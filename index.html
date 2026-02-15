@@ -43,7 +43,7 @@
         .input-section {
             transition: all 0.3s ease-in-out;
             opacity: 1;
-            max-height: 500px;
+            max-height: 800px;
             overflow: hidden;
         }
         .input-section.hidden-section {
@@ -70,9 +70,9 @@
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col relative">
 
-    <!-- Formula Modal (Hidden by default) -->
+    <!-- Formula Modal -->
     <div id="formulaModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
-        <div class="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-100">
+        <div class="bg-white rounded-lg shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all scale-100">
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-gray-800" id="modalTitle">Calculation Logic</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
@@ -83,13 +83,13 @@
             </div>
             <div class="p-6">
                 <div class="mb-4">
-                    <p class="text-sm text-gray-500 uppercase font-bold tracking-wider mb-2">The Formula</p>
+                    <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">The Formula</p>
                     <div class="bg-gray-100 p-3 rounded-md font-mono text-xs text-gray-700 break-words" id="modalFormula">
                         <!-- Formula goes here -->
                     </div>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500 uppercase font-bold tracking-wider mb-2">Key Assumptions</p>
+                    <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Key Assumptions</p>
                     <p class="text-sm text-gray-600 leading-relaxed" id="modalDesc">
                         <!-- Description goes here -->
                     </p>
@@ -171,6 +171,10 @@
                         <input type="number" id="numNewHires" value="10" min="0" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
                         <p class="text-xs text-gray-400 mt-1">Used for Onboarding ROI</p>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Annual Releases</label>
+                        <input type="number" id="annualReleases" value="24" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                    </div>
                     <!-- Hidden Seat Cost Input (Default 600) -->
                     <input type="hidden" id="seatCost" value="600">
                 </div>
@@ -180,44 +184,94 @@
             <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">3. Discovery: Pain Points</h2>
                 
-                <!-- Productivity (Linked to: Product) -->
-                <div id="section-productivity" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
+                <!-- 1. Productivity (Product, Platform) -->
+                <div id="section-productivity" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product,platform">
                     <div class="flex justify-between mb-2">
                         <label class="text-sm font-medium text-gray-700">Hours lost per week (env setup, debugging)</label>
                         <span class="text-sm font-bold text-postman" id="prodHoursDisplay">3 hrs</span>
                     </div>
                     <input type="range" id="prodHours" min="0" max="10" step="0.5" value="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodHours', 'prodHoursDisplay', ' hrs'); calculate()">
-                    <p class="text-xs text-gray-500 mt-1">Calculates at 50% realization factor (conservative estimate)</p>
+                    <p class="text-xs text-gray-500 mt-1">Efficiency Baseline</p>
                 </div>
 
-                <!-- Duplication (Linked to: Product, Platform) -->
-                <div id="section-duplication" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product,platform">
+                <!-- 2. Onboarding (Product) -->
+                <div id="section-onboarding" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-gray-700">Ramp Up Time (Weeks)</label>
+                        <span class="text-sm font-bold text-postman" id="rampWeeksDisplay">4 wks</span>
+                    </div>
+                    <input type="range" id="rampWeeks" min="1" max="12" step="1" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('rampWeeks', 'rampWeeksDisplay', ' wks'); calculate()">
+                    <p class="text-xs text-gray-500 mt-1">Postman reduces ramp time by 40%</p>
+                </div>
+
+                <!-- 3. Rework/Duplication (Product) -->
+                <div id="section-duplication" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
                     <div class="flex justify-between mb-2">
                         <label class="text-sm font-medium text-gray-700">Redundant APIs/Projects built per year</label>
                         <span class="text-sm font-bold text-postman" id="dupProjectsDisplay">1</span>
                     </div>
                     <input type="range" id="dupProjects" min="0" max="10" step="1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('dupProjects', 'dupProjectsDisplay', ''); calculate()">
-                    <p class="text-xs text-gray-500 mt-1">Assumes 3 devs x 3 months per project</p>
+                    <p class="text-xs text-gray-500 mt-1">Cost of building redundant code</p>
                 </div>
 
-                <!-- Onboarding (Linked to: Product) -->
-                <div id="section-onboarding" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
-                    <div class="flex justify-between mb-2">
-                        <label class="text-sm font-medium text-gray-700">Current Ramp Time (Weeks)</label>
-                        <span class="text-sm font-bold text-postman" id="rampWeeksDisplay">4 wks</span>
+                <!-- 4. Governance (Platform) -->
+                <div id="section-governance" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="platform">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Governance Efficiency</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">PRs Reviewed/Year</label>
+                            <input type="number" id="prsReviewed" value="500" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Mins per Review</label>
+                            <input type="number" id="minsReview" value="30" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Architect Rate (x)</label>
+                            <input type="number" id="archMultiplier" value="1.25" step="0.05" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Auto. Savings (%)</label>
+                            <input type="number" id="govSavings" value="90" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
                     </div>
-                    <input type="range" id="rampWeeks" min="1" max="12" step="1" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('rampWeeks', 'rampWeeksDisplay', ' wks'); calculate()">
-                    <p class="text-xs text-gray-500 mt-1">Calculates on a 40% reduction in ramp time</p>
+                    <p class="text-xs text-gray-500">Automating API linting & styling</p>
                 </div>
 
-                <!-- Quality (Linked to: QE, Platform) -->
-                <div id="section-quality" class="input-section" data-audience="qe,platform">
+                <!-- 6. Internal Integration (Platform, Product) -->
+                <div id="section-integration" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="platform,product">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Internal Integration Velocity</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Integrations/Year</label>
+                            <input type="number" id="intCount" value="20" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Current TTFC (Hours)</label>
+                            <input type="number" id="ttfcHours" value="4" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">Time-to-First-Call reduction</p>
+                </div>
+
+                <!-- 7. Testing (QE) -->
+                <div id="section-testing" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="qe">
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-gray-700">Regression Cycle (Hours)</label>
+                        <span class="text-sm font-bold text-postman" id="regHoursDisplay">20 hrs</span>
+                    </div>
+                    <input type="range" id="regHours" min="0" max="100" step="5" value="20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('regHours', 'regHoursDisplay', ' hrs'); calculate()">
+                    <p class="text-xs text-gray-500 mt-1">95% reduction via automation</p>
+                </div>
+
+                <!-- 8. Defects (QE) -->
+                <div id="section-defects" class="input-section" data-audience="qe">
                     <div class="flex justify-between mb-2">
                         <label class="text-sm font-medium text-gray-700">Critical Bugs in Prod (Annual)</label>
                         <span class="text-sm font-bold text-postman" id="prodBugsDisplay">2</span>
                     </div>
                     <input type="range" id="prodBugs" min="0" max="20" step="1" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodBugs', 'prodBugsDisplay', ''); calculate()">
-                    <p class="text-xs text-gray-500 mt-1">Assumes 100 hours to fix a prod defect vs dev</p>
+                    <p class="text-xs text-gray-500 mt-1">Cost of fixing in Prod vs Dev</p>
                 </div>
             </section>
         </div>
@@ -236,43 +290,38 @@
                         </button>
                     </div>
                     
-                    <!-- WRAPPER: Added overflow-x-auto to prevent breaking layout in app -->
                     <div class="overflow-x-auto bg-gray-900 p-2">
-                        <!-- MAIN COPY TARGET: Fixed width table with explicit styling for copy/paste safety -->
                         <div id="slideContent">
                             <table border="0" cellpadding="0" cellspacing="0" style="width: 950px; min-width: 950px; background-color: #111827; color: #ffffff; font-family: sans-serif; border-collapse: collapse;">
-                                
-                                <!-- 1. Headline Row -->
                                 <tr>
-                                    <td colspan="2" style="padding: 30px; border-left: 6px solid #FF6C37; background-color: #111827;">
+                                    <td colspan="3" style="padding: 30px; border-left: 6px solid #FF6C37; background-color: #111827;">
                                         <div style="font-size: 24px; font-weight: bold; color: white; line-height: 1.3; font-family: 'Inter', sans-serif;">
                                             "Postman Enterprise will drive <span style="color: #FF6C37;" id="outTotalSavings">$0</span> in annual efficiency gains while reducing security risk."
                                         </div>
                                     </td>
                                 </tr>
-
-                                <!-- 2. Content Row -->
                                 <tr>
-                                    <!-- Left Column: Strategic Outcomes -->
-                                    <td style="width: 450px; vertical-align: top; padding: 24px 20px 40px 30px; border-right: 1px solid #374151; background-color: #111827;">
+                                    <!-- Strategic Outcomes (Column 1) -->
+                                    <td rowspan="2" style="width: 400px; vertical-align: top; padding: 24px 20px 40px 30px; border-right: 1px solid #374151; background-color: #111827;">
                                         <h4 style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 16px 0;">1. Strategic Outcomes</h4>
-                                        <div style="color: #E5E7EB; font-size: 16px; line-height: 1.6;" id="strategicBullets">
-                                            <!-- Dynamic bullets populate here -->
-                                        </div>
+                                        <div style="color: #E5E7EB; font-size: 16px; line-height: 1.6;" id="strategicBullets"></div>
+                                    </td>
+                                    
+                                    <!-- Operational Impact (Column 2 - Left) -->
+                                    <td style="width: 275px; vertical-align: top; padding: 24px 10px 24px 30px; background-color: #111827;">
+                                        <h4 style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 16px 0;">2. Operational Impact</h4>
+                                        <div id="opImpactLeft"></div>
                                     </td>
 
-                                    <!-- Right Column: Operational Impact & ROI -->
-                                    <td style="width: 500px; vertical-align: top; padding: 24px 30px 40px 30px; background-color: #111827;">
-                                        
-                                        <!-- Operational Impact -->
-                                        <div style="margin-bottom: 24px;">
-                                            <h4 style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 16px 0;">2. Operational Impact</h4>
-                                            <div id="operationalImpactList">
-                                                <!-- Dynamic impact items populate here as simple DIVs -->
-                                            </div>
-                                        </div>
-
-                                        <!-- ROI Summary -->
+                                    <!-- Operational Impact (Column 3 - Right) -->
+                                    <td style="width: 275px; vertical-align: top; padding: 24px 30px 24px 10px; background-color: #111827;">
+                                        <div style="height: 28px;"></div> <!-- Spacer to align with header -->
+                                        <div id="opImpactRight"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <!-- ROI Summary (Spans Columns 2 & 3) -->
+                                    <td colspan="2" style="padding: 0 30px 30px 30px; background-color: #111827; vertical-align: bottom;">
                                         <div style="background-color: #1F2937; padding: 20px; border-radius: 8px; border: 1px solid #374151;">
                                             <h4 style="color: #9CA3AF; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 8px 0;">3. ROI Summary</h4>
                                             <p style="margin: 0; font-size: 16px; color: #E5E7EB; line-height: 1.5;">
@@ -286,7 +335,6 @@
                     </div>
                 </div>
                 
-                <!-- Toast Notification -->
                 <div id="toast" class="opacity-0 transition-opacity duration-300 fixed bottom-5 right-5 bg-gray-900 text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -298,254 +346,201 @@
     </main>
 
     <script>
-        // Utility: Format currency
-        const formatMoney = (amount) => {
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
-        };
+        const formatMoney = (amount) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
+        const updateRangeDisplay = (id, display, suffix) => document.getElementById(display).innerText = document.getElementById(id).value + suffix;
 
-        // Utility: Update range slider displays
-        const updateRangeDisplay = (inputId, displayId, suffix) => {
-            const val = document.getElementById(inputId).value;
-            document.getElementById(displayId).innerText = val + suffix;
-        };
-
-        // Formula Data
         const formulaData = {
-            productivity: {
-                title: "Developer Productivity Formula",
-                formula: "(Total Developers × Hours Saved/Week × 52 Weeks × Hourly Rate) × 50% Realization",
-                desc: "We assume that not all saved time is immediately reinvested into coding. A conservative 50% 'Realization Factor' is applied to the hours saved to ensure the calculation is credible to a CFO."
-            },
-            rework: {
-                title: "Avoided Rework Formula",
-                formula: "Duplicate Projects × 3 Devs × 3 Months × 160 Hours/Month × Hourly Rate",
-                desc: "This calculates the cost of building redundant APIs or features that already exist but weren't discoverable. We assume an average project team size of 3 developers working for 3 months."
-            },
-            onboarding: {
-                title: "Onboarding Velocity Formula",
-                formula: "New Hires × (Current Ramp Weeks × 40% Reduction) × 40 Hours/Week × Hourly Rate",
-                desc: "Postman's workspace collaboration is estimated to reduce new hire ramp time by 40%. This calculates the monetary value of those reclaimed weeks."
-            },
-            risk: {
-                title: "Risk Mitigation Formula",
-                formula: "Critical Prod Defects × 100 Hours to Fix × Hourly Rate",
-                desc: "Fixing a bug in production is significantly more expensive than in development. We assume a 100-hour penalty (root cause analysis, hotfix, deployment, comms) for every critical production defect."
-            }
+            productivity: { title: "Developer Productivity", formula: "Devs × (Hours Saved × 0.50) × 52 × Rate", desc: "Assumption: A conservative 50% 'Realization Factor' is applied, assuming not every saved hour is immediately reinvested in coding." },
+            onboarding: { title: "Onboarding Velocity", formula: "New Hires × (Ramp Weeks × 40%) × 40hrs × Rate", desc: "Assumption: Postman reduces new hire ramp time by 40% (Source: Customer Benchmarks)." },
+            rework: { title: "Avoided Rework", formula: "Duplicate Projects × 3 Devs × 3 Months × 160hrs × Rate", desc: "Assumption: An average redundant project involves 3 developers working for 3 months (Source: ROI Blueprint)." },
+            governance: { title: "Governance Efficiency", formula: "PRs × (Mins/60) × (Rate × ArchitectMult) × Savings%", desc: "Assumption: Architect hourly rate is 1.25x standard dev rate. Automation removes 90% of manual review effort." },
+            provisioning: { title: "IT Provisioning", formula: "New Hires × 2 Hours × (Rate × 0.75)", desc: "Assumption: IT Admin rate is 75% of Dev rate. Automated SCIM/SSO provisioning saves 2 hours of IT ticket time per hire." },
+            integration: { title: "Internal Integration", formula: "Integrations × (TTFC - 0.25) × Rate", desc: "Assumption: Postman Private API Network reduces Time-to-First-Call (TTFC) to 15 minutes (0.25 hours)." },
+            testing: { title: "Test Compression", formula: "Releases × Cycle Hours × 95% × Rate", desc: "Assumption: API automation reduces manual regression testing cycles by 95% (Source: Customer Benchmarks)." },
+            defects: { title: "Defect Remediation", formula: "Prod Defects × 100 Hours × Rate", desc: "Assumption: Remediation of a defect found in production takes 100 hours longer than if found in development." },
+            security: { title: "Risk Mitigation", formula: "$4,450,000 × 0.005", desc: "Assumption: Based on IBM Cost of Data Breach Report ($4.45M average) with a conservative 0.5% risk reduction attribution to API governance." }
         };
 
-        // Modal Logic
         function showFormula(type) {
             const data = formulaData[type];
             if(data) {
                 document.getElementById('modalTitle').innerText = data.title;
                 document.getElementById('modalFormula').innerText = data.formula;
                 document.getElementById('modalDesc').innerText = data.desc;
-                
-                const modal = document.getElementById('formulaModal');
-                modal.classList.remove('hidden');
+                document.getElementById('formulaModal').classList.remove('hidden');
             }
         }
+        function closeModal() { document.getElementById('formulaModal').classList.add('hidden'); }
+        document.getElementById('formulaModal').addEventListener('click', e => { if(e.target === document.getElementById('formulaModal')) closeModal(); });
 
-        function closeModal() {
-            document.getElementById('formulaModal').classList.add('hidden');
-        }
-
-        // Close modal on click outside
-        document.getElementById('formulaModal').addEventListener('click', function(e) {
-            if(e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Core Calculation Engine
         function calculate() {
-            // 0. Determine Active Personas
+            // Inputs
             const selectedPersonas = Array.from(document.querySelectorAll('input[name="persona"]:checked')).map(cb => cb.value);
-            const isDefaultMode = selectedPersonas.length === 0; // If nothing selected, show all
-
-            // 1. Manage Visibility & Relevance
-            const inputMappings = {
-                'section-productivity': ['product'],
-                'section-duplication': ['product', 'platform'],
-                'section-onboarding': ['product'],
-                'section-quality': ['qe', 'platform']
-            };
-
-            const relevance = {
-                productivity: false,
-                duplication: false,
-                onboarding: false,
-                quality: false
-            };
-
-            for (const [sectionId, audienceList] of Object.entries(inputMappings)) {
-                const section = document.getElementById(sectionId);
-                const isRelevant = isDefaultMode || audienceList.some(role => selectedPersonas.includes(role));
-                
-                if (isRelevant) {
-                    section.classList.remove('hidden-section');
-                    if(sectionId.includes('productivity')) relevance.productivity = true;
-                    if(sectionId.includes('duplication')) relevance.duplication = true;
-                    if(sectionId.includes('onboarding')) relevance.onboarding = true;
-                    if(sectionId.includes('quality')) relevance.quality = true;
-                } else {
-                    section.classList.add('hidden-section');
-                }
-            }
-
-            // 2. Get Inputs
-            const numDevs = parseInt(document.getElementById('numDevs').value) || 0;
-            const hourlyRate = parseInt(document.getElementById('hourlyRate').value) || 0;
-            const numNewHires = parseInt(document.getElementById('numNewHires').value) || 0;
+            const isDefault = selectedPersonas.length === 0;
+            
+            const devs = parseInt(document.getElementById('numDevs').value) || 0;
+            const rate = parseInt(document.getElementById('hourlyRate').value) || 0;
+            const hires = parseInt(document.getElementById('numNewHires').value) || 0;
+            const releases = parseInt(document.getElementById('annualReleases').value) || 0;
             const seatCost = parseInt(document.getElementById('seatCost').value) || 600;
 
-            const prodHours = parseFloat(document.getElementById('prodHours').value) || 0;
-            const dupProjects = parseInt(document.getElementById('dupProjects').value) || 0;
-            const rampWeeks = parseInt(document.getElementById('rampWeeks').value) || 0;
-            const prodBugs = parseInt(document.getElementById('prodBugs').value) || 0;
-
-            // 3. Run Formulas
-            const rawProdSavings = numDevs * prodHours * 52 * hourlyRate;
-            const prodSavings = relevance.productivity ? (rawProdSavings * 0.50) : 0; 
-            const dupSavings = relevance.duplication ? (dupProjects * 3 * 3 * 160 * hourlyRate) : 0;
-            const savedWeeks = rampWeeks * 0.40;
-            const onboardSavings = relevance.onboarding ? (numNewHires * savedWeeks * 40 * hourlyRate) : 0;
-            const qualitySavings = relevance.quality ? (prodBugs * 100 * hourlyRate) : 0;
-
-            const totalSavings = prodSavings + dupSavings + onboardSavings + qualitySavings;
-            const totalCost = numDevs * seatCost;
-            const roiMultiplier = totalCost > 0 ? (totalSavings / totalCost).toFixed(1) : "0";
-
-            // 4. Update DOM Output
-
-            // A. Strategic Outcomes
-            const bulletsContainer = document.getElementById('strategicBullets');
-            bulletsContainer.innerHTML = '';
-            let strategies = [];
-            
-            if(isDefaultMode) {
-                strategies.push("Accelerate API-first development adoption.");
-                strategies.push("Improve governance while maintaining velocity.");
-            } else {
-                if(selectedPersonas.includes('platform')) {
-                    strategies.push("Eliminate Shadow APIs and enforce governance.");
-                    strategies.push("Standardize API security protocols across the org.");
-                }
-                if(selectedPersonas.includes('product')) {
-                    strategies.push("Increase developer velocity through component reuse.");
-                    strategies.push("Accelerate partner onboarding with documented APIs.");
-                }
-                if(selectedPersonas.includes('qe')) {
-                    strategies.push("Shift testing left to reduce production defects.");
-                    strategies.push("Automate regression testing in CI/CD pipelines.");
-                }
-            }
-
-            // Manually creating bullet points with a table structure to ensure dots persist
-            [...new Set(strategies)].forEach(text => {
-                const row = document.createElement('div');
-                row.style.marginBottom = '12px';
-                row.innerHTML = `<span style="color: #9CA3AF; margin-right: 8px;">•</span><span style="color: #E5E7EB;">${text}</span>`;
-                bulletsContainer.appendChild(row);
-            });
-
-            // B. Operational Impact (Dynamic List) - FLAT STRUCTURE to avoid nested table issues
-            const impactContainer = document.getElementById('operationalImpactList');
-            impactContainer.innerHTML = '';
-
-            const createImpactLine = (label, value, subtext, type) => {
-                // INFO ICON ADDED: Note the <span class="info-icon"...> section.
-                return `
-                    <div style="margin-bottom: 24px; line-height: 1.4; font-family: 'Inter', sans-serif;">
-                        <span style="color: white; font-size: 14px; font-weight: 700;">
-                            ${label}
-                            <span class="info-icon cursor-pointer inline-block ml-1 align-middle opacity-50 hover:opacity-100" onclick="showFormula('${type}')" title="View Logic" style="margin-left:6px; vertical-align:middle; cursor:pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            </span>
-                        </span><br>
-                        <span style="color: #FF6C37; font-family: monospace; font-size: 18px; font-weight: 700;">${formatMoney(value)}</span>
-                        <span style="color: #9CA3AF; font-size: 12px;"> / year</span><br>
-                        <span style="color: #9CA3AF; font-size: 11px; font-style: italic;">${subtext}</span>
-                    </div>
-                `;
+            // Visibility Logic & Flag Setting
+            const sections = document.querySelectorAll('.input-section');
+            const p = { 
+                prod: false, onb: false, dup: false, gov: false, 
+                prov: false, int: false, test: false, def: false, sec: false 
             };
 
-            if (relevance.productivity && prodSavings > 0) {
-                impactContainer.innerHTML += createImpactLine(
-                    "Developer Productivity", 
-                    prodSavings, 
-                    `(Recovering <span id="outProdHours">${prodHours}</span> hours/dev/week)`,
-                    'productivity'
-                );
+            sections.forEach(section => {
+                const audienceAttr = section.getAttribute('data-audience');
+                const audiences = audienceAttr ? audienceAttr.split(',') : [];
+                const isVisible = isDefault || audiences.some(r => selectedPersonas.includes(r));
+                
+                section.classList.toggle('hidden-section', !isVisible);
+
+                // Update calculation flags if visible
+                if (isVisible) {
+                    if(section.id.includes('productivity')) p.prod = true;
+                    if(section.id.includes('onboarding')) p.onb = true;
+                    if(section.id.includes('duplication')) p.dup = true;
+                    if(section.id.includes('governance')) p.gov = true;
+                    if(section.id.includes('integration')) p.int = true;
+                    if(section.id.includes('testing')) p.test = true;
+                    if(section.id.includes('defects')) p.def = true;
+                }
+            });
+
+            // Logic for Hidden calcs (IT Provisioning & Security tied to Platform)
+            if(isDefault || selectedPersonas.includes('platform')) { p.prov = true; p.sec = true; }
+
+            // 1. Productivity
+            const hoursWasted = parseFloat(document.getElementById('prodHours').value) || 0;
+            const valProd = p.prod ? (devs * (hoursWasted * 0.50) * 52 * rate) : 0;
+
+            // 2. Onboarding
+            const rampWeeks = parseInt(document.getElementById('rampWeeks').value) || 0;
+            const valOnb = p.onb ? (hires * (rampWeeks * 40 * 0.40) * rate) : 0;
+
+            // 3. Rework
+            const dupProj = parseInt(document.getElementById('dupProjects').value) || 0;
+            const valDup = p.dup ? (dupProj * 3 * 3 * 160 * rate) : 0;
+
+            // 4. Governance
+            const prs = parseInt(document.getElementById('prsReviewed').value) || 0;
+            const mins = parseInt(document.getElementById('minsReview').value) || 0;
+            const archMult = parseFloat(document.getElementById('archMultiplier').value) || 1.25;
+            const govSave = (parseFloat(document.getElementById('govSavings').value) || 90) / 100;
+            
+            const valGov = p.gov ? (prs * (mins/60) * (rate * archMult) * govSave) : 0;
+
+            // 5. IT Provisioning
+            const valProv = p.prov ? (hires * 2 * (rate * 0.75)) : 0;
+
+            // 6. Integration
+            const intCount = parseInt(document.getElementById('intCount').value) || 0;
+            const ttfc = parseFloat(document.getElementById('ttfcHours').value) || 0;
+            const valInt = p.int ? (intCount * (Math.max(0, ttfc - 0.25)) * rate) : 0;
+
+            // 7. Testing
+            const regHours = parseFloat(document.getElementById('regHours').value) || 0;
+            const valTest = p.test ? (releases * regHours * 0.95 * rate) : 0;
+
+            // 8. Defects
+            const prodBugs = parseInt(document.getElementById('prodBugs').value) || 0;
+            const valDef = p.def ? (prodBugs * 100 * rate) : 0;
+
+            // 9. Security
+            const valSec = p.sec ? (4450000 * 0.005) : 0;
+
+            const totalSavings = valProd + valOnb + valDup + valGov + valProv + valInt + valTest + valDef + valSec;
+            const totalCost = devs * seatCost;
+            const roi = totalCost > 0 ? (totalSavings / totalCost).toFixed(1) : "0";
+
+            // Output Generation
+            const bullets = document.getElementById('strategicBullets');
+            bullets.innerHTML = '';
+            let strats = [];
+            if (isDefault) strats = ["Improve API governance and velocity.", "Reduce risk while accelerating onboarding."];
+            else {
+                if(selectedPersonas.includes('platform')) {
+                    strats.push("Eliminate Shadow APIs & enforce governance.");
+                    strats.push("Reduce security risk & IT provisioning overhead.");
+                }
+                if(selectedPersonas.includes('product')) {
+                    strats.push("Increase developer velocity & reuse.");
+                    strats.push("Accelerate onboarding & integration time.");
+                }
+                if(selectedPersonas.includes('qe')) {
+                    strats.push("Shift testing left to reduce production defects.");
+                    strats.push("Compress regression cycles via automation.");
+                }
             }
-            if (relevance.duplication && dupSavings > 0) {
-                impactContainer.innerHTML += createImpactLine(
-                    "Avoided Rework", 
-                    dupSavings, 
-                    "by utilizing the Private API Network",
-                    'rework'
-                );
-            }
-            if (relevance.onboarding && onboardSavings > 0) {
-                 impactContainer.innerHTML += `
-                    <div style="margin-bottom: 24px; line-height: 1.4; font-family: 'Inter', sans-serif;">
-                        <span style="color: white; font-size: 14px; font-weight: 700;">
-                            Onboarding Velocity
-                            <span class="info-icon cursor-pointer inline-block ml-1 align-middle opacity-50 hover:opacity-100" onclick="showFormula('onboarding')" title="View Logic" style="margin-left:6px; vertical-align:middle; cursor:pointer;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            </span>
-                        </span><br>
-                        <span style="color: #9CA3AF; font-size: 11px; font-style: italic;">Reduced ramp time by 40%, saving</span> <span style="color: #FF6C37; font-family: monospace; font-size: 16px; font-weight: 700;">${formatMoney(onboardSavings)}</span>
-                    </div>
-                `;
-            }
-            if (relevance.quality && qualitySavings > 0) {
-                 impactContainer.innerHTML += createImpactLine(
-                    "Risk Mitigation", 
-                    qualitySavings, 
-                    "by reducing critical production defects",
-                    'risk'
-                );
+            [...new Set(strats)].forEach(t => bullets.innerHTML += `<div style="margin-bottom:12px;"><span style="color:#9CA3AF;margin-right:8px;">•</span><span style="color:#E5E7EB;">${t}</span></div>`);
+
+            // Clear Lists
+            document.getElementById('opImpactLeft').innerHTML = '';
+            document.getElementById('opImpactRight').innerHTML = '';
+            
+            // Collect Valid Items
+            let impactItems = [];
+            if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity'});
+            if(valOnb > 0) impactItems.push({label: "Onboarding Velocity", val: valOnb, sub: "Reduced ramp time by 40%", type: 'onboarding'});
+            if(valDup > 0) impactItems.push({label: "Avoided Rework", val: valDup, sub: "Eliminating redundant API builds", type: 'rework'});
+            if(valGov > 0) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automating API styling & linting", type: 'governance'});
+            if(valProv > 0) impactItems.push({label: "IT Provisioning", val: valProv, sub: "Automated SCIM/SSO access", type: 'provisioning'});
+            if(valInt > 0) impactItems.push({label: "Integration Velocity", val: valInt, sub: `TTFC reduced to 15 mins`, type: 'integration'});
+            if(valTest > 0) impactItems.push({label: "Test Cycle Compression", val: valTest, sub: "95% reduction in regression time", type: 'testing'});
+            if(valDef > 0) impactItems.push({label: "Defect Remediation", val: valDef, sub: "Cost of bugs in Prod vs Dev", type: 'defects'});
+            if(valSec > 0) impactItems.push({label: "Risk Mitigation", val: valSec, sub: "Data breach risk reduction", type: 'security'});
+
+            // Distribute Items to Columns
+            if (impactItems.length === 0) {
+                document.getElementById('opImpactLeft').innerHTML = '<p style="color:#6B7280;font-size:12px;">Select metrics on the left.</p>';
+            } else {
+                impactItems.forEach((item, index) => {
+                    const html = renderItem(item);
+                    // Even items to Left, Odd items to Right
+                    if (index % 2 === 0) {
+                        document.getElementById('opImpactLeft').innerHTML += html;
+                    } else {
+                        document.getElementById('opImpactRight').innerHTML += html;
+                    }
+                });
             }
 
-            // Fallback
-            if (impactContainer.innerHTML === '') {
-                impactContainer.innerHTML = '<p style="color: #6B7280; font-style: italic; font-size: 12px;">Select metrics on the left to see impact.</p>';
-            }
-
-            // C. Totals
             document.getElementById('outTotalSavings').innerText = formatMoney(totalSavings);
             document.getElementById('outTotalSavingsText').innerText = formatMoney(totalSavings);
             document.getElementById('outCost').innerText = formatMoney(totalCost);
-            document.getElementById('outROI').innerText = roiMultiplier + 'x';
+            document.getElementById('outROI').innerText = roi + 'x';
         }
 
-        // Copy Functionality
+        function renderItem(item) {
+            return `
+                <div style="line-height: 1.4; font-family: 'Inter', sans-serif; margin-bottom: 24px;">
+                    <span style="color: white; font-size: 13px; font-weight: 700;">
+                        ${item.label}
+                        <span class="info-icon cursor-pointer inline-block ml-1 opacity-50 hover:opacity-100" onclick="showFormula('${item.type}')" style="vertical-align:middle; cursor:pointer;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        </span>
+                    </span><br>
+                    <span style="color: #FF6C37; font-family: monospace; font-size: 16px; font-weight: 700;">${formatMoney(item.val)}</span>
+                    <span style="color: #9CA3AF; font-size: 11px;"> / year</span><br>
+                    <span style="color: #9CA3AF; font-size: 10px; font-style: italic;">${item.sub}</span>
+                </div>
+            `;
+        }
+
         function copyToClipboard() {
-            // Select & Copy
             const node = document.getElementById('slideContent');
             const range = document.createRange();
             range.selectNode(node);
             window.getSelection().removeAllRanges();
             window.getSelection().addRange(range);
-            
-            try {
-                document.execCommand('copy');
-                const toast = document.getElementById('toast');
-                toast.classList.remove('opacity-0');
-                setTimeout(() => {
-                    toast.classList.add('opacity-0');
-                }, 2000);
-            } catch(err) {
-                alert('Unable to copy');
-            }
-            
+            try { document.execCommand('copy'); document.getElementById('toast').classList.remove('opacity-0'); setTimeout(()=>document.getElementById('toast').classList.add('opacity-0'),2000); } catch(e){}
             window.getSelection().removeAllRanges();
         }
 
-        // Initial Calc
         window.onload = calculate;
-
     </script>
 </body>
 </html>
