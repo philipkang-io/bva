@@ -23,7 +23,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        /* Custom range slider styling for Postman feel */
+        
+        /* Custom range slider styling */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             background: #FF6C37;
@@ -37,7 +38,8 @@
             height: 4px;
             border-radius: 2px;
         }
-        /* Smooth fade for showing/hiding sections */
+
+        /* Input Section Animation */
         .input-section {
             transition: all 0.3s ease-in-out;
             opacity: 1;
@@ -51,9 +53,55 @@
             padding: 0;
             border: none;
         }
+
+        /* Modal Overlay Transition */
+        #formulaModal {
+            transition: opacity 0.2s ease-in-out;
+        }
+        #formulaModal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #formulaModal:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col relative">
+
+    <!-- Formula Modal (Hidden by default) -->
+    <div id="formulaModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+        <div class="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-100">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-800" id="modalTitle">Calculation Logic</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 uppercase font-bold tracking-wider mb-2">The Formula</p>
+                    <div class="bg-gray-100 p-3 rounded-md font-mono text-xs text-gray-700 break-words" id="modalFormula">
+                        <!-- Formula goes here -->
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 uppercase font-bold tracking-wider mb-2">Key Assumptions</p>
+                    <p class="text-sm text-gray-600 leading-relaxed" id="modalDesc">
+                        <!-- Description goes here -->
+                    </p>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" onclick="closeModal()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-postman text-base font-medium text-white hover:bg-postman-hover focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -261,6 +309,54 @@
             document.getElementById(displayId).innerText = val + suffix;
         };
 
+        // Formula Data
+        const formulaData = {
+            productivity: {
+                title: "Developer Productivity Formula",
+                formula: "(Total Developers × Hours Saved/Week × 52 Weeks × Hourly Rate) × 50% Realization",
+                desc: "We assume that not all saved time is immediately reinvested into coding. A conservative 50% 'Realization Factor' is applied to the hours saved to ensure the calculation is credible to a CFO."
+            },
+            rework: {
+                title: "Avoided Rework Formula",
+                formula: "Duplicate Projects × 3 Devs × 3 Months × 160 Hours/Month × Hourly Rate",
+                desc: "This calculates the cost of building redundant APIs or features that already exist but weren't discoverable. We assume an average project team size of 3 developers working for 3 months."
+            },
+            onboarding: {
+                title: "Onboarding Velocity Formula",
+                formula: "New Hires × (Current Ramp Weeks × 40% Reduction) × 40 Hours/Week × Hourly Rate",
+                desc: "Postman's workspace collaboration is estimated to reduce new hire ramp time by 40%. This calculates the monetary value of those reclaimed weeks."
+            },
+            risk: {
+                title: "Risk Mitigation Formula",
+                formula: "Critical Prod Defects × 100 Hours to Fix × Hourly Rate",
+                desc: "Fixing a bug in production is significantly more expensive than in development. We assume a 100-hour penalty (root cause analysis, hotfix, deployment, comms) for every critical production defect."
+            }
+        };
+
+        // Modal Logic
+        function showFormula(type) {
+            const data = formulaData[type];
+            if(data) {
+                document.getElementById('modalTitle').innerText = data.title;
+                document.getElementById('modalFormula').innerText = data.formula;
+                document.getElementById('modalDesc').innerText = data.desc;
+                
+                const modal = document.getElementById('formulaModal');
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('formulaModal').classList.add('hidden');
+        }
+
+        // Close modal on click outside
+        document.getElementById('formulaModal').addEventListener('click', function(e) {
+            if(e.target === this) {
+                closeModal();
+            }
+        });
+
         // Core Calculation Engine
         function calculate() {
             // 0. Determine Active Personas
@@ -357,11 +453,16 @@
             const impactContainer = document.getElementById('operationalImpactList');
             impactContainer.innerHTML = '';
 
-            const createImpactLine = (label, value, subtext) => {
-                // Using simple Divs and line breaks. Eliminating display: block on spans to fix paragraph spacing in Slides.
+            const createImpactLine = (label, value, subtext, type) => {
+                // INFO ICON ADDED: Note the <span class="info-icon"...> section.
                 return `
                     <div style="margin-bottom: 24px; line-height: 1.4; font-family: 'Inter', sans-serif;">
-                        <span style="color: white; font-size: 14px; font-weight: 700;">${label}</span><br>
+                        <span style="color: white; font-size: 14px; font-weight: 700;">
+                            ${label}
+                            <span class="info-icon cursor-pointer inline-block ml-1 align-middle opacity-50 hover:opacity-100" onclick="showFormula('${type}')" title="View Logic" style="margin-left:6px; vertical-align:middle; cursor:pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            </span>
+                        </span><br>
                         <span style="color: #FF6C37; font-family: monospace; font-size: 18px; font-weight: 700;">${formatMoney(value)}</span>
                         <span style="color: #9CA3AF; font-size: 12px;"> / year</span><br>
                         <span style="color: #9CA3AF; font-size: 11px; font-style: italic;">${subtext}</span>
@@ -373,20 +474,27 @@
                 impactContainer.innerHTML += createImpactLine(
                     "Developer Productivity", 
                     prodSavings, 
-                    `(Recovering <span id="outProdHours">${prodHours}</span> hours/dev/week)`
+                    `(Recovering <span id="outProdHours">${prodHours}</span> hours/dev/week)`,
+                    'productivity'
                 );
             }
             if (relevance.duplication && dupSavings > 0) {
                 impactContainer.innerHTML += createImpactLine(
                     "Avoided Rework", 
                     dupSavings, 
-                    "by utilizing the Private API Network"
+                    "by utilizing the Private API Network",
+                    'rework'
                 );
             }
             if (relevance.onboarding && onboardSavings > 0) {
                  impactContainer.innerHTML += `
                     <div style="margin-bottom: 24px; line-height: 1.4; font-family: 'Inter', sans-serif;">
-                        <span style="color: white; font-size: 14px; font-weight: 700;">Onboarding Velocity</span><br>
+                        <span style="color: white; font-size: 14px; font-weight: 700;">
+                            Onboarding Velocity
+                            <span class="info-icon cursor-pointer inline-block ml-1 align-middle opacity-50 hover:opacity-100" onclick="showFormula('onboarding')" title="View Logic" style="margin-left:6px; vertical-align:middle; cursor:pointer;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            </span>
+                        </span><br>
                         <span style="color: #9CA3AF; font-size: 11px; font-style: italic;">Reduced ramp time by 40%, saving</span> <span style="color: #FF6C37; font-family: monospace; font-size: 16px; font-weight: 700;">${formatMoney(onboardSavings)}</span>
                     </div>
                 `;
@@ -395,7 +503,8 @@
                  impactContainer.innerHTML += createImpactLine(
                     "Risk Mitigation", 
                     qualitySavings, 
-                    "by reducing critical production defects"
+                    "by reducing critical production defects",
+                    'risk'
                 );
             }
 
@@ -413,6 +522,7 @@
 
         // Copy Functionality
         function copyToClipboard() {
+            // Select & Copy
             const node = document.getElementById('slideContent');
             const range = document.createRange();
             range.selectNode(node);
