@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postman Enterprise BVA Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        postman: {
+                            DEFAULT: '#FF6C37',
+                            hover: '#E05524',
+                            bg: '#FFF5F0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom range slider styling for Postman feel */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            background: #FF6C37;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            margin-top: -6px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            background: #ddd;
+            height: 4px;
+            border-radius: 2px;
+        }
+        /* Smooth fade for showing/hiding sections */
+        .input-section {
+            transition: all 0.3s ease-in-out;
+            opacity: 1;
+            max-height: 500px;
+            overflow: hidden;
+        }
+        .input-section.hidden-section {
+            opacity: 0;
+            max-height: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-postman rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900 tracking-tight">Postman <span class="text-postman">Value Calculator</span></h1>
+            </div>
+            <div class="text-sm text-gray-500 hidden sm:block">Sales Engineering Tool</div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Inputs (Wizard) -->
+        <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Step 1: Persona -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">1. Select Audience</h2>
+                    <span class="px-2 py-1 bg-gray-100 text-xs font-medium text-gray-600 rounded">Dynamic Logic</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <label class="cursor-pointer relative">
+                        <input type="checkbox" name="persona" value="platform" class="peer sr-only" onchange="calculate()">
+                        <div class="p-4 rounded-lg border-2 border-gray-100 hover:border-gray-200 peer-checked:border-postman peer-checked:bg-postman-bg transition-all h-full">
+                            <div class="font-medium text-gray-900 peer-checked:text-postman mb-1">Platform Eng.</div>
+                            <div class="text-xs text-gray-500">Governance & Security</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer relative">
+                        <input type="checkbox" name="persona" value="product" class="peer sr-only" onchange="calculate()">
+                        <div class="p-4 rounded-lg border-2 border-gray-100 hover:border-gray-200 peer-checked:border-postman peer-checked:bg-postman-bg transition-all h-full">
+                            <div class="font-medium text-gray-900 peer-checked:text-postman mb-1">Product Eng.</div>
+                            <div class="text-xs text-gray-500">Velocity & Reuse</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer relative">
+                        <input type="checkbox" name="persona" value="qe" class="peer sr-only" onchange="calculate()">
+                        <div class="p-4 rounded-lg border-2 border-gray-100 hover:border-gray-200 peer-checked:border-postman peer-checked:bg-postman-bg transition-all h-full">
+                            <div class="font-medium text-gray-900 peer-checked:text-postman mb-1">Head of QE</div>
+                            <div class="text-xs text-gray-500">Quality & Defects</div>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Step 2: Global Variables -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">2. Organization Metrics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Developers</label>
+                        <input type="number" id="numDevs" value="50" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Avg Hourly Cost ($)</label>
+                        <input type="number" id="hourlyRate" value="80" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Hires per Year</label>
+                        <input type="number" id="numNewHires" value="10" min="0" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                        <p class="text-xs text-gray-400 mt-1">Used for Onboarding ROI</p>
+                    </div>
+                    <!-- Hidden Seat Cost Input (Default 600) -->
+                    <input type="hidden" id="seatCost" value="600">
+                </div>
+            </section>
+
+            <!-- Step 3: Pain Points -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">3. Discovery: Pain Points</h2>
+                
+                <!-- Productivity (Linked to: Product) -->
+                <div id="section-productivity" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-gray-700">Hours lost per week (env setup, debugging)</label>
+                        <span class="text-sm font-bold text-postman" id="prodHoursDisplay">3 hrs</span>
+                    </div>
+                    <input type="range" id="prodHours" min="0" max="10" step="0.5" value="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodHours', 'prodHoursDisplay', ' hrs'); calculate()">
+                    <p class="text-xs text-gray-500 mt-1">Calculates at 50% realization factor (conservative estimate)</p>
+                </div>
+
+                <!-- Duplication (Linked to: Product, Platform) -->
+                <div id="section-duplication" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product,platform">
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-gray-700">Redundant APIs/Projects built per year</label>
+                        <span class="text-sm font-bold text-postman" id="dupProjectsDisplay">1</span>
+                    </div>
+                    <input type="range" id="dupProjects" min="0" max="10" step="1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('dupProjects', 'dupProjectsDisplay', ''); calculate()">
+                    <p class="text-xs text-gray-500 mt-1">Assumes 3 devs x 3 months per project</p>
+                </div>
+
+                <!-- Onboarding (Linked to: Product) -->
+                <div id="section-onboarding" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-gray-700">Current Ramp Time (Weeks)</label>
+                        <span class="text-sm font-bold text-postman" id="rampWeeksDisplay">4 wks</span>
+                    </div>
+                    <input type="range" id="rampWeeks" min="1" max="12" step="1" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('rampWeeks', 'rampWeeksDisplay', ' wks'); calculate()">
+                    <p class="text-xs text-gray-500 mt-1">Calculates on a 40% reduction in ramp time</p>
+                </div>
+
+                <!-- Quality (Linked to: QE, Platform) -->
+                <div id="section-quality" class="input-section" data-audience="qe,platform">
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-gray-700">Critical Bugs in Prod (Annual)</label>
+                        <span class="text-sm font-bold text-postman" id="prodBugsDisplay">2</span>
+                    </div>
+                    <input type="range" id="prodBugs" min="0" max="20" step="1" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodBugs', 'prodBugsDisplay', ''); calculate()">
+                    <p class="text-xs text-gray-500 mt-1">Assumes 100 hours to fix a prod defect vs dev</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Column: The Money Slide (Output) -->
+        <div class="lg:col-span-5">
+            <div class="sticky top-24">
+                <div class="bg-gray-900 text-white rounded-xl shadow-2xl overflow-hidden">
+                    <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-800">
+                        <h3 class="font-semibold text-base">Executive Business Value Summary</h3>
+                        <button onclick="copyToClipboard()" class="text-xs bg-postman hover:bg-postman-hover text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                            </svg>
+                            Copy Output
+                        </button>
+                    </div>
+                    
+                    <!-- WRAPPER: Added overflow-x-auto to prevent breaking layout in app -->
+                    <div class="overflow-x-auto bg-gray-900 p-2">
+                        <!-- MAIN COPY TARGET: Fixed width table with explicit styling for copy/paste safety -->
+                        <div id="slideContent">
+                            <table border="0" cellpadding="0" cellspacing="0" style="width: 950px; min-width: 950px; background-color: #111827; color: #ffffff; font-family: sans-serif; border-collapse: collapse;">
+                                
+                                <!-- 1. Headline Row -->
+                                <tr>
+                                    <td colspan="2" style="padding: 30px; border-left: 6px solid #FF6C37; background-color: #111827;">
+                                        <div style="font-size: 24px; font-weight: bold; color: white; line-height: 1.3; font-family: 'Inter', sans-serif;">
+                                            "Postman Enterprise will drive <span style="color: #FF6C37;" id="outTotalSavings">$0</span> in annual efficiency gains while reducing security risk."
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- 2. Content Row -->
+                                <tr>
+                                    <!-- Left Column: Strategic Outcomes -->
+                                    <td style="width: 450px; vertical-align: top; padding: 24px 20px 40px 30px; border-right: 1px solid #374151; background-color: #111827;">
+                                        <h4 style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 16px 0;">1. Strategic Outcomes</h4>
+                                        <div style="color: #E5E7EB; font-size: 16px; line-height: 1.6;" id="strategicBullets">
+                                            <!-- Dynamic bullets populate here -->
+                                        </div>
+                                    </td>
+
+                                    <!-- Right Column: Operational Impact & ROI -->
+                                    <td style="width: 500px; vertical-align: top; padding: 24px 30px 40px 30px; background-color: #111827;">
+                                        
+                                        <!-- Operational Impact -->
+                                        <div style="margin-bottom: 24px;">
+                                            <h4 style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 16px 0;">2. Operational Impact</h4>
+                                            <div id="operationalImpactList">
+                                                <!-- Dynamic impact items populate here as simple DIVs -->
+                                            </div>
+                                        </div>
+
+                                        <!-- ROI Summary -->
+                                        <div style="background-color: #1F2937; padding: 20px; border-radius: 8px; border: 1px solid #374151;">
+                                            <h4 style="color: #9CA3AF; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 8px 0;">3. ROI Summary</h4>
+                                            <p style="margin: 0; font-size: 16px; color: #E5E7EB; line-height: 1.5;">
+                                                "By investing <span style="color: #ffffff; font-weight: 700;" id="outCost">$0</span>, the team creates <span style="color: #ffffff; font-weight: 700;" id="outTotalSavingsText">$0</span> in value (<span style="color: #FF6C37; font-weight: 700; font-size: 18px;" id="outROI">0x</span> ROI)."
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Toast Notification -->
+                <div id="toast" class="opacity-0 transition-opacity duration-300 fixed bottom-5 right-5 bg-gray-900 text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied to clipboard!
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Utility: Format currency
+        const formatMoney = (amount) => {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
+        };
+
+        // Utility: Update range slider displays
+        const updateRangeDisplay = (inputId, displayId, suffix) => {
+            const val = document.getElementById(inputId).value;
+            document.getElementById(displayId).innerText = val + suffix;
+        };
+
+        // Core Calculation Engine
+        function calculate() {
+            // 0. Determine Active Personas
+            const selectedPersonas = Array.from(document.querySelectorAll('input[name="persona"]:checked')).map(cb => cb.value);
+            const isDefaultMode = selectedPersonas.length === 0; // If nothing selected, show all
+
+            // 1. Manage Visibility & Relevance
+            const inputMappings = {
+                'section-productivity': ['product'],
+                'section-duplication': ['product', 'platform'],
+                'section-onboarding': ['product'],
+                'section-quality': ['qe', 'platform']
+            };
+
+            const relevance = {
+                productivity: false,
+                duplication: false,
+                onboarding: false,
+                quality: false
+            };
+
+            for (const [sectionId, audienceList] of Object.entries(inputMappings)) {
+                const section = document.getElementById(sectionId);
+                const isRelevant = isDefaultMode || audienceList.some(role => selectedPersonas.includes(role));
+                
+                if (isRelevant) {
+                    section.classList.remove('hidden-section');
+                    if(sectionId.includes('productivity')) relevance.productivity = true;
+                    if(sectionId.includes('duplication')) relevance.duplication = true;
+                    if(sectionId.includes('onboarding')) relevance.onboarding = true;
+                    if(sectionId.includes('quality')) relevance.quality = true;
+                } else {
+                    section.classList.add('hidden-section');
+                }
+            }
+
+            // 2. Get Inputs
+            const numDevs = parseInt(document.getElementById('numDevs').value) || 0;
+            const hourlyRate = parseInt(document.getElementById('hourlyRate').value) || 0;
+            const numNewHires = parseInt(document.getElementById('numNewHires').value) || 0;
+            const seatCost = parseInt(document.getElementById('seatCost').value) || 600;
+
+            const prodHours = parseFloat(document.getElementById('prodHours').value) || 0;
+            const dupProjects = parseInt(document.getElementById('dupProjects').value) || 0;
+            const rampWeeks = parseInt(document.getElementById('rampWeeks').value) || 0;
+            const prodBugs = parseInt(document.getElementById('prodBugs').value) || 0;
+
+            // 3. Run Formulas
+            const rawProdSavings = numDevs * prodHours * 52 * hourlyRate;
+            const prodSavings = relevance.productivity ? (rawProdSavings * 0.50) : 0; 
+            const dupSavings = relevance.duplication ? (dupProjects * 3 * 3 * 160 * hourlyRate) : 0;
+            const savedWeeks = rampWeeks * 0.40;
+            const onboardSavings = relevance.onboarding ? (numNewHires * savedWeeks * 40 * hourlyRate) : 0;
+            const qualitySavings = relevance.quality ? (prodBugs * 100 * hourlyRate) : 0;
+
+            const totalSavings = prodSavings + dupSavings + onboardSavings + qualitySavings;
+            const totalCost = numDevs * seatCost;
+            const roiMultiplier = totalCost > 0 ? (totalSavings / totalCost).toFixed(1) : "0";
+
+            // 4. Update DOM Output
+
+            // A. Strategic Outcomes
+            const bulletsContainer = document.getElementById('strategicBullets');
+            bulletsContainer.innerHTML = '';
+            let strategies = [];
+            
+            if(isDefaultMode) {
+                strategies.push("Accelerate API-first development adoption.");
+                strategies.push("Improve governance while maintaining velocity.");
+            } else {
+                if(selectedPersonas.includes('platform')) {
+                    strategies.push("Eliminate Shadow APIs and enforce governance.");
+                    strategies.push("Standardize API security protocols across the org.");
+                }
+                if(selectedPersonas.includes('product')) {
+                    strategies.push("Increase developer velocity through component reuse.");
+                    strategies.push("Accelerate partner onboarding with documented APIs.");
+                }
+                if(selectedPersonas.includes('qe')) {
+                    strategies.push("Shift testing left to reduce production defects.");
+                    strategies.push("Automate regression testing in CI/CD pipelines.");
+                }
+            }
+
+            // Manually creating bullet points with a table structure to ensure dots persist
+            [...new Set(strategies)].forEach(text => {
+                const row = document.createElement('div');
+                row.style.marginBottom = '12px';
+                row.innerHTML = `<span style="color: #9CA3AF; margin-right: 8px;">•</span><span style="color: #E5E7EB;">${text}</span>`;
+                bulletsContainer.appendChild(row);
+            });
+
+            // B. Operational Impact (Dynamic List) - FLAT STRUCTURE to avoid nested table issues
+            const impactContainer = document.getElementById('operationalImpactList');
+            impactContainer.innerHTML = '';
+
+            const createImpactLine = (label, value, subtext) => {
+                // Using simple Divs and line breaks. Eliminating display: block on spans to fix paragraph spacing in Slides.
+                return `
+                    <div style="margin-bottom: 24px; line-height: 1.4; font-family: 'Inter', sans-serif;">
+                        <span style="color: white; font-size: 14px; font-weight: 700;">${label}</span><br>
+                        <span style="color: #FF6C37; font-family: monospace; font-size: 18px; font-weight: 700;">${formatMoney(value)}</span>
+                        <span style="color: #9CA3AF; font-size: 12px;"> / year</span><br>
+                        <span style="color: #9CA3AF; font-size: 11px; font-style: italic;">${subtext}</span>
+                    </div>
+                `;
+            };
+
+            if (relevance.productivity && prodSavings > 0) {
+                impactContainer.innerHTML += createImpactLine(
+                    "Developer Productivity", 
+                    prodSavings, 
+                    `(Recovering <span id="outProdHours">${prodHours}</span> hours/dev/week)`
+                );
+            }
+            if (relevance.duplication && dupSavings > 0) {
+                impactContainer.innerHTML += createImpactLine(
+                    "Avoided Rework", 
+                    dupSavings, 
+                    "by utilizing the Private API Network"
+                );
+            }
+            if (relevance.onboarding && onboardSavings > 0) {
+                 impactContainer.innerHTML += `
+                    <div style="margin-bottom: 24px; line-height: 1.4; font-family: 'Inter', sans-serif;">
+                        <span style="color: white; font-size: 14px; font-weight: 700;">Onboarding Velocity</span><br>
+                        <span style="color: #9CA3AF; font-size: 11px; font-style: italic;">Reduced ramp time by 40%, saving</span> <span style="color: #FF6C37; font-family: monospace; font-size: 16px; font-weight: 700;">${formatMoney(onboardSavings)}</span>
+                    </div>
+                `;
+            }
+            if (relevance.quality && qualitySavings > 0) {
+                 impactContainer.innerHTML += createImpactLine(
+                    "Risk Mitigation", 
+                    qualitySavings, 
+                    "by reducing critical production defects"
+                );
+            }
+
+            // Fallback
+            if (impactContainer.innerHTML === '') {
+                impactContainer.innerHTML = '<p style="color: #6B7280; font-style: italic; font-size: 12px;">Select metrics on the left to see impact.</p>';
+            }
+
+            // C. Totals
+            document.getElementById('outTotalSavings').innerText = formatMoney(totalSavings);
+            document.getElementById('outTotalSavingsText').innerText = formatMoney(totalSavings);
+            document.getElementById('outCost').innerText = formatMoney(totalCost);
+            document.getElementById('outROI').innerText = roiMultiplier + 'x';
+        }
+
+        // Copy Functionality
+        function copyToClipboard() {
+            const node = document.getElementById('slideContent');
+            const range = document.createRange();
+            range.selectNode(node);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            
+            try {
+                document.execCommand('copy');
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('opacity-0');
+                }, 2000);
+            } catch(err) {
+                alert('Unable to copy');
+            }
+            
+            window.getSelection().removeAllRanges();
+        }
+
+        // Initial Calc
+        window.onload = calculate;
+
+    </script>
+</body>
+</html>
