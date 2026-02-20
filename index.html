@@ -43,7 +43,7 @@
         .input-section {
             transition: all 0.3s ease-in-out;
             opacity: 1;
-            max-height: 800px;
+            max-height: 800px; /* Increased for larger sections */
             overflow: hidden;
         }
         .input-section.hidden-section {
@@ -169,7 +169,6 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">New Hires per Year</label>
                         <input type="number" id="numNewHires" value="10" min="0" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
-                        <p class="text-xs text-gray-400 mt-1">Used for Onboarding ROI</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Annual Releases</label>
@@ -225,14 +224,6 @@
                         <div>
                             <label class="text-xs text-gray-600 block mb-1">Mins per Review</label>
                             <input type="number" id="minsReview" value="30" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-600 block mb-1">Architect Rate (x)</label>
-                            <input type="number" id="archMultiplier" value="1.25" step="0.05" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-600 block mb-1">Auto. Savings (%)</label>
-                            <input type="number" id="govSavings" value="90" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
                         </div>
                     </div>
                     <p class="text-xs text-gray-500">Automating API linting & styling</p>
@@ -350,15 +341,15 @@
         const updateRangeDisplay = (id, display, suffix) => document.getElementById(display).innerText = document.getElementById(id).value + suffix;
 
         const formulaData = {
-            productivity: { title: "Developer Productivity", formula: "Devs × (Hours Saved × 0.50) × 52 × Rate", desc: "Assumption: A conservative 50% 'Realization Factor' is applied, assuming not every saved hour is immediately reinvested in coding." },
-            onboarding: { title: "Onboarding Velocity", formula: "New Hires × (Ramp Weeks × 40%) × 40hrs × Rate", desc: "Assumption: Postman reduces new hire ramp time by 40% (Source: Customer Benchmarks)." },
-            rework: { title: "Avoided Rework", formula: "Duplicate Projects × 3 Devs × 3 Months × 160hrs × Rate", desc: "Assumption: An average redundant project involves 3 developers working for 3 months (Source: ROI Blueprint)." },
-            governance: { title: "Governance Efficiency", formula: "PRs × (Mins/60) × (Rate × ArchitectMult) × Savings%", desc: "Assumption: Architect hourly rate is 1.25x standard dev rate. Automation removes 90% of manual review effort." },
-            provisioning: { title: "IT Provisioning", formula: "New Hires × 2 Hours × (Rate × 0.75)", desc: "Assumption: IT Admin rate is 75% of Dev rate. Automated SCIM/SSO provisioning saves 2 hours of IT ticket time per hire." },
-            integration: { title: "Internal Integration", formula: "Integrations × (TTFC - 0.25) × Rate", desc: "Assumption: Postman Private API Network reduces Time-to-First-Call (TTFC) to 15 minutes (0.25 hours)." },
-            testing: { title: "Test Compression", formula: "Releases × Cycle Hours × 95% × Rate", desc: "Assumption: API automation reduces manual regression testing cycles by 95% (Source: Customer Benchmarks)." },
-            defects: { title: "Defect Remediation", formula: "Prod Defects × 100 Hours × Rate", desc: "Assumption: Remediation of a defect found in production takes 100 hours longer than if found in development." },
-            security: { title: "Risk Mitigation", formula: "$4,450,000 × 0.005", desc: "Assumption: Based on IBM Cost of Data Breach Report ($4.45M average) with a conservative 0.5% risk reduction attribution to API governance." }
+            productivity: { title: "Developer Productivity", formula: "Devs × (Hours Saved × 0.50) × 52 × Rate", desc: "50% Realization factor applied to conservative estimates." },
+            onboarding: { title: "Onboarding Velocity", formula: "New Hires × (Ramp Weeks × 40%) × 40hrs × Rate", desc: "Postman reduces ramp time by 40% (Bell POV)." },
+            rework: { title: "Avoided Rework", formula: "Duplicate Projects × 3 Devs × 3 Months × 160hrs × Rate", desc: "Cost of rebuilding existing but undiscoverable APIs." },
+            governance: { title: "Governance Efficiency", formula: "PRs × (Mins/60) × (Rate × 1.25) × 90%", desc: "Automation saves 90% of review time. Architect rate 1.25x." },
+            provisioning: { title: "IT Provisioning", formula: "New Hires × 2 Hours × (Rate × 0.75)", desc: "IT Admin rate 75% of Dev. SCIM saves 2 hrs/hire." },
+            integration: { title: "Internal Integration", formula: "Integrations × (TTFC - 0.25) × Rate", desc: "Private API Network reduces TTFC to 15 mins (0.25 hrs)." },
+            testing: { title: "Test Compression", formula: "Releases × Cycle Hours × 95% × Rate", desc: "95% reduction via automation (WGU Case Study)." },
+            defects: { title: "Defect Remediation", formula: "Prod Defects × 100 Hours × Rate", desc: "Fixing in prod costs 100 hrs vs dev." },
+            security: { title: "Risk Mitigation", formula: "$4,450,000 × 0.005", desc: "IBM Data Breach Cost ($4.45M) × 0.5% risk reduction." }
         };
 
         function showFormula(type) {
@@ -384,32 +375,36 @@
             const releases = parseInt(document.getElementById('annualReleases').value) || 0;
             const seatCost = parseInt(document.getElementById('seatCost').value) || 600;
 
-            // Visibility Logic & Flag Setting
-            const sections = document.querySelectorAll('.input-section');
+            // Visibility Logic
+            const mapping = {
+                'section-productivity': ['product', 'platform'],
+                'section-onboarding': ['product'],
+                'section-duplication': ['product'],
+                'section-governance': ['platform'],
+                'section-integration': ['platform', 'product'],
+                'section-testing': ['qe'],
+                'section-defects': ['qe']
+            };
+            
+            // Flags for Calculation
             const p = { 
                 prod: false, onb: false, dup: false, gov: false, 
                 prov: false, int: false, test: false, def: false, sec: false 
             };
 
-            sections.forEach(section => {
-                const audienceAttr = section.getAttribute('data-audience');
-                const audiences = audienceAttr ? audienceAttr.split(',') : [];
-                const isVisible = isDefault || audiences.some(r => selectedPersonas.includes(r));
-                
-                section.classList.toggle('hidden-section', !isVisible);
-
-                // Update calculation flags if visible
-                if (isVisible) {
-                    if(section.id.includes('productivity')) p.prod = true;
-                    if(section.id.includes('onboarding')) p.onb = true;
-                    if(section.id.includes('duplication')) p.dup = true;
-                    if(section.id.includes('governance')) p.gov = true;
-                    if(section.id.includes('integration')) p.int = true;
-                    if(section.id.includes('testing')) p.test = true;
-                    if(section.id.includes('defects')) p.def = true;
+            for (const [id, roles] of Object.entries(mapping)) {
+                const visible = isDefault || roles.some(r => selectedPersonas.includes(r));
+                document.getElementById(id).classList.toggle('hidden-section', !visible);
+                if(visible) {
+                    if(id.includes('productivity')) p.prod = true;
+                    if(id.includes('onboarding')) p.onb = true;
+                    if(id.includes('duplication')) p.dup = true;
+                    if(id.includes('governance')) p.gov = true;
+                    if(id.includes('integration')) p.int = true;
+                    if(id.includes('testing')) p.test = true;
+                    if(id.includes('defects')) p.def = true;
                 }
-            });
-
+            }
             // Logic for Hidden calcs (IT Provisioning & Security tied to Platform)
             if(isDefault || selectedPersonas.includes('platform')) { p.prov = true; p.sec = true; }
 
@@ -428,10 +423,7 @@
             // 4. Governance
             const prs = parseInt(document.getElementById('prsReviewed').value) || 0;
             const mins = parseInt(document.getElementById('minsReview').value) || 0;
-            const archMult = parseFloat(document.getElementById('archMultiplier').value) || 1.25;
-            const govSave = (parseFloat(document.getElementById('govSavings').value) || 90) / 100;
-            
-            const valGov = p.gov ? (prs * (mins/60) * (rate * archMult) * govSave) : 0;
+            const valGov = p.gov ? (prs * (mins/60) * (rate * 1.25) * 0.90) : 0;
 
             // 5. IT Provisioning
             const valProv = p.prov ? (hires * 2 * (rate * 0.75)) : 0;
@@ -460,11 +452,12 @@
             const bullets = document.getElementById('strategicBullets');
             bullets.innerHTML = '';
             let strats = [];
-            if (isDefault) strats = ["Improve API governance and velocity.", "Reduce risk while accelerating onboarding."];
-            else {
+            
+            if (!isDefault) {
                 if(selectedPersonas.includes('platform')) {
-                    strats.push("Eliminate Shadow APIs & enforce governance.");
-                    strats.push("Reduce security risk & IT provisioning overhead.");
+                    strats.push("Tamed API Sprawl and Increased Efficiency");
+                    strats.push("Automated Governance and Risk Reduction");
+                    strats.push("Accelerated Delivery and Enhanced Productivity");
                 }
                 if(selectedPersonas.includes('product')) {
                     strats.push("Increase developer velocity & reuse.");
