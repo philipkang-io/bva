@@ -43,7 +43,7 @@
         .input-section {
             transition: all 0.3s ease-in-out;
             opacity: 1;
-            max-height: 800px; /* Increased for larger sections */
+            max-height: 1500px; /* Increased for larger container sections */
             overflow: hidden;
         }
         .input-section.hidden-section {
@@ -180,7 +180,7 @@
             </section>
 
             <!-- Step 3: Pain Points -->
-            <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <section id="step3-section" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 input-section hidden-section">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">3. Discovery: Pain Points</h2>
                 
                 <!-- 1. Productivity (Product, Platform) -->
@@ -451,8 +451,16 @@
             const releases = parseInt(document.getElementById('annualReleases').value) || 0;
             const seatCost = parseInt(document.getElementById('seatCost').value) || 600;
 
+            // Update Step 3 Container Visibility
+            const step3Section = document.getElementById('step3-section');
+            if (isDefault) {
+                step3Section.classList.add('hidden-section');
+            } else {
+                step3Section.classList.remove('hidden-section');
+            }
+
             // Visibility Logic & Flag Setting
-            const sections = document.querySelectorAll('.input-section');
+            const sections = document.querySelectorAll('#step3-section .input-section');
             const p = { 
                 prod: false, apiDes: false, onb: false, dup: false, support: false,
                 gov: false, prov: false, int: false, outage: false,
@@ -462,7 +470,7 @@
             sections.forEach(section => {
                 const audienceAttr = section.getAttribute('data-audience');
                 const audiences = audienceAttr ? audienceAttr.split(',') : [];
-                const isVisible = isDefault || audiences.some(r => selectedPersonas.includes(r));
+                const isVisible = !isDefault && audiences.some(r => selectedPersonas.includes(r));
                 
                 section.classList.toggle('hidden-section', !isVisible);
 
@@ -483,7 +491,7 @@
             });
 
             // Logic for Hidden calcs (IT Provisioning & Security tied to Platform)
-            if(isDefault || selectedPersonas.includes('platform')) { p.prov = true; p.sec = true; }
+            if(!isDefault && selectedPersonas.includes('platform')) { p.prov = true; p.sec = true; }
 
             // 1. Productivity
             const hoursWasted = parseFloat(document.getElementById('prodHours').value) || 0;
@@ -592,7 +600,7 @@
 
             // Distribute Items to Columns
             if (impactItems.length === 0) {
-                document.getElementById('opImpactLeft').innerHTML = '<p style="color:#6B7280;font-size:12px;">Select metrics on the left.</p>';
+                document.getElementById('opImpactLeft').innerHTML = '<p style="color:#6B7280;font-size:12px;">Select an audience on the left to uncover value.</p>';
             } else {
                 impactItems.forEach((item, index) => {
                     const html = renderItem(item);
