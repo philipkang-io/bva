@@ -203,6 +203,38 @@
                     <p class="text-xs text-gray-500 mt-1">Postman reduces ramp time by 40%</p>
                 </div>
 
+                <!-- NEW 1: API Design Acceleration (Product) -->
+                <div id="section-api-design" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">API Design Acceleration</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Net New APIs/Year</label>
+                            <input type="number" id="netNewApis" value="50" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Hours per API (Design)</label>
+                            <input type="number" id="hoursPerApi" value="40" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">25% reduction in design/test time</p>
+                </div>
+
+                <!-- NEW 4: Support Center Cost Reduction (Product) -->
+                <div id="section-support" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Support Center Savings</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Bug Tickets/Year</label>
+                            <input type="number" id="bugTickets" value="5000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Cost per Ticket ($)</label>
+                            <input type="number" id="costPerTicket" value="8" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">30% decrease in bug-related tickets</p>
+                </div>
+
                 <!-- 3. Rework/Duplication (Product) -->
                 <div id="section-duplication" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="product">
                     <div class="flex justify-between mb-2">
@@ -211,6 +243,22 @@
                     </div>
                     <input type="range" id="dupProjects" min="0" max="10" step="1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('dupProjects', 'dupProjectsDisplay', ''); calculate()">
                     <p class="text-xs text-gray-500 mt-1">Cost of building redundant code</p>
+                </div>
+
+                <!-- NEW 2: QA Engineer FTE Efficiencies (QE) -->
+                <div id="section-qa-fte" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="qe">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Engineer FTE Efficiencies</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Total QA Engineers</label>
+                            <input type="number" id="numQaEng" value="5" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Avg QA Salary ($)</label>
+                            <input type="number" id="qaSalary" value="120000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">65% efficiency gain via automation</p>
                 </div>
 
                 <!-- 4. Governance (Platform) -->
@@ -235,6 +283,22 @@
                         </div>
                     </div>
                     <p class="text-xs text-gray-500">Automating API linting & styling</p>
+                </div>
+
+                <!-- NEW 3: Outage & Reliability Savings (Platform) -->
+                <div id="section-outage" class="input-section mb-6 pb-6 border-b border-gray-100" data-audience="platform">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Outage & Reliability Savings</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Outages/Year</label>
+                            <input type="number" id="numOutages" value="4" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-600 block mb-1">Cost per Outage ($)</label>
+                            <input type="number" id="costPerOutage" value="200000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">30% reduction in outages</p>
                 </div>
 
                 <!-- 6. Internal Integration (Platform, Product) -->
@@ -301,19 +365,19 @@
                                 </tr>
                                 <tr>
                                     <!-- Strategic Outcomes (Column 1) -->
-                                    <td rowspan="2" style="width: 400px; vertical-align: top; padding: 24px 20px 40px 30px; border-right: 1px solid #374151; background-color: #111827;">
+                                    <td rowspan="2" style="width: 350px; vertical-align: top; padding: 24px 20px 40px 30px; border-right: 1px solid #374151; background-color: #111827;">
                                         <h4 style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 16px 0;">1. Strategic Outcomes</h4>
                                         <div style="color: #E5E7EB; font-size: 16px; line-height: 1.6;" id="strategicBullets"></div>
                                     </td>
                                     
                                     <!-- Operational Impact (Column 2 - Left) -->
-                                    <td style="width: 275px; vertical-align: top; padding: 24px 10px 24px 30px; background-color: #111827;">
+                                    <td style="width: 300px; vertical-align: top; padding: 24px 10px 24px 30px; background-color: #111827;">
                                         <h4 style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 16px 0;">2. Operational Impact</h4>
                                         <div id="opImpactLeft"></div>
                                     </td>
 
                                     <!-- Operational Impact (Column 3 - Right) -->
-                                    <td style="width: 275px; vertical-align: top; padding: 24px 30px 24px 10px; background-color: #111827;">
+                                    <td style="width: 300px; vertical-align: top; padding: 24px 30px 24px 10px; background-color: #111827;">
                                         <div style="height: 28px;"></div> <!-- Spacer to align with header -->
                                         <div id="opImpactRight"></div>
                                     </td>
@@ -350,13 +414,17 @@
 
         const formulaData = {
             productivity: { title: "Developer Productivity", formula: "Devs × (Hours Saved × 0.50) × 52 × Rate", desc: "Assumption: A conservative 50% 'Realization Factor' is applied, assuming not every saved hour is immediately reinvested in coding." },
+            apiDesign: { title: "API Design Acceleration", formula: "Net New APIs × Hours per API × 25% Reduction × Rate × 50%", desc: "Assumption: Forrester assumes a 25% reduction in design/testing time in Year 1, with a 50% Productivity Capture rate (only half the saved time converts directly to dollar value)." },
             onboarding: { title: "Onboarding Velocity", formula: "New Hires × (Ramp Weeks × 40%) × 40hrs × Rate", desc: "Assumption: Postman reduces new hire ramp time by 40% (Source: Customer Benchmarks)." },
             rework: { title: "Avoided Rework", formula: "Duplicate Projects × 3 Devs × 3 Months × 160hrs × Rate", desc: "Assumption: An average redundant project involves 3 developers working for 3 months (Source: ROI Blueprint)." },
             governance: { title: "Governance Efficiency", formula: "PRs × (Mins/60) × (Rate × ArchitectMult) × Savings%", desc: "Assumption: Architect hourly rate is 1.25x standard dev rate. Automation removes 90% of manual review effort." },
             provisioning: { title: "IT Provisioning", formula: "New Hires × 2 Hours × (Rate × 0.75)", desc: "Assumption: IT Admin rate is 75% of Dev rate. Automated SCIM/SSO provisioning saves 2 hours of IT ticket time per hire." },
             integration: { title: "Internal Integration", formula: "Integrations × (TTFC - 0.25) × Rate", desc: "Assumption: Postman Private API Network reduces Time-to-First-Call (TTFC) to 15 minutes (0.25 hours)." },
+            qaFte: { title: "QA Engineer FTE Efficiencies", formula: "QA Engineers × Annual Salary × 65% Gain × 50%", desc: "Assumption: Forrester assumes a 65% efficiency gain in Year 1 by shifting to automated testing, applying a 50% Productivity Capture rate." },
             testing: { title: "Test Compression", formula: "Releases × Cycle Hours × 95% × Rate", desc: "Assumption: API automation reduces manual regression testing cycles by 95% (Source: Customer Benchmarks)." },
             defects: { title: "Defect Remediation", formula: "Prod Defects × 100 Hours × Rate", desc: "Assumption: Remediation of a defect found in production takes 100 hours longer than if found in development." },
+            outage: { title: "Outage & Reliability Savings", formula: "Outages × Cost per Outage × 30% Reduction × 50%", desc: "Assumption: Forrester assumes a 30% reduction in outages in Year 1, and assigns a 50% Attribution Factor specifically to Postman's impact." },
+            support: { title: "Support Center Cost Reduction", formula: "Bug Tickets × Cost per Ticket × 30% Decrease", desc: "Assumption: Better testing reduces the volume of bug-related tickets hitting support. Forrester assumes a 30% decrease in Year 1." },
             security: { title: "Risk Mitigation", formula: "$4,450,000 × 0.005", desc: "Assumption: Based on IBM Cost of Data Breach Report ($4.45M average) with a conservative 0.5% risk reduction attribution to API governance." }
         };
 
@@ -386,8 +454,9 @@
             // Visibility Logic & Flag Setting
             const sections = document.querySelectorAll('.input-section');
             const p = { 
-                prod: false, onb: false, dup: false, gov: false, 
-                prov: false, int: false, test: false, def: false, sec: false 
+                prod: false, apiDes: false, onb: false, dup: false, support: false,
+                gov: false, prov: false, int: false, outage: false,
+                test: false, def: false, qaFte: false, sec: false 
             };
 
             sections.forEach(section => {
@@ -399,13 +468,17 @@
 
                 // Update calculation flags if visible
                 if (isVisible) {
-                    if(section.id.includes('productivity')) p.prod = true;
-                    if(section.id.includes('onboarding')) p.onb = true;
-                    if(section.id.includes('duplication')) p.dup = true;
-                    if(section.id.includes('governance')) p.gov = true;
-                    if(section.id.includes('integration')) p.int = true;
-                    if(section.id.includes('testing')) p.test = true;
-                    if(section.id.includes('defects')) p.def = true;
+                    if(section.id === 'section-productivity') p.prod = true;
+                    if(section.id === 'section-api-design') p.apiDes = true;
+                    if(section.id === 'section-onboarding') p.onb = true;
+                    if(section.id === 'section-duplication') p.dup = true;
+                    if(section.id === 'section-support') p.support = true;
+                    if(section.id === 'section-governance') p.gov = true;
+                    if(section.id === 'section-integration') p.int = true;
+                    if(section.id === 'section-outage') p.outage = true;
+                    if(section.id === 'section-testing') p.test = true;
+                    if(section.id === 'section-defects') p.def = true;
+                    if(section.id === 'section-qa-fte') p.qaFte = true;
                 }
             });
 
@@ -416,6 +489,11 @@
             const hoursWasted = parseFloat(document.getElementById('prodHours').value) || 0;
             const valProd = p.prod ? (devs * (hoursWasted * 0.50) * 52 * rate) : 0;
 
+            // NEW: API Design Acceleration
+            const netNewApis = parseInt(document.getElementById('netNewApis').value) || 0;
+            const hoursPerApi = parseFloat(document.getElementById('hoursPerApi').value) || 0;
+            const valApiDes = p.apiDes ? (netNewApis * hoursPerApi * 0.25 * rate * 0.50) : 0;
+
             // 2. Onboarding
             const rampWeeks = parseInt(document.getElementById('rampWeeks').value) || 0;
             const valOnb = p.onb ? (hires * (rampWeeks * 40 * 0.40) * rate) : 0;
@@ -424,6 +502,16 @@
             const dupProj = parseInt(document.getElementById('dupProjects').value) || 0;
             const valDup = p.dup ? (dupProj * 3 * 3 * 160 * rate) : 0;
 
+            // NEW: Support Center Savings
+            const bugTickets = parseInt(document.getElementById('bugTickets').value) || 0;
+            const costPerTicket = parseFloat(document.getElementById('costPerTicket').value) || 0;
+            const valSupport = p.support ? (bugTickets * costPerTicket * 0.30) : 0;
+
+            // NEW: QA Engineer FTE Efficiencies
+            const numQaEng = parseInt(document.getElementById('numQaEng').value) || 0;
+            const qaSalary = parseFloat(document.getElementById('qaSalary').value) || 0;
+            const valQaFte = p.qaFte ? (numQaEng * qaSalary * 0.65 * 0.50) : 0;
+
             // 4. Governance
             const prs = parseInt(document.getElementById('prsReviewed').value) || 0;
             const mins = parseInt(document.getElementById('minsReview').value) || 0;
@@ -431,6 +519,11 @@
             const govSave = (parseFloat(document.getElementById('govSavings').value) || 90) / 100;
             
             const valGov = p.gov ? (prs * (mins/60) * (rate * archMult) * govSave) : 0;
+
+            // NEW: Outage & Reliability
+            const numOutages = parseInt(document.getElementById('numOutages').value) || 0;
+            const costPerOutage = parseFloat(document.getElementById('costPerOutage').value) || 0;
+            const valOutage = p.outage ? (numOutages * costPerOutage * 0.30 * 0.50) : 0;
 
             // 5. IT Provisioning
             const valProv = p.prov ? (hires * 2 * (rate * 0.75)) : 0;
@@ -451,7 +544,7 @@
             // 9. Security
             const valSec = p.sec ? (4450000 * 0.005) : 0;
 
-            const totalSavings = valProd + valOnb + valDup + valGov + valProv + valInt + valTest + valDef + valSec;
+            const totalSavings = valProd + valApiDes + valOnb + valDup + valSupport + valQaFte + valGov + valOutage + valProv + valInt + valTest + valDef + valSec;
             const totalCost = devs * seatCost;
             const roi = totalCost > 0 ? (totalSavings / totalCost).toFixed(1) : "0";
 
@@ -484,9 +577,13 @@
             // Collect Valid Items
             let impactItems = [];
             if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity'});
+            if(valApiDes > 0) impactItems.push({label: "API Design Acceleration", val: valApiDes, sub: "Faster design and early testing", type: 'apiDesign'});
             if(valOnb > 0) impactItems.push({label: "Onboarding Velocity", val: valOnb, sub: "Reduced ramp time by 40%", type: 'onboarding'});
             if(valDup > 0) impactItems.push({label: "Avoided Rework", val: valDup, sub: "Eliminating redundant API builds", type: 'rework'});
+            if(valSupport > 0) impactItems.push({label: "Support Center Savings", val: valSupport, sub: "Reduced bug-related ticket volume", type: 'support'});
+            if(valQaFte > 0) impactItems.push({label: "QA FTE Efficiencies", val: valQaFte, sub: "Automated testing scaling", type: 'qaFte'});
             if(valGov > 0) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automating API styling & linting", type: 'governance'});
+            if(valOutage > 0) impactItems.push({label: "Outage & Reliability Savings", val: valOutage, sub: "Avoided service degradations", type: 'outage'});
             if(valProv > 0) impactItems.push({label: "IT Provisioning", val: valProv, sub: "Automated SCIM/SSO access", type: 'provisioning'});
             if(valInt > 0) impactItems.push({label: "Integration Velocity", val: valInt, sub: `TTFC reduced to 15 mins`, type: 'integration'});
             if(valTest > 0) impactItems.push({label: "Test Cycle Compression", val: valTest, sub: "95% reduction in regression time", type: 'testing'});
