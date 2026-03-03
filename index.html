@@ -101,6 +101,15 @@
         .output-dim {
             opacity: 0.25;
         }
+
+        /* Risk Mitigation Special FX */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 108, 55, 0); }
+            50% { box-shadow: 0 0 12px 0 rgba(255, 108, 55, 0.25); }
+        }
+        .risk-pulse {
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen relative overflow-x-hidden">
@@ -174,19 +183,19 @@
                 <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">1. Organization Metrics</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
+                        <div id="global-devs" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-devs')" onmouseleave="clearHighlight()">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Total Developers</label>
                             <input type="number" id="numDevs" value="50" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
                         </div>
-                        <div>
+                        <div id="global-rate" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-rate')" onmouseleave="clearHighlight()">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Avg Hourly Cost ($)</label>
                             <input type="number" id="hourlyRate" value="80" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
                         </div>
-                        <div>
+                        <div id="global-hires" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-hires')" onmouseleave="clearHighlight()">
                             <label class="block text-sm font-medium text-gray-700 mb-1">New Hires per Year</label>
                             <input type="number" id="numNewHires" value="10" min="0" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
                         </div>
-                        <div>
+                        <div id="global-releases" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-releases')" onmouseleave="clearHighlight()">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Annual Releases</label>
                             <input type="number" id="annualReleases" value="24" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
                         </div>
@@ -200,7 +209,7 @@
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">2. Discovery: Pain Points</h2>
                     
                     <!-- 1. Productivity -->
-                    <div id="section-productivity" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('productivity')" onmouseleave="clearHighlight()">
+                    <div id="section-productivity" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-productivity')" onmouseleave="clearHighlight()">
                         <div class="flex justify-between mb-2">
                             <label class="text-sm font-medium text-gray-700">Hours lost per week (env setup, debugging)</label>
                             <span class="text-sm font-bold text-postman" id="prodHoursDisplay">3 hrs</span>
@@ -211,7 +220,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 2. Onboarding -->
-                    <div id="section-onboarding" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('onboarding')" onmouseleave="clearHighlight()">
+                    <div id="section-onboarding" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-onboarding')" onmouseleave="clearHighlight()">
                         <div class="flex justify-between mb-2">
                             <label class="text-sm font-medium text-gray-700">Ramp Up Time (Weeks)</label>
                             <span class="text-sm font-bold text-postman" id="rampWeeksDisplay">4 wks</span>
@@ -222,7 +231,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 3. API Design Acceleration -->
-                    <div id="section-api-design" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('apiDesign')" onmouseleave="clearHighlight()">
+                    <div id="section-api-design" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-api-design')" onmouseleave="clearHighlight()">
                         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">API Design Acceleration</h3>
                         <div class="grid grid-cols-2 gap-4 mb-2">
                             <div>
@@ -239,7 +248,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 4. Support Center Cost Reduction -->
-                    <div id="section-support" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('support')" onmouseleave="clearHighlight()">
+                    <div id="section-support" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-support')" onmouseleave="clearHighlight()">
                         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Support Center Savings</h3>
                         <div class="grid grid-cols-2 gap-4 mb-2">
                             <div>
@@ -256,7 +265,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 5. Rework/Duplication -->
-                    <div id="section-duplication" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('rework')" onmouseleave="clearHighlight()">
+                    <div id="section-duplication" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-duplication')" onmouseleave="clearHighlight()">
                         <div class="flex justify-between mb-2">
                             <label class="text-sm font-medium text-gray-700">Redundant APIs/Projects built per year</label>
                             <span class="text-sm font-bold text-postman" id="dupProjectsDisplay">1</span>
@@ -267,7 +276,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 6. QA Engineer FTE Efficiencies -->
-                    <div id="section-qa-fte" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('qaFte')" onmouseleave="clearHighlight()">
+                    <div id="section-qa-fte" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-qa-fte')" onmouseleave="clearHighlight()">
                         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Engineer FTE Efficiencies</h3>
                         <div class="grid grid-cols-2 gap-4 mb-2">
                             <div>
@@ -284,7 +293,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 7. Governance -->
-                    <div id="section-governance" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('governance')" onmouseleave="clearHighlight()">
+                    <div id="section-governance" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-governance')" onmouseleave="clearHighlight()">
                         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Governance Efficiency</h3>
                         <div class="grid grid-cols-2 gap-4 mb-2">
                             <div>
@@ -309,7 +318,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 8. Outage & Reliability Savings -->
-                    <div id="section-outage" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('outage')" onmouseleave="clearHighlight()">
+                    <div id="section-outage" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-outage')" onmouseleave="clearHighlight()">
                         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Outage & Reliability Savings</h3>
                         <div class="grid grid-cols-2 gap-4 mb-2">
                             <div>
@@ -326,7 +335,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 9. Internal Integration -->
-                    <div id="section-integration" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('integration')" onmouseleave="clearHighlight()">
+                    <div id="section-integration" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-integration')" onmouseleave="clearHighlight()">
                         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Internal Integration Velocity</h3>
                         <div class="grid grid-cols-2 gap-4 mb-2">
                             <div>
@@ -343,7 +352,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 10. Testing -->
-                    <div id="section-testing" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('testing')" onmouseleave="clearHighlight()">
+                    <div id="section-testing" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-testing')" onmouseleave="clearHighlight()">
                         <div class="flex justify-between mb-2">
                             <label class="text-sm font-medium text-gray-700">Regression Cycle (Hours)</label>
                             <span class="text-sm font-bold text-postman" id="regHoursDisplay">20 hrs</span>
@@ -354,7 +363,7 @@
                     <hr class="border-gray-100 my-2">
 
                     <!-- 11. Defects -->
-                    <div id="section-defects" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlight('defects')" onmouseleave="clearHighlight()">
+                    <div id="section-defects" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-defects')" onmouseleave="clearHighlight()">
                         <div class="flex justify-between mb-2">
                             <label class="text-sm font-medium text-gray-700">Critical Bugs in Prod (Annual)</label>
                             <span class="text-sm font-bold text-postman" id="prodBugsDisplay">2</span>
@@ -727,25 +736,25 @@
         // ==========================================
         // Hover Cross-Highlighting Logic
         // ==========================================
-        function setHighlight(type) {
-            // Maps the generated Output ID directly back to the matching Input Section ID
-            const inputMap = {
-                productivity: 'section-productivity',
-                apiDesign: 'section-api-design',
-                onboarding: 'section-onboarding',
-                rework: 'section-duplication',
-                support: 'section-support',
-                qaFte: 'section-qa-fte',
-                governance: 'section-governance',
-                outage: 'section-outage',
-                integration: 'section-integration',
-                testing: 'section-testing',
-                defects: 'section-defects'
-            };
+        // Maps each output to the array of input IDs that drive it
+        const dependencyMap = {
+            productivity: ['section-productivity', 'global-devs', 'global-rate'],
+            apiDesign: ['section-api-design', 'global-rate'],
+            onboarding: ['section-onboarding', 'global-hires', 'global-rate'],
+            rework: ['section-duplication', 'global-rate'],
+            support: ['section-support'],
+            qaFte: ['section-qa-fte'],
+            governance: ['section-governance', 'global-rate'],
+            outage: ['section-outage'],
+            provisioning: ['global-hires', 'global-rate'], // No specific pain point, just global vars
+            integration: ['section-integration', 'global-rate'],
+            testing: ['section-testing', 'global-releases', 'global-rate'],
+            defects: ['section-defects', 'global-rate'],
+            security: [] // Entirely static
+        };
 
-            const targetInputId = inputMap[type];
-
-            // 1. Process right-side output elements
+        function setHighlightOutput(type) {
+            // 1. Highlight the specifically hovered right-side output
             document.querySelectorAll('.output-item').forEach(el => {
                 if (el.getAttribute('data-type') === type) {
                     el.classList.add('output-highlight');
@@ -756,14 +765,40 @@
                 }
             });
 
-            // 2. Process left-side input containers
+            // 2. Highlight all left-side inputs (global & specific) that drive this output
+            const deps = dependencyMap[type] || [];
             document.querySelectorAll('.input-section-highlightable').forEach(el => {
-                if (el.id === targetInputId) {
+                if (deps.includes(el.id)) {
                     el.classList.add('input-highlight');
                     el.classList.remove('input-dim');
                 } else {
                     el.classList.add('input-dim');
                     el.classList.remove('input-highlight');
+                }
+            });
+        }
+
+        function setHighlightInput(inputId) {
+            // 1. Highlight the specifically hovered left-side input
+            document.querySelectorAll('.input-section-highlightable').forEach(el => {
+                if (el.id === inputId) {
+                    el.classList.add('input-highlight');
+                    el.classList.remove('input-dim');
+                } else {
+                    el.classList.add('input-dim');
+                    el.classList.remove('input-highlight');
+                }
+            });
+
+            // 2. Find and highlight all right-side outputs that depend on this input
+            const affectedOutputs = Object.keys(dependencyMap).filter(key => dependencyMap[key].includes(inputId));
+            document.querySelectorAll('.output-item').forEach(el => {
+                if (affectedOutputs.includes(el.getAttribute('data-type'))) {
+                    el.classList.add('output-highlight');
+                    el.classList.remove('output-dim');
+                } else {
+                    el.classList.add('output-dim');
+                    el.classList.remove('output-highlight');
                 }
             });
         }
@@ -937,15 +972,21 @@
         }
 
         function renderItem(item) {
-            // We apply onmouseenter and onmouseleave directly to the generated item to trigger the cross-highlight.
-            // Notice the negative margins (-8px) and padding (8px) – this ensures the background highlight box expands cleanly without pushing adjacent text around.
+            const isRisk = item.type === 'security';
+            // Provide inline CSS that survives copy-paste to Google Slides for the Risk item
+            const borderStyle = isRisk ? '1px dashed rgba(255, 108, 55, 0.4)' : '2px solid transparent';
+            const bgStyle = isRisk ? 'rgba(255, 108, 55, 0.05)' : 'transparent';
+            const badge = isRisk ? '<span style="margin-left: 8px; font-size: 9px; text-transform: uppercase; background-color: #1F2937; color: #9CA3AF; padding: 2px 6px; border-radius: 4px; border: 1px solid #374151; vertical-align: middle;">Static Benchmark</span>' : '';
+            const pulseClass = isRisk ? 'risk-pulse' : '';
+
             return `
-                <div class="output-item transition-all duration-300" data-type="${item.type}" onmouseenter="setHighlight('${item.type}')" onmouseleave="clearHighlight()" style="line-height: 1.4; font-family: 'Inter', sans-serif; padding: 8px; margin-left: -8px; margin-right: -8px; margin-bottom: 16px; border-radius: 8px;">
-                    <span style="color: white; font-size: 13px; font-weight: 700;">
+                <div class="output-item transition-all duration-300 ${pulseClass}" data-type="${item.type}" onmouseenter="setHighlightOutput('${item.type}')" onmouseleave="clearHighlight()" style="line-height: 1.4; font-family: 'Inter', sans-serif; padding: 10px; margin-left: -10px; margin-right: -10px; margin-bottom: 16px; border-radius: 8px; border: ${borderStyle}; background-color: ${bgStyle};">
+                    <span style="color: white; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center;">
                         ${item.label}
                         <span class="info-icon cursor-pointer inline-block ml-1 opacity-50 hover:opacity-100" onclick="showFormula('${item.type}')" style="vertical-align:middle; cursor:pointer;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         </span>
+                        ${badge}
                     </span><br>
                     <span style="color: #FF6C37; font-family: monospace; font-size: 16px; font-weight: 700;">${formatMoney(item.val)}</span>
                     <span style="color: #9CA3AF; font-size: 11px;"> / year</span><br>
