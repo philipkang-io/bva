@@ -63,10 +63,10 @@
         }
         .view-active {
             animation: fadeIn 0.4s ease-out forwards;
-            display: flex !important; /* Force flex display when active */
+            display: flex !important; 
         }
         .view-hidden {
-            display: none !important; /* Force complete removal when hidden */
+            display: none !important; 
         }
 
         /* ==========================================
@@ -77,7 +77,7 @@
             border: 2px solid transparent;
         }
         .input-highlight {
-            background-color: #FFF5F0; /* Postman light orange bg */
+            background-color: #FFF5F0; 
             border-color: #FF6C37 !important;
             transform: scale(1.02);
             box-shadow: 0 4px 12px rgba(255, 108, 55, 0.1);
@@ -147,6 +147,97 @@
         </div>
     </div>
 
+    <!-- Custom Feedback Modal -->
+    <div id="feedbackModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+        <div class="bg-white rounded-lg shadow-2xl max-w-5xl w-full mx-4 h-[90vh] overflow-hidden transform transition-all scale-100 flex flex-col">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center z-10">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">💡</span>
+                    <h3 class="text-lg font-bold text-gray-800">Feedback & Suggestions</h3>
+                </div>
+                <button onclick="closeFeedbackModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="flex-grow w-full relative bg-white overflow-y-auto relative">
+                <!-- Native HTML Form -->
+                <form id="nativeFeedbackForm" action="https://script.google.com/a/macros/postman.com/s/AKfycbxXEtWLs3xUd5bHbXLrom3XmRNCSR6eJfbuospVklW9H69jhrr7Obt0T71Uro3YqjqJ/exec" method="POST" onsubmit="handleFeedbackSubmit(event)" class="p-6 space-y-8 pb-24">
+                    
+                    <!-- 0. Submitter Info -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-900 mb-1">Your Name <span class="text-red-500">*</span></label>
+                        <p class="text-xs text-gray-500 mb-2">So we can follow up if we have questions about your idea.</p>
+                        <input type="text" name="submitter_name" required class="w-full md:w-1/3 text-sm border-gray-300 rounded-lg shadow-sm focus:border-postman focus:ring-postman" placeholder="e.g., Jane Doe">
+                    </div>
+
+                    <!-- 1. Existing Formulas Table -->
+                    <div>
+                        <h4 class="text-md font-bold text-gray-900 mb-1">1. Existing Formulas</h4>
+                        <p class="text-sm text-gray-500 mb-3">Select "Modify" or "Delete" to provide feedback on our current calculations.</p>
+                        <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/3">Formula</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/4">Action</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-5/12">Reasoning / Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feedback-table-body" class="bg-white divide-y divide-gray-100">
+                                    <!-- Populated automatically by Javascript on load -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 2. Propose New Formulas -->
+                    <div>
+                        <h4 class="text-md font-bold text-gray-900 mb-1">2. Propose New Formula(s)</h4>
+                        <p class="text-sm text-gray-500 mb-3">Identify a missing value driver and how to calculate it.</p>
+                        <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Value Driver Name & Target Audience</label>
+                                <input type="text" name="new_formula_name" class="w-full text-sm border-gray-300 rounded shadow-sm focus:border-postman focus:ring-postman" placeholder="e.g., API Discovery (Platform Eng)">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Math Logic & Benchmark Source</label>
+                                <input type="text" name="new_formula_logic" class="w-full text-sm border-gray-300 rounded shadow-sm focus:border-postman focus:ring-postman" placeholder="e.g., Devs * 2 hrs * $80 (Gartner)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. General Feedback -->
+                    <div>
+                        <h4 class="text-md font-bold text-gray-900 mb-1">3. General Application Feedback</h4>
+                        <p class="text-sm text-gray-500 mb-3">Share your thoughts on the UI, UX, bugs, or feature enhancements.</p>
+                        <textarea name="general_feedback" rows="3" class="w-full text-sm border-gray-300 rounded-lg shadow-sm focus:border-postman focus:ring-postman" placeholder="What would make this tool a 'must-have' on your sales calls?"></textarea>
+                    </div>
+                </form>
+
+                <!-- Success State (Hidden by default) -->
+                <div id="feedbackSuccess" class="hidden absolute inset-0 bg-white flex-col items-center justify-center text-center p-8 z-20">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-gray-900 mb-2">Feedback Received!</h3>
+                    <p class="text-gray-500 text-lg mb-8">Thank you for helping us improve the BVA Calculator.</p>
+                    <button type="button" onclick="closeFeedbackModal()" class="px-8 py-3 bg-postman text-white rounded-md text-base font-bold hover:bg-postman-hover transition-colors shadow-md">Return to Calculator</button>
+                </div>
+            </div>
+
+            <!-- Modal Footer Buttons (Sticky to bottom) -->
+            <div id="feedbackFooter" class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end gap-3 absolute bottom-0 left-0 right-0 z-10">
+                <button type="button" onclick="closeFeedbackModal()" class="px-5 py-2.5 border border-gray-300 bg-white rounded-md text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="submit" id="submitBtn" form="nativeFeedbackForm" class="px-5 py-2.5 bg-postman text-white rounded-md text-sm font-semibold hover:bg-postman-hover transition-colors shadow-sm">Submit Feedback</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- ========================================== -->
     <!-- VIEW 1: CALCULATOR                         -->
@@ -163,7 +254,12 @@
                     </div>
                     <h1 class="text-xl font-bold text-gray-900 tracking-tight">Postman <span class="text-postman">Value Calculator</span></h1>
                 </div>
-                <div class="flex items-center gap-5">
+                <div class="flex items-center gap-6">
+                    <!-- Feedback Button -->
+                    <button onclick="showFeedbackModal()" class="text-sm font-semibold text-gray-600 hover:text-postman transition-colors flex items-center gap-1.5 cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md hover:bg-postman-bg border border-gray-200">
+                        💡 Feedback
+                    </button>
+                    
                     <!-- Switch to Methodology Button -->
                     <button onclick="toggleView('methodology')" class="text-sm font-semibold text-postman hover:text-postman-hover transition-colors flex items-center gap-1 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -460,13 +556,20 @@
                     </div>
                     <h1 class="text-xl font-bold text-gray-900 tracking-tight">Postman <span class="text-postman">BVA Methodology</span></h1>
                 </div>
-                <!-- Switch to Calculator Button -->
-                <button onclick="toggleView('calculator')" class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-postman transition-colors cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Back to Calculator
-                </button>
+                <div class="flex items-center gap-6">
+                    <!-- Feedback Button -->
+                    <button onclick="showFeedbackModal()" class="text-sm font-semibold text-gray-600 hover:text-postman transition-colors flex items-center gap-1.5 cursor-pointer bg-gray-100 px-3 py-1.5 rounded-md hover:bg-postman-bg border border-gray-200">
+                        💡 Feedback
+                    </button>
+
+                    <!-- Switch to Calculator Button -->
+                    <button onclick="toggleView('calculator')" class="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-postman transition-colors cursor-pointer pl-5 border-l border-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Calculator
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -729,92 +832,11 @@
                 calcView.classList.remove('view-hidden');
                 calcView.classList.add('view-active');
             }
-            // Flip instantly to the top of the new view without scrolling animation
             window.scrollTo(0, 0);
         }
 
         // ==========================================
-        // Hover Cross-Highlighting Logic
-        // ==========================================
-        // Maps each output to the array of input IDs that drive it
-        const dependencyMap = {
-            productivity: ['section-productivity', 'global-devs', 'global-rate'],
-            apiDesign: ['section-api-design', 'global-rate'],
-            onboarding: ['section-onboarding', 'global-hires', 'global-rate'],
-            rework: ['section-duplication', 'global-rate'],
-            support: ['section-support'],
-            qaFte: ['section-qa-fte'],
-            governance: ['section-governance', 'global-rate'],
-            outage: ['section-outage'],
-            provisioning: ['global-hires', 'global-rate'], // No specific pain point, just global vars
-            integration: ['section-integration', 'global-rate'],
-            testing: ['section-testing', 'global-releases', 'global-rate'],
-            defects: ['section-defects', 'global-rate'],
-            security: [] // Entirely static
-        };
-
-        function setHighlightOutput(type) {
-            // 1. Highlight the specifically hovered right-side output
-            document.querySelectorAll('.output-item').forEach(el => {
-                if (el.getAttribute('data-type') === type) {
-                    el.classList.add('output-highlight');
-                    el.classList.remove('output-dim');
-                } else {
-                    el.classList.add('output-dim');
-                    el.classList.remove('output-highlight');
-                }
-            });
-
-            // 2. Highlight all left-side inputs (global & specific) that drive this output
-            const deps = dependencyMap[type] || [];
-            document.querySelectorAll('.input-section-highlightable').forEach(el => {
-                if (deps.includes(el.id)) {
-                    el.classList.add('input-highlight');
-                    el.classList.remove('input-dim');
-                } else {
-                    el.classList.add('input-dim');
-                    el.classList.remove('input-highlight');
-                }
-            });
-        }
-
-        function setHighlightInput(inputId) {
-            // 1. Highlight the specifically hovered left-side input
-            document.querySelectorAll('.input-section-highlightable').forEach(el => {
-                if (el.id === inputId) {
-                    el.classList.add('input-highlight');
-                    el.classList.remove('input-dim');
-                } else {
-                    el.classList.add('input-dim');
-                    el.classList.remove('input-highlight');
-                }
-            });
-
-            // 2. Find and highlight all right-side outputs that depend on this input
-            const affectedOutputs = Object.keys(dependencyMap).filter(key => dependencyMap[key].includes(inputId));
-            document.querySelectorAll('.output-item').forEach(el => {
-                if (affectedOutputs.includes(el.getAttribute('data-type'))) {
-                    el.classList.add('output-highlight');
-                    el.classList.remove('output-dim');
-                } else {
-                    el.classList.add('output-dim');
-                    el.classList.remove('output-highlight');
-                }
-            });
-        }
-
-        function clearHighlight() {
-            // Instantly strip all hover states to return to clean UI
-            document.querySelectorAll('.output-item').forEach(el => {
-                el.classList.remove('output-highlight', 'output-dim');
-            });
-            document.querySelectorAll('.input-section-highlightable').forEach(el => {
-                el.classList.remove('input-highlight', 'input-dim');
-            });
-        }
-
-        // ==========================================
-        // Calculator Engine
+        // Calculator Engine Data
         // ==========================================
         const formatMoney = (amount) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount);
         const updateRangeDisplay = (id, display, suffix) => document.getElementById(display).innerText = document.getElementById(id).value + suffix;
@@ -835,6 +857,205 @@
             security: { title: "Risk Mitigation", formula: "$4,450,000 × 0.005", desc: "Assumption: Based on IBM Cost of Data Breach Report ($4.45M average) with a conservative 0.5% risk reduction attribution to API governance." }
         };
 
+        // ==========================================
+        // Feedback Form & Table Logic
+        // ==========================================
+        function showFeedbackModal() {
+            document.getElementById('feedbackModal').classList.remove('hidden');
+        }
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+        }
+        document.getElementById('feedbackModal').addEventListener('click', e => { 
+            if(e.target === document.getElementById('feedbackModal')) closeFeedbackModal(); 
+        });
+
+        // 1. Auto-Populate the 3-Column HTML Table
+        function populateFeedbackTable() {
+            const tbody = document.getElementById('feedback-table-body');
+            tbody.innerHTML = '';
+            
+            Object.keys(formulaData).forEach(key => {
+                const item = formulaData[key];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-4 py-3 text-sm text-gray-900 font-medium border-t border-gray-100">${item.title}</td>
+                    <td class="px-4 py-3 text-sm border-t border-gray-100">
+                        <select name="action_${key}" class="text-sm border-gray-300 rounded focus:ring-postman focus:border-postman w-full" onchange="toggleReasoning('${key}', this.value)">
+                            <option value="">-- No Action --</option>
+                            <option value="Modify">Modify</option>
+                            <option value="Delete">Delete</option>
+                        </select>
+                    </td>
+                    <td class="px-4 py-3 text-sm border-t border-gray-100">
+                        <input type="text" id="reason_${key}" name="reason_${key}" disabled class="w-full text-sm border-gray-300 rounded shadow-sm bg-gray-100 text-gray-400 cursor-not-allowed transition-colors" placeholder="Select action first...">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 2. Lock/Unlock the Reasoning field based on Dropdown
+        function toggleReasoning(key, val) {
+            const input = document.getElementById(`reason_${key}`);
+            if (val) {
+                input.disabled = false;
+                input.classList.remove('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
+                input.classList.add('bg-white', 'text-gray-900');
+                input.placeholder = "Explain your reasoning here...";
+                input.required = true;
+            } else {
+                input.disabled = true;
+                input.classList.add('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
+                input.classList.remove('bg-white', 'text-gray-900');
+                input.placeholder = "Select action first...";
+                input.required = false;
+                input.value = ""; // Clear out old data
+            }
+        }
+
+        // 3. Handle the Submit Event and Build JSON Payload
+        function handleFeedbackSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            // Build the clean JSON Payload
+            const payload = {
+                user: formData.get('submitter_name'),
+                newFormulaName: formData.get('new_formula_name'),
+                newFormulaLogic: formData.get('new_formula_logic'),
+                generalFeedback: formData.get('general_feedback'),
+                formulaFeedback: []
+            };
+
+            // Loop through all table rows to find active feedback
+            Object.keys(formulaData).forEach(key => {
+                const action = formData.get(`action_${key}`);
+                if (action) {
+                    payload.formulaFeedback.push({
+                        formula: formulaData[key].title,
+                        action: action,
+                        reasoning: formData.get(`reason_${key}`)
+                    });
+                }
+            });
+
+            // Make sure they actually entered something
+            if (payload.formulaFeedback.length === 0 && !payload.newFormulaName && !payload.generalFeedback) {
+                alert("Please provide at least one piece of feedback before submitting.");
+                return;
+            }
+
+            // Update UI to "Loading"
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = "Submitting...";
+            submitBtn.disabled = true;
+
+            // Send to Google Apps Script using Form Encoded Data (Most reliable for Google Scripts)
+            fetch(form.action, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    payload: JSON.stringify(payload)
+                })
+            })
+            .then(() => {
+                // Show Success Screen
+                document.getElementById('nativeFeedbackForm').classList.add('hidden');
+                document.getElementById('feedbackSuccess').classList.remove('hidden');
+                document.getElementById('feedbackSuccess').classList.add('flex');
+                document.getElementById('feedbackFooter').classList.add('hidden');
+            })
+            .catch(error => {
+                console.error(error);
+                alert("There was an issue submitting your feedback.");
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            });
+        }
+
+
+        // ==========================================
+        // Hover Cross-Highlighting Logic
+        // ==========================================
+        // Maps each output to the array of input IDs that drive it
+        const dependencyMap = {
+            productivity: ['section-productivity', 'global-devs', 'global-rate'],
+            apiDesign: ['section-api-design', 'global-rate'],
+            onboarding: ['section-onboarding', 'global-hires', 'global-rate'],
+            rework: ['section-duplication', 'global-rate'],
+            support: ['section-support'],
+            qaFte: ['section-qa-fte'],
+            governance: ['section-governance', 'global-rate'],
+            outage: ['section-outage'],
+            provisioning: ['global-hires', 'global-rate'],
+            integration: ['section-integration', 'global-rate'],
+            testing: ['section-testing', 'global-releases', 'global-rate'],
+            defects: ['section-defects', 'global-rate'],
+            security: [] 
+        };
+
+        function setHighlightOutput(type) {
+            document.querySelectorAll('.output-item').forEach(el => {
+                if (el.getAttribute('data-type') === type) {
+                    el.classList.add('output-highlight');
+                    el.classList.remove('output-dim');
+                } else {
+                    el.classList.add('output-dim');
+                    el.classList.remove('output-highlight');
+                }
+            });
+
+            const deps = dependencyMap[type] || [];
+            document.querySelectorAll('.input-section-highlightable').forEach(el => {
+                if (deps.includes(el.id)) {
+                    el.classList.add('input-highlight');
+                    el.classList.remove('input-dim');
+                } else {
+                    el.classList.add('input-dim');
+                    el.classList.remove('input-highlight');
+                }
+            });
+        }
+
+        function setHighlightInput(inputId) {
+            document.querySelectorAll('.input-section-highlightable').forEach(el => {
+                if (el.id === inputId) {
+                    el.classList.add('input-highlight');
+                    el.classList.remove('input-dim');
+                } else {
+                    el.classList.add('input-dim');
+                    el.classList.remove('input-highlight');
+                }
+            });
+
+            const affectedOutputs = Object.keys(dependencyMap).filter(key => dependencyMap[key].includes(inputId));
+            document.querySelectorAll('.output-item').forEach(el => {
+                if (affectedOutputs.includes(el.getAttribute('data-type'))) {
+                    el.classList.add('output-highlight');
+                    el.classList.remove('output-dim');
+                } else {
+                    el.classList.add('output-dim');
+                    el.classList.remove('output-highlight');
+                }
+            });
+        }
+
+        function clearHighlight() {
+            document.querySelectorAll('.output-item').forEach(el => {
+                el.classList.remove('output-highlight', 'output-dim');
+            });
+            document.querySelectorAll('.input-section-highlightable').forEach(el => {
+                el.classList.remove('input-highlight', 'input-dim');
+            });
+        }
+
+
         function showFormula(type) {
             const data = formulaData[type];
             if(data) {
@@ -854,69 +1075,55 @@
             const releases = parseInt(document.getElementById('annualReleases').value) || 0;
             const seatCost = parseInt(document.getElementById('seatCost').value) || 600;
 
-            // 1. Productivity
             const hoursWasted = parseFloat(document.getElementById('prodHours').value) || 0;
             const valProd = devs * (hoursWasted * 0.50) * 52 * rate;
 
-            // 2. API Design Acceleration
             const netNewApis = parseInt(document.getElementById('netNewApis').value) || 0;
             const hoursPerApi = parseFloat(document.getElementById('hoursPerApi').value) || 0;
             const valApiDes = netNewApis * hoursPerApi * 0.25 * rate * 0.50;
 
-            // 3. Onboarding
             const rampWeeks = parseInt(document.getElementById('rampWeeks').value) || 0;
             const valOnb = hires * (rampWeeks * 40 * 0.40) * rate;
 
-            // 4. Rework
             const dupProj = parseInt(document.getElementById('dupProjects').value) || 0;
             const valDup = dupProj * 3 * 3 * 160 * rate;
 
-            // 5. Support Center Savings
             const bugTickets = parseInt(document.getElementById('bugTickets').value) || 0;
             const costPerTicket = parseFloat(document.getElementById('costPerTicket').value) || 0;
             const valSupport = bugTickets * costPerTicket * 0.30;
 
-            // 6. QA Engineer FTE Efficiencies
             const numQaEng = parseInt(document.getElementById('numQaEng').value) || 0;
             const qaSalary = parseFloat(document.getElementById('qaSalary').value) || 0;
             const valQaFte = numQaEng * qaSalary * 0.65 * 0.50;
 
-            // 7. Governance
             const prs = parseInt(document.getElementById('prsReviewed').value) || 0;
             const mins = parseInt(document.getElementById('minsReview').value) || 0;
             const archMult = parseFloat(document.getElementById('archMultiplier').value) || 1.25;
             const govSave = (parseFloat(document.getElementById('govSavings').value) || 90) / 100;
             const valGov = prs * (mins/60) * (rate * archMult) * govSave;
 
-            // 8. Outage & Reliability
             const numOutages = parseInt(document.getElementById('numOutages').value) || 0;
             const costPerOutage = parseFloat(document.getElementById('costPerOutage').value) || 0;
             const valOutage = numOutages * costPerOutage * 0.30 * 0.50;
 
-            // 9. IT Provisioning
             const valProv = hires * 2 * (rate * 0.75);
 
-            // 10. Integration
             const intCount = parseInt(document.getElementById('intCount').value) || 0;
             const ttfc = parseFloat(document.getElementById('ttfcHours').value) || 0;
             const valInt = intCount * (Math.max(0, ttfc - 0.25)) * rate;
 
-            // 11. Testing
             const regHours = parseFloat(document.getElementById('regHours').value) || 0;
             const valTest = releases * regHours * 0.95 * rate;
 
-            // 12. Defects
             const prodBugs = parseInt(document.getElementById('prodBugs').value) || 0;
             const valDef = prodBugs * 100 * rate;
 
-            // 13. Security
             const valSec = 4450000 * 0.005;
 
             const totalSavings = valProd + valApiDes + valOnb + valDup + valSupport + valQaFte + valGov + valOutage + valProv + valInt + valTest + valDef + valSec;
             const totalCost = devs * seatCost;
             const roi = totalCost > 0 ? (totalSavings / totalCost).toFixed(1) : "0";
 
-            // Output Generation
             const bullets = document.getElementById('strategicBullets');
             bullets.innerHTML = '';
             let strats = [
@@ -931,11 +1138,9 @@
             
             strats.forEach(t => bullets.innerHTML += `<div style="margin-bottom:8px;"><span style="color:#9CA3AF;margin-right:8px;">•</span><span style="color:#E5E7EB;">${t}</span></div>`);
 
-            // Clear Lists
             document.getElementById('opImpactLeft').innerHTML = '';
             document.getElementById('opImpactRight').innerHTML = '';
             
-            // Collect Valid Items
             let impactItems = [];
             if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity'});
             if(valApiDes > 0) impactItems.push({label: "API Design Acceleration", val: valApiDes, sub: "Faster design and early testing", type: 'apiDesign'});
@@ -956,7 +1161,6 @@
             } else {
                 impactItems.forEach((item, index) => {
                     const html = renderItem(item);
-                    // Even items to Left, Odd items to Right
                     if (index % 2 === 0) {
                         document.getElementById('opImpactLeft').innerHTML += html;
                     } else {
@@ -973,7 +1177,6 @@
 
         function renderItem(item) {
             const isRisk = item.type === 'security';
-            // Provide inline CSS that survives copy-paste to Google Slides for the Risk item
             const borderStyle = isRisk ? '1px dashed rgba(255, 108, 55, 0.4)' : '2px solid transparent';
             const bgStyle = isRisk ? 'rgba(255, 108, 55, 0.05)' : 'transparent';
             const badge = isRisk ? '<span style="margin-left: 8px; font-size: 9px; text-transform: uppercase; background-color: #1F2937; color: #9CA3AF; padding: 2px 6px; border-radius: 4px; border: 1px solid #374151; vertical-align: middle;">Static Benchmark</span>' : '';
@@ -996,9 +1199,7 @@
         }
 
         function copyToClipboard() {
-            // VERY IMPORTANT: Clear any active highlights so they are not permanently pasted into Google Slides
             clearHighlight(); 
-            
             const node = document.getElementById('slideContent');
             const range = document.createRange();
             range.selectNode(node);
@@ -1012,7 +1213,11 @@
             window.getSelection().removeAllRanges();
         }
 
-        window.onload = calculate;
+        // Initialize Calculator and Table on load
+        window.onload = () => {
+            calculate();
+            populateFeedbackTable();
+        };
     </script>
 </body>
 </html>
