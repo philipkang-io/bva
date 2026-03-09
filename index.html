@@ -69,6 +69,21 @@
             display: none !important; 
         }
 
+        /* Section Visibility Animation */
+        .input-section {
+            transition: all 0.3s ease-in-out;
+            opacity: 1;
+            max-height: 2500px;
+            overflow: hidden;
+        }
+        .input-section.hidden-section {
+            opacity: 0;
+            max-height: 0;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
         /* ==========================================
            Dynamic Cross-Highlighting CSS
            ========================================== */
@@ -275,9 +290,41 @@
         <main class="flex-grow max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Left Column: Inputs (Wizard) -->
             <div class="lg:col-span-5 xl:col-span-4 space-y-6">
-                <!-- Step 1: Global Variables -->
+
+                <!-- Step 1: Select Audience -->
                 <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">1. Organization Metrics</h2>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">1. Select Audience</h2>
+                        <span class="px-2 py-1 bg-gray-100 text-xs font-medium text-gray-600 rounded">Dynamic Logic</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <label class="cursor-pointer relative">
+                            <input type="checkbox" name="persona" value="platform" class="peer sr-only" onchange="calculate()">
+                            <div class="p-4 rounded-lg border-2 border-gray-100 hover:border-gray-200 peer-checked:border-postman peer-checked:bg-postman-bg transition-all h-full">
+                                <div class="font-medium text-gray-900 peer-checked:text-postman mb-1">Platform Eng.</div>
+                                <div class="text-xs text-gray-500">Governance & Security</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer relative">
+                            <input type="checkbox" name="persona" value="product" class="peer sr-only" onchange="calculate()">
+                            <div class="p-4 rounded-lg border-2 border-gray-100 hover:border-gray-200 peer-checked:border-postman peer-checked:bg-postman-bg transition-all h-full">
+                                <div class="font-medium text-gray-900 peer-checked:text-postman mb-1">Product Eng.</div>
+                                <div class="text-xs text-gray-500">Velocity & Reuse</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer relative">
+                            <input type="checkbox" name="persona" value="qe" class="peer sr-only" onchange="calculate()">
+                            <div class="p-4 rounded-lg border-2 border-gray-100 hover:border-gray-200 peer-checked:border-postman peer-checked:bg-postman-bg transition-all h-full">
+                                <div class="font-medium text-gray-900 peer-checked:text-postman mb-1">Head of QE</div>
+                                <div class="text-xs text-gray-500">Quality & Defects</div>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Step 2: Global Variables -->
+                <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">2. Organization Metrics</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div id="global-devs" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-devs')" onmouseleave="clearHighlight()">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Total Developers</label>
@@ -300,172 +347,194 @@
                     </div>
                 </section>
 
-                <!-- Step 2: Pain Points -->
-                <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">2. Discovery: Pain Points</h2>
+                <!-- Step 3: Pain Points -->
+                <section id="step3-section" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 input-section hidden-section">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">3. Discovery: Pain Points</h2>
                     
                     <!-- 1. Productivity -->
-                    <div id="section-productivity" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-productivity')" onmouseleave="clearHighlight()">
-                        <div class="flex justify-between mb-2">
-                            <label class="text-sm font-medium text-gray-700">Hours lost per week (env setup, debugging)</label>
-                            <span class="text-sm font-bold text-postman" id="prodHoursDisplay">3 hrs</span>
+                    <div id="section-productivity-wrapper" class="input-section hidden-section" data-audience="product,platform">
+                        <div id="section-productivity" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-productivity')" onmouseleave="clearHighlight()">
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">Hours lost per week (env setup, debugging)</label>
+                                <span class="text-sm font-bold text-postman" id="prodHoursDisplay">3 hrs</span>
+                            </div>
+                            <input type="range" id="prodHours" min="0" max="10" step="0.5" value="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodHours', 'prodHoursDisplay', ' hrs'); calculate()">
+                            <p class="text-xs text-gray-500 mt-1">Efficiency Baseline</p>
                         </div>
-                        <input type="range" id="prodHours" min="0" max="10" step="0.5" value="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodHours', 'prodHoursDisplay', ' hrs'); calculate()">
-                        <p class="text-xs text-gray-500 mt-1">Efficiency Baseline</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 2. Onboarding -->
-                    <div id="section-onboarding" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-onboarding')" onmouseleave="clearHighlight()">
-                        <div class="flex justify-between mb-2">
-                            <label class="text-sm font-medium text-gray-700">Ramp Up Time (Weeks)</label>
-                            <span class="text-sm font-bold text-postman" id="rampWeeksDisplay">4 wks</span>
+                    <div id="section-onboarding-wrapper" class="input-section hidden-section" data-audience="product">
+                        <div id="section-onboarding" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-onboarding')" onmouseleave="clearHighlight()">
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">Ramp Up Time (Weeks)</label>
+                                <span class="text-sm font-bold text-postman" id="rampWeeksDisplay">4 wks</span>
+                            </div>
+                            <input type="range" id="rampWeeks" min="1" max="12" step="1" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('rampWeeks', 'rampWeeksDisplay', ' wks'); calculate()">
+                            <p class="text-xs text-gray-500 mt-1">Postman reduces ramp time by 40%</p>
                         </div>
-                        <input type="range" id="rampWeeks" min="1" max="12" step="1" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('rampWeeks', 'rampWeeksDisplay', ' wks'); calculate()">
-                        <p class="text-xs text-gray-500 mt-1">Postman reduces ramp time by 40%</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 3. API Design Acceleration -->
-                    <div id="section-api-design" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-api-design')" onmouseleave="clearHighlight()">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">API Design Acceleration</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Net New APIs/Year</label>
-                                <input type="number" id="netNewApis" value="50" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                    <div id="section-api-design-wrapper" class="input-section hidden-section" data-audience="product">
+                        <div id="section-api-design" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-api-design')" onmouseleave="clearHighlight()">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">API Design Acceleration</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Net New APIs/Year</label>
+                                    <input type="number" id="netNewApis" value="50" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Hours per API (Design)</label>
+                                    <input type="number" id="hoursPerApi" value="40" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Hours per API (Design)</label>
-                                <input type="number" id="hoursPerApi" value="40" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
+                            <p class="text-xs text-gray-500">25% reduction in design/test time</p>
                         </div>
-                        <p class="text-xs text-gray-500">25% reduction in design/test time</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 4. Support Center Cost Reduction -->
-                    <div id="section-support" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-support')" onmouseleave="clearHighlight()">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Support Center Savings</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Bug Tickets/Year</label>
-                                <input type="number" id="bugTickets" value="5000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                    <div id="section-support-wrapper" class="input-section hidden-section" data-audience="product">
+                        <div id="section-support" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-support')" onmouseleave="clearHighlight()">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Support Center Savings</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Bug Tickets/Year</label>
+                                    <input type="number" id="bugTickets" value="5000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Cost per Ticket ($)</label>
+                                    <input type="number" id="costPerTicket" value="8" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Cost per Ticket ($)</label>
-                                <input type="number" id="costPerTicket" value="8" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
+                            <p class="text-xs text-gray-500">30% decrease in bug-related tickets</p>
                         </div>
-                        <p class="text-xs text-gray-500">30% decrease in bug-related tickets</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 5. Rework/Duplication -->
-                    <div id="section-duplication" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-duplication')" onmouseleave="clearHighlight()">
-                        <div class="flex justify-between mb-2">
-                            <label class="text-sm font-medium text-gray-700">Redundant APIs/Projects built per year</label>
-                            <span class="text-sm font-bold text-postman" id="dupProjectsDisplay">1</span>
+                    <div id="section-duplication-wrapper" class="input-section hidden-section" data-audience="product">
+                        <div id="section-duplication" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-duplication')" onmouseleave="clearHighlight()">
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">Redundant APIs/Projects built per year</label>
+                                <span class="text-sm font-bold text-postman" id="dupProjectsDisplay">1</span>
+                            </div>
+                            <input type="range" id="dupProjects" min="0" max="10" step="1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('dupProjects', 'dupProjectsDisplay', ''); calculate()">
+                            <p class="text-xs text-gray-500 mt-1">Cost of building redundant code</p>
                         </div>
-                        <input type="range" id="dupProjects" min="0" max="10" step="1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('dupProjects', 'dupProjectsDisplay', ''); calculate()">
-                        <p class="text-xs text-gray-500 mt-1">Cost of building redundant code</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 6. QA Engineer FTE Efficiencies -->
-                    <div id="section-qa-fte" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-qa-fte')" onmouseleave="clearHighlight()">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Engineer FTE Efficiencies</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Total QA Engineers</label>
-                                <input type="number" id="numQaEng" value="5" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                    <div id="section-qa-fte-wrapper" class="input-section hidden-section" data-audience="qe">
+                        <div id="section-qa-fte" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-qa-fte')" onmouseleave="clearHighlight()">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Engineer FTE Efficiencies</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Total QA Engineers</label>
+                                    <input type="number" id="numQaEng" value="5" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Avg QA Salary ($)</label>
+                                    <input type="number" id="qaSalary" value="120000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Avg QA Salary ($)</label>
-                                <input type="number" id="qaSalary" value="120000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
+                            <p class="text-xs text-gray-500">65% efficiency gain via automation</p>
                         </div>
-                        <p class="text-xs text-gray-500">65% efficiency gain via automation</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 7. Governance -->
-                    <div id="section-governance" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-governance')" onmouseleave="clearHighlight()">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Governance Efficiency</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">PRs Reviewed/Year</label>
-                                <input type="number" id="prsReviewed" value="500" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                    <div id="section-governance-wrapper" class="input-section hidden-section" data-audience="platform">
+                        <div id="section-governance" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-governance')" onmouseleave="clearHighlight()">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Governance Efficiency</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">PRs Reviewed/Year</label>
+                                    <input type="number" id="prsReviewed" value="500" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Mins per Review</label>
+                                    <input type="number" id="minsReview" value="30" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Architect Rate (x)</label>
+                                    <input type="number" id="archMultiplier" value="1.25" step="0.05" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Auto. Savings (%)</label>
+                                    <input type="number" id="govSavings" value="90" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Mins per Review</label>
-                                <input type="number" id="minsReview" value="30" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Architect Rate (x)</label>
-                                <input type="number" id="archMultiplier" value="1.25" step="0.05" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Auto. Savings (%)</label>
-                                <input type="number" id="govSavings" value="90" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
+                            <p class="text-xs text-gray-500">Automating API linting & styling</p>
                         </div>
-                        <p class="text-xs text-gray-500">Automating API linting & styling</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 8. Outage & Reliability Savings -->
-                    <div id="section-outage" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-outage')" onmouseleave="clearHighlight()">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Outage & Reliability Savings</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Outages/Year</label>
-                                <input type="number" id="numOutages" value="4" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                    <div id="section-outage-wrapper" class="input-section hidden-section" data-audience="platform">
+                        <div id="section-outage" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-outage')" onmouseleave="clearHighlight()">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Outage & Reliability Savings</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Outages/Year</label>
+                                    <input type="number" id="numOutages" value="4" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Cost per Outage ($)</label>
+                                    <input type="number" id="costPerOutage" value="200000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Cost per Outage ($)</label>
-                                <input type="number" id="costPerOutage" value="200000" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
+                            <p class="text-xs text-gray-500">30% reduction in outages</p>
                         </div>
-                        <p class="text-xs text-gray-500">30% reduction in outages</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 9. Internal Integration -->
-                    <div id="section-integration" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-integration')" onmouseleave="clearHighlight()">
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Internal Integration Velocity</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Integrations/Year</label>
-                                <input type="number" id="intCount" value="20" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                    <div id="section-integration-wrapper" class="input-section hidden-section" data-audience="platform,product">
+                        <div id="section-integration" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-integration')" onmouseleave="clearHighlight()">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Internal Integration Velocity</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Integrations/Year</label>
+                                    <input type="number" id="intCount" value="20" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Current TTFC (Hours)</label>
+                                    <input type="number" id="ttfcHours" value="4" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
+                                </div>
                             </div>
-                            <div>
-                                <label class="text-xs text-gray-600 block mb-1">Current TTFC (Hours)</label>
-                                <input type="number" id="ttfcHours" value="4" class="w-full text-sm border-gray-300 rounded" oninput="calculate()">
-                            </div>
+                            <p class="text-xs text-gray-500">Time-to-First-Call reduction</p>
                         </div>
-                        <p class="text-xs text-gray-500">Time-to-First-Call reduction</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 10. Testing -->
-                    <div id="section-testing" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-testing')" onmouseleave="clearHighlight()">
-                        <div class="flex justify-between mb-2">
-                            <label class="text-sm font-medium text-gray-700">Regression Cycle (Hours)</label>
-                            <span class="text-sm font-bold text-postman" id="regHoursDisplay">20 hrs</span>
+                    <div id="section-testing-wrapper" class="input-section hidden-section" data-audience="qe">
+                        <div id="section-testing" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-testing')" onmouseleave="clearHighlight()">
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">Regression Cycle (Hours)</label>
+                                <span class="text-sm font-bold text-postman" id="regHoursDisplay">20 hrs</span>
+                            </div>
+                            <input type="range" id="regHours" min="0" max="100" step="5" value="20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('regHours', 'regHoursDisplay', ' hrs'); calculate()">
+                            <p class="text-xs text-gray-500 mt-1">95% reduction via automation</p>
                         </div>
-                        <input type="range" id="regHours" min="0" max="100" step="5" value="20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('regHours', 'regHoursDisplay', ' hrs'); calculate()">
-                        <p class="text-xs text-gray-500 mt-1">95% reduction via automation</p>
+                        <hr class="border-gray-100 my-2">
                     </div>
-                    <hr class="border-gray-100 my-2">
 
                     <!-- 11. Defects -->
-                    <div id="section-defects" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-defects')" onmouseleave="clearHighlight()">
-                        <div class="flex justify-between mb-2">
-                            <label class="text-sm font-medium text-gray-700">Critical Bugs in Prod (Annual)</label>
-                            <span class="text-sm font-bold text-postman" id="prodBugsDisplay">2</span>
+                    <div id="section-defects-wrapper" class="input-section hidden-section" data-audience="qe">
+                        <div id="section-defects" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-defects')" onmouseleave="clearHighlight()">
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">Critical Bugs in Prod (Annual)</label>
+                                <span class="text-sm font-bold text-postman" id="prodBugsDisplay">2</span>
+                            </div>
+                            <input type="range" id="prodBugs" min="0" max="20" step="1" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodBugs', 'prodBugsDisplay', ''); calculate()">
+                            <p class="text-xs text-gray-500 mt-1">Cost of fixing in Prod vs Dev</p>
                         </div>
-                        <input type="range" id="prodBugs" min="0" max="20" step="1" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodBugs', 'prodBugsDisplay', ''); calculate()">
-                        <p class="text-xs text-gray-500 mt-1">Cost of fixing in Prod vs Dev</p>
                     </div>
                 </section>
             </div>
@@ -1069,55 +1138,102 @@
         document.getElementById('formulaModal').addEventListener('click', e => { if(e.target === document.getElementById('formulaModal')) closeModal(); });
 
         function calculate() {
+            const selectedPersonas = Array.from(document.querySelectorAll('input[name="persona"]:checked')).map(cb => cb.value);
+            const isDefault = selectedPersonas.length === 0;
+
             const devs = parseInt(document.getElementById('numDevs').value) || 0;
             const rate = parseInt(document.getElementById('hourlyRate').value) || 0;
             const hires = parseInt(document.getElementById('numNewHires').value) || 0;
             const releases = parseInt(document.getElementById('annualReleases').value) || 0;
             const seatCost = parseInt(document.getElementById('seatCost').value) || 600;
 
+            // Visibility Logic & Flag Setting for Step 3 Container
+            const step3Section = document.getElementById('step3-section');
+            if (isDefault) {
+                step3Section.classList.add('hidden-section');
+            } else {
+                step3Section.classList.remove('hidden-section');
+            }
+
+            const p = { 
+                prod: false, apiDes: false, onb: false, dup: false, support: false,
+                qaFte: false, gov: false, outage: false, int: false, test: false, def: false,
+                prov: false, sec: true // sec is always true
+            };
+
+            const sections = document.querySelectorAll('#step3-section .input-section');
+            sections.forEach(section => {
+                const audienceAttr = section.getAttribute('data-audience');
+                const audiences = audienceAttr ? audienceAttr.split(',') : [];
+                const isVisible = !isDefault && audiences.some(r => selectedPersonas.includes(r));
+                
+                section.classList.toggle('hidden-section', !isVisible);
+
+                // Update calculation flags if visible
+                if (isVisible) {
+                    if(section.id.includes('productivity')) p.prod = true;
+                    if(section.id.includes('api-design')) p.apiDes = true;
+                    if(section.id.includes('onboarding')) p.onb = true;
+                    if(section.id.includes('duplication')) p.dup = true;
+                    if(section.id.includes('support')) p.support = true;
+                    if(section.id.includes('qa-fte')) p.qaFte = true;
+                    if(section.id.includes('governance')) p.gov = true;
+                    if(section.id.includes('outage')) p.outage = true;
+                    if(section.id.includes('integration')) p.int = true;
+                    if(section.id.includes('testing')) p.test = true;
+                    if(section.id.includes('defects')) p.def = true;
+                }
+            });
+
+            // Logic for IT Provisioning tied to Platform
+            if(!isDefault && selectedPersonas.includes('platform')) { 
+                p.prov = true; 
+            }
+
             const hoursWasted = parseFloat(document.getElementById('prodHours').value) || 0;
-            const valProd = devs * (hoursWasted * 0.50) * 52 * rate;
+            const valProd = p.prod ? devs * (hoursWasted * 0.50) * 52 * rate : 0;
 
             const netNewApis = parseInt(document.getElementById('netNewApis').value) || 0;
             const hoursPerApi = parseFloat(document.getElementById('hoursPerApi').value) || 0;
-            const valApiDes = netNewApis * hoursPerApi * 0.25 * rate * 0.50;
+            const valApiDes = p.apiDes ? netNewApis * hoursPerApi * 0.25 * rate * 0.50 : 0;
 
             const rampWeeks = parseInt(document.getElementById('rampWeeks').value) || 0;
-            const valOnb = hires * (rampWeeks * 40 * 0.40) * rate;
+            const valOnb = p.onb ? hires * (rampWeeks * 40 * 0.40) * rate : 0;
 
             const dupProj = parseInt(document.getElementById('dupProjects').value) || 0;
-            const valDup = dupProj * 3 * 3 * 160 * rate;
+            const valDup = p.dup ? dupProj * 3 * 3 * 160 * rate : 0;
 
             const bugTickets = parseInt(document.getElementById('bugTickets').value) || 0;
             const costPerTicket = parseFloat(document.getElementById('costPerTicket').value) || 0;
-            const valSupport = bugTickets * costPerTicket * 0.30;
+            const valSupport = p.support ? bugTickets * costPerTicket * 0.30 : 0;
 
             const numQaEng = parseInt(document.getElementById('numQaEng').value) || 0;
             const qaSalary = parseFloat(document.getElementById('qaSalary').value) || 0;
-            const valQaFte = numQaEng * qaSalary * 0.65 * 0.50;
+            const valQaFte = p.qaFte ? numQaEng * qaSalary * 0.65 * 0.50 : 0;
 
             const prs = parseInt(document.getElementById('prsReviewed').value) || 0;
             const mins = parseInt(document.getElementById('minsReview').value) || 0;
             const archMult = parseFloat(document.getElementById('archMultiplier').value) || 1.25;
             const govSave = (parseFloat(document.getElementById('govSavings').value) || 90) / 100;
-            const valGov = prs * (mins/60) * (rate * archMult) * govSave;
+            const valGov = p.gov ? prs * (mins/60) * (rate * archMult) * govSave : 0;
 
             const numOutages = parseInt(document.getElementById('numOutages').value) || 0;
             const costPerOutage = parseFloat(document.getElementById('costPerOutage').value) || 0;
-            const valOutage = numOutages * costPerOutage * 0.30 * 0.50;
+            const valOutage = p.outage ? numOutages * costPerOutage * 0.30 * 0.50 : 0;
 
-            const valProv = hires * 2 * (rate * 0.75);
+            const valProv = p.prov ? hires * 2 * (rate * 0.75) : 0;
 
             const intCount = parseInt(document.getElementById('intCount').value) || 0;
             const ttfc = parseFloat(document.getElementById('ttfcHours').value) || 0;
-            const valInt = intCount * (Math.max(0, ttfc - 0.25)) * rate;
+            const valInt = p.int ? intCount * (Math.max(0, ttfc - 0.25)) * rate : 0;
 
             const regHours = parseFloat(document.getElementById('regHours').value) || 0;
-            const valTest = releases * regHours * 0.95 * rate;
+            const valTest = p.test ? releases * regHours * 0.95 * rate : 0;
 
             const prodBugs = parseInt(document.getElementById('prodBugs').value) || 0;
-            const valDef = prodBugs * 100 * rate;
+            const valDef = p.def ? prodBugs * 100 * rate : 0;
 
+            // Risk mitigation is calculated unconditionally as per prompt request
             const valSec = 4450000 * 0.005;
 
             const totalSavings = valProd + valApiDes + valOnb + valDup + valSupport + valQaFte + valGov + valOutage + valProv + valInt + valTest + valDef + valSec;
@@ -1126,17 +1242,26 @@
 
             const bullets = document.getElementById('strategicBullets');
             bullets.innerHTML = '';
-            let strats = [
-                "Tamed API Sprawl and Increased Efficiency",
-                "Automated Governance and Risk Reduction",
-                "Accelerated Delivery and Enhanced Productivity",
-                "Increase developer velocity & reuse.",
-                "Accelerate onboarding & integration time.",
-                "Shift testing left to reduce production defects.",
-                "Compress regression cycles via automation."
-            ];
+            let strats = [];
             
-            strats.forEach(t => bullets.innerHTML += `<div style="margin-bottom:8px;"><span style="color:#9CA3AF;margin-right:8px;">•</span><span style="color:#E5E7EB;">${t}</span></div>`);
+            if (!isDefault) {
+                if(selectedPersonas.includes('platform')) {
+                    strats.push("Tamed API Sprawl and Increased Efficiency");
+                    strats.push("Automated Governance and Risk Reduction");
+                    strats.push("Accelerated Delivery and Enhanced Productivity");
+                }
+                if(selectedPersonas.includes('product')) {
+                    strats.push("Increase developer velocity & reuse.");
+                    strats.push("Accelerate onboarding & integration time.");
+                }
+                if(selectedPersonas.includes('qe')) {
+                    strats.push("Shift testing left to reduce production defects.");
+                    strats.push("Compress regression cycles via automation.");
+                }
+                [...new Set(strats)].forEach(t => bullets.innerHTML += `<div style="margin-bottom:8px;"><span style="color:#9CA3AF;margin-right:8px;">•</span><span style="color:#E5E7EB;">${t}</span></div>`);
+            } else {
+                bullets.innerHTML = '<p style="color:#6B7280;font-size:12px;font-style:italic;">Select an audience to uncover strategic outcomes.</p>';
+            }
 
             document.getElementById('opImpactLeft').innerHTML = '';
             document.getElementById('opImpactRight').innerHTML = '';
