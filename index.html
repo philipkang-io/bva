@@ -342,8 +342,8 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Annual Releases</label>
                             <input type="number" id="annualReleases" value="24" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
                         </div>
-                        <!-- Hidden Seat Cost Input (Default 600) -->
-                        <input type="hidden" id="seatCost" value="600">
+                        <!-- Hidden Seat Cost Input (Default 588) -->
+                        <input type="hidden" id="seatCost" value="588">
                     </div>
                 </section>
 
@@ -428,7 +428,30 @@
                         <hr class="border-gray-100 my-2">
                     </div>
 
-                    <!-- 6. QA Engineer FTE Efficiencies -->
+                    <!-- NEW 6. Cost of Delay Avoided (Product) -->
+                    <div id="section-cost-delay-wrapper" class="input-section hidden-section" data-audience="product">
+                        <div id="section-cost-delay" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-cost-delay')" onmouseleave="clearHighlight()">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Cost of Delay (Revenue Impact)</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-2">
+                                <div class="col-span-2">
+                                    <label class="text-xs text-gray-600 block mb-1">Weekly Revenue Impact ($)</label>
+                                    <input type="number" id="revImpact" value="10000" class="w-full text-sm border-gray-300 rounded shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Delayed Releases/Yr</label>
+                                    <input type="number" id="delayReleases" value="5" class="w-full text-sm border-gray-300 rounded shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600 block mb-1">Avg Delay (Weeks)</label>
+                                    <input type="number" id="delayWeeks" value="2" class="w-full text-sm border-gray-300 rounded shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 italic mt-1">Assumes Postman resolves 50% of API-related delays.</p>
+                        </div>
+                        <hr class="border-gray-100 my-2">
+                    </div>
+
+                    <!-- 7. QA Engineer FTE Efficiencies -->
                     <div id="section-qa-fte-wrapper" class="input-section hidden-section" data-audience="qe">
                         <div id="section-qa-fte" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-qa-fte')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Engineer FTE Efficiencies</h3>
@@ -447,7 +470,7 @@
                         <hr class="border-gray-100 my-2">
                     </div>
 
-                    <!-- 7. Governance -->
+                    <!-- 8. Governance -->
                     <div id="section-governance-wrapper" class="input-section hidden-section" data-audience="platform">
                         <div id="section-governance" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-governance')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Governance Efficiency</h3>
@@ -474,7 +497,7 @@
                         <hr class="border-gray-100 my-2">
                     </div>
 
-                    <!-- 8. Outage & Reliability Savings -->
+                    <!-- 9. Outage & Reliability Savings -->
                     <div id="section-outage-wrapper" class="input-section hidden-section" data-audience="platform">
                         <div id="section-outage" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-outage')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Outage & Reliability Savings</h3>
@@ -493,7 +516,7 @@
                         <hr class="border-gray-100 my-2">
                     </div>
 
-                    <!-- 9. Internal Integration -->
+                    <!-- 10. Internal Integration -->
                     <div id="section-integration-wrapper" class="input-section hidden-section" data-audience="platform,product">
                         <div id="section-integration" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-integration')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Internal Integration Velocity</h3>
@@ -512,7 +535,7 @@
                         <hr class="border-gray-100 my-2">
                     </div>
 
-                    <!-- 10. Testing -->
+                    <!-- 11. Testing -->
                     <div id="section-testing-wrapper" class="input-section hidden-section" data-audience="qe">
                         <div id="section-testing" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-testing')" onmouseleave="clearHighlight()">
                             <div class="flex justify-between mb-2">
@@ -525,7 +548,7 @@
                         <hr class="border-gray-100 my-2">
                     </div>
 
-                    <!-- 11. Defects -->
+                    <!-- 12. Defects -->
                     <div id="section-defects-wrapper" class="input-section hidden-section" data-audience="qe">
                         <div id="section-defects" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-defects')" onmouseleave="clearHighlight()">
                             <div class="flex justify-between mb-2">
@@ -687,8 +710,8 @@
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 text-sm font-medium text-gray-900">Seat Cost</td>
-                                    <td class="px-4 py-3 text-sm text-gray-500">$600</td>
-                                    <td class="px-4 py-3 text-sm text-gray-500">Platform License Overhead</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">$588</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">Platform License Overhead ($49/mo)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -788,6 +811,14 @@
                             </div>
                             <p class="text-xs text-gray-600">30% ticket decrease. Product engineering models also share Productivity & Integration.</p>
                         </div>
+                        <!-- NEW: Cost of Delay -->
+                        <div class="border border-gray-100 rounded-lg p-4 bg-gray-50">
+                            <h4 class="font-bold text-sm text-gray-900 mb-2">Cost of Delay</h4>
+                            <div class="bg-white p-3 rounded border border-gray-200 mb-2 overflow-x-auto">
+                                $$ Impact \times Rel \times Weeks \times 0.5 $$
+                            </div>
+                            <p class="text-xs text-gray-600">Protected revenue via accelerated delivery.</p>
+                        </div>
                     </div>
                 </section>
 
@@ -841,6 +872,7 @@
                         <ul class="space-y-3 text-sm text-gray-700">
                             <li><strong class="text-gray-900">Developer Productivity:</strong> 50% "Capture Rate" is applied to ensure savings are grounded in reality—not all saved time is reinvested in coding.</li>
                             <li><strong class="text-gray-900">API Design Acceleration:</strong> Assumes a 25% cycle time reduction (Forrester) specifically for the Design and Testing phases.</li>
+                            <li><strong class="text-gray-900">Cost of Delay:</strong> This is a CFO-level metric. 43% of API-first organizations generate 25%+ of total revenue from APIs. We assume Postman's accelerated delivery reduces these delays by 50%.</li>
                             <li><strong class="text-gray-900">Hourly Rate Blending:</strong> Standard blended rate of $80/hr includes benefits and overhead for a full-stack engineer.</li>
                         </ul>
                     </div>
@@ -915,6 +947,7 @@
             apiDesign: { title: "API Design Acceleration", formula: "Net New APIs × Hours per API × 25% Reduction × Rate × 50%", desc: "Assumption: Forrester assumes a 25% reduction in design/testing time in Year 1, with a 50% Productivity Capture rate (only half the saved time converts directly to dollar value)." },
             onboarding: { title: "Onboarding Velocity", formula: "New Hires × (Ramp Weeks × 40%) × 40hrs × Rate", desc: "Assumption: Postman reduces new hire ramp time by 40% (Source: Customer Benchmarks)." },
             rework: { title: "Avoided Rework", formula: "Duplicate Projects × 3 Devs × 3 Months × 160hrs × Rate", desc: "Assumption: An average redundant project involves 3 developers working for 3 months (Source: ROI Blueprint)." },
+            costDelay: { title: "Cost of Delay Avoided", formula: "Weekly Revenue Impact × Delayed Releases × Delay Weeks × 50%", desc: "Assumption: This is a CFO-level metric. 43% of API-first organizations generate 25%+ of total revenue from APIs. We assume Postman's accelerated delivery reduces these delays by 50%." },
             governance: { title: "Governance Efficiency", formula: "PRs × (Mins/60) × (Rate × ArchitectMult) × Savings%", desc: "Assumption: Architect hourly rate is 1.25x standard dev rate. Automation removes 90% of manual review effort." },
             provisioning: { title: "IT Provisioning", formula: "New Hires × 2 Hours × (Rate × 0.75)", desc: "Assumption: IT Admin rate is 75% of Dev rate. Automated SCIM/SSO provisioning saves 2 hours of IT ticket time per hire." },
             integration: { title: "Internal Integration", formula: "Integrations × (TTFC - 0.25) × Rate", desc: "Assumption: Postman Private API Network reduces Time-to-First-Call (TTFC) to 15 minutes (0.25 hours)." },
@@ -1058,6 +1091,7 @@
             apiDesign: ['section-api-design', 'global-rate'],
             onboarding: ['section-onboarding', 'global-hires', 'global-rate'],
             rework: ['section-duplication', 'global-rate'],
+            costDelay: ['section-cost-delay'], // Does not depend on rate or dev count, stands alone
             support: ['section-support'],
             qaFte: ['section-qa-fte'],
             governance: ['section-governance', 'global-rate'],
@@ -1145,7 +1179,7 @@
             const rate = parseInt(document.getElementById('hourlyRate').value) || 0;
             const hires = parseInt(document.getElementById('numNewHires').value) || 0;
             const releases = parseInt(document.getElementById('annualReleases').value) || 0;
-            const seatCost = parseInt(document.getElementById('seatCost').value) || 600;
+            const seatCost = parseInt(document.getElementById('seatCost').value) || 588;
 
             // Visibility Logic & Flag Setting for Step 3 Container
             const step3Section = document.getElementById('step3-section');
@@ -1156,7 +1190,7 @@
             }
 
             const p = { 
-                prod: false, apiDes: false, onb: false, dup: false, support: false,
+                prod: false, apiDes: false, onb: false, dup: false, support: false, costDelay: false,
                 qaFte: false, gov: false, outage: false, int: false, test: false, def: false,
                 prov: false, sec: true // sec is always true
             };
@@ -1176,6 +1210,7 @@
                     if(section.id.includes('onboarding')) p.onb = true;
                     if(section.id.includes('duplication')) p.dup = true;
                     if(section.id.includes('support')) p.support = true;
+                    if(section.id.includes('cost-delay')) p.costDelay = true;
                     if(section.id.includes('qa-fte')) p.qaFte = true;
                     if(section.id.includes('governance')) p.gov = true;
                     if(section.id.includes('outage')) p.outage = true;
@@ -1207,6 +1242,11 @@
             const costPerTicket = parseFloat(document.getElementById('costPerTicket').value) || 0;
             const valSupport = p.support ? bugTickets * costPerTicket * 0.30 : 0;
 
+            const revImpact = parseFloat(document.getElementById('revImpact').value) || 0;
+            const delayReleases = parseInt(document.getElementById('delayReleases').value) || 0;
+            const delayWeeks = parseFloat(document.getElementById('delayWeeks').value) || 0;
+            const valCostDelay = p.costDelay ? revImpact * delayReleases * delayWeeks * 0.50 : 0;
+
             const numQaEng = parseInt(document.getElementById('numQaEng').value) || 0;
             const qaSalary = parseFloat(document.getElementById('qaSalary').value) || 0;
             const valQaFte = p.qaFte ? numQaEng * qaSalary * 0.65 * 0.50 : 0;
@@ -1236,7 +1276,7 @@
             // Risk mitigation is calculated unconditionally as per prompt request
             const valSec = 4450000 * 0.005;
 
-            const totalSavings = valProd + valApiDes + valOnb + valDup + valSupport + valQaFte + valGov + valOutage + valProv + valInt + valTest + valDef + valSec;
+            const totalSavings = valProd + valApiDes + valOnb + valDup + valSupport + valCostDelay + valQaFte + valGov + valOutage + valProv + valInt + valTest + valDef + valSec;
             const totalCost = devs * seatCost;
             const roi = totalCost > 0 ? (totalSavings / totalCost).toFixed(1) : "0";
 
@@ -1253,6 +1293,7 @@
                 if(selectedPersonas.includes('product')) {
                     strats.push("Increase developer velocity & reuse.");
                     strats.push("Accelerate onboarding & integration time.");
+                    strats.push("Protect revenue from delayed time-to-market."); // Added context
                 }
                 if(selectedPersonas.includes('qe')) {
                     strats.push("Shift testing left to reduce production defects.");
@@ -1271,6 +1312,7 @@
             if(valApiDes > 0) impactItems.push({label: "API Design Acceleration", val: valApiDes, sub: "Faster design and early testing", type: 'apiDesign'});
             if(valOnb > 0) impactItems.push({label: "Onboarding Velocity", val: valOnb, sub: "Reduced ramp time by 40%", type: 'onboarding'});
             if(valDup > 0) impactItems.push({label: "Avoided Rework", val: valDup, sub: "Eliminating redundant API builds", type: 'rework'});
+            if(valCostDelay > 0) impactItems.push({label: "Cost of Delay Avoided", val: valCostDelay, sub: "Protected revenue via accelerated delivery", type: 'costDelay'});
             if(valSupport > 0) impactItems.push({label: "Support Center Savings", val: valSupport, sub: "Reduced bug-related ticket volume", type: 'support'});
             if(valQaFte > 0) impactItems.push({label: "QA FTE Efficiencies", val: valQaFte, sub: "Automated testing scaling", type: 'qaFte'});
             if(valGov > 0) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automating API styling & linting", type: 'governance'});
