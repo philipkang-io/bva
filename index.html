@@ -94,7 +94,7 @@
         .input-highlight {
             background-color: #FFF5F0; 
             border-color: #FF6C37 !important;
-            transform: scale(1.02);
+            transform: scale(1.015);
             box-shadow: 0 4px 12px rgba(255, 108, 55, 0.1);
             z-index: 10;
         }
@@ -352,8 +352,8 @@
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">3. Discovery: Pain Points</h2>
                     
                     <!-- 1. Productivity -->
-                    <div id="section-productivity-wrapper" class="input-section hidden-section" data-audience="product,platform">
-                        <div id="section-productivity" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-productivity')" onmouseleave="clearHighlight()">
+                    <div id="section-productivity-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="product,platform">
+                        <div id="section-productivity" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-productivity')" onmouseleave="clearHighlight()">
                             <div class="flex justify-between mb-2">
                                 <label class="text-sm font-medium text-gray-700">Hours lost per week (env setup, debugging)</label>
                                 <span class="text-sm font-bold text-postman" id="prodHoursDisplay">3 hrs</span>
@@ -361,12 +361,12 @@
                             <input type="range" id="prodHours" min="0" max="10" step="0.5" value="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodHours', 'prodHoursDisplay', ' hrs'); calculate()">
                             <p class="text-xs text-gray-500 mt-1">Efficiency Baseline</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 2. Onboarding -->
-                    <div id="section-onboarding-wrapper" class="input-section hidden-section" data-audience="product">
-                        <div id="section-onboarding" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-onboarding')" onmouseleave="clearHighlight()">
+                    <div id="section-onboarding-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="product">
+                        <div id="section-onboarding" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-onboarding')" onmouseleave="clearHighlight()">
                             <div class="flex justify-between mb-2">
                                 <label class="text-sm font-medium text-gray-700">Ramp Up Time (Weeks)</label>
                                 <span class="text-sm font-bold text-postman" id="rampWeeksDisplay">4 wks</span>
@@ -374,12 +374,12 @@
                             <input type="range" id="rampWeeks" min="1" max="12" step="1" value="4" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('rampWeeks', 'rampWeeksDisplay', ' wks'); calculate()">
                             <p class="text-xs text-gray-500 mt-1">Postman reduces ramp time by 40%</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 3. API Design Acceleration -->
-                    <div id="section-api-design-wrapper" class="input-section hidden-section" data-audience="product">
-                        <div id="section-api-design" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-api-design')" onmouseleave="clearHighlight()">
+                    <div id="section-api-design-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="product">
+                        <div id="section-api-design" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-api-design')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">API Design Acceleration</h3>
                             <div class="grid grid-cols-2 gap-4 mb-2">
                                 <div>
@@ -393,12 +393,12 @@
                             </div>
                             <p class="text-xs text-gray-500">25% reduction in design/test time</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 4. Support Center Cost Reduction -->
-                    <div id="section-support-wrapper" class="input-section hidden-section" data-audience="product">
-                        <div id="section-support" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-support')" onmouseleave="clearHighlight()">
+                    <div id="section-support-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="product">
+                        <div id="section-support" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-support')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Support Center Savings</h3>
                             <div class="grid grid-cols-2 gap-4 mb-2">
                                 <div>
@@ -412,12 +412,12 @@
                             </div>
                             <p class="text-xs text-gray-500">30% decrease in bug-related tickets</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 5. Rework/Duplication -->
-                    <div id="section-duplication-wrapper" class="input-section hidden-section" data-audience="product">
-                        <div id="section-duplication" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-duplication')" onmouseleave="clearHighlight()">
+                    <div id="section-duplication-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="product">
+                        <div id="section-duplication" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-duplication')" onmouseleave="clearHighlight()">
                             <div class="flex justify-between mb-2">
                                 <label class="text-sm font-medium text-gray-700">Redundant APIs/Projects built per year</label>
                                 <span class="text-sm font-bold text-postman" id="dupProjectsDisplay">1</span>
@@ -425,12 +425,12 @@
                             <input type="range" id="dupProjects" min="0" max="10" step="1" value="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('dupProjects', 'dupProjectsDisplay', ''); calculate()">
                             <p class="text-xs text-gray-500 mt-1">Cost of building redundant code</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- NEW 6. Cost of Delay Avoided (Product) -->
-                    <div id="section-cost-delay-wrapper" class="input-section hidden-section" data-audience="product">
-                        <div id="section-cost-delay" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-cost-delay')" onmouseleave="clearHighlight()">
+                    <div id="section-cost-delay-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="product">
+                        <div id="section-cost-delay" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-cost-delay')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Cost of Delay (Revenue Impact)</h3>
                             <div class="grid grid-cols-2 gap-4 mb-2">
                                 <div class="col-span-2">
@@ -448,12 +448,12 @@
                             </div>
                             <p class="text-xs text-gray-500 italic mt-1">Assumes Postman resolves 50% of API-related delays.</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 7. QA Engineer FTE Efficiencies -->
-                    <div id="section-qa-fte-wrapper" class="input-section hidden-section" data-audience="qe">
-                        <div id="section-qa-fte" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-qa-fte')" onmouseleave="clearHighlight()">
+                    <div id="section-qa-fte-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="qe">
+                        <div id="section-qa-fte" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-qa-fte')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Engineer FTE Efficiencies</h3>
                             <div class="grid grid-cols-2 gap-4 mb-2">
                                 <div>
@@ -467,12 +467,12 @@
                             </div>
                             <p class="text-xs text-gray-500">65% efficiency gain via automation</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 8. Governance -->
-                    <div id="section-governance-wrapper" class="input-section hidden-section" data-audience="platform">
-                        <div id="section-governance" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-governance')" onmouseleave="clearHighlight()">
+                    <div id="section-governance-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="platform">
+                        <div id="section-governance" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-governance')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Governance Efficiency</h3>
                             <div class="grid grid-cols-2 gap-4 mb-2">
                                 <div>
@@ -494,12 +494,12 @@
                             </div>
                             <p class="text-xs text-gray-500">Automating API linting & styling</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 9. Outage & Reliability Savings -->
-                    <div id="section-outage-wrapper" class="input-section hidden-section" data-audience="platform">
-                        <div id="section-outage" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-outage')" onmouseleave="clearHighlight()">
+                    <div id="section-outage-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="platform">
+                        <div id="section-outage" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-outage')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Outage & Reliability Savings</h3>
                             <div class="grid grid-cols-2 gap-4 mb-2">
                                 <div>
@@ -513,12 +513,12 @@
                             </div>
                             <p class="text-xs text-gray-500">30% reduction in outages</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 10. Internal Integration -->
-                    <div id="section-integration-wrapper" class="input-section hidden-section" data-audience="platform,product">
-                        <div id="section-integration" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-integration')" onmouseleave="clearHighlight()">
+                    <div id="section-integration-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="platform,product">
+                        <div id="section-integration" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-integration')" onmouseleave="clearHighlight()">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Internal Integration Velocity</h3>
                             <div class="grid grid-cols-2 gap-4 mb-2">
                                 <div>
@@ -532,12 +532,12 @@
                             </div>
                             <p class="text-xs text-gray-500">Time-to-First-Call reduction</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 11. Testing -->
-                    <div id="section-testing-wrapper" class="input-section hidden-section" data-audience="qe">
-                        <div id="section-testing" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-testing')" onmouseleave="clearHighlight()">
+                    <div id="section-testing-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="qe">
+                        <div id="section-testing" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-testing')" onmouseleave="clearHighlight()">
                             <div class="flex justify-between mb-2">
                                 <label class="text-sm font-medium text-gray-700">Regression Cycle (Hours)</label>
                                 <span class="text-sm font-bold text-postman" id="regHoursDisplay">20 hrs</span>
@@ -545,12 +545,12 @@
                             <input type="range" id="regHours" min="0" max="100" step="5" value="20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('regHours', 'regHoursDisplay', ' hrs'); calculate()">
                             <p class="text-xs text-gray-500 mt-1">95% reduction via automation</p>
                         </div>
-                        <hr class="border-gray-100 my-2">
+                        <hr class="border-gray-100 my-2 mx-2">
                     </div>
 
                     <!-- 12. Defects -->
-                    <div id="section-defects-wrapper" class="input-section hidden-section" data-audience="qe">
-                        <div id="section-defects" class="input-section-highlightable p-4 -mx-4 rounded-xl relative" onmouseenter="setHighlightInput('section-defects')" onmouseleave="clearHighlight()">
+                    <div id="section-defects-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="qe">
+                        <div id="section-defects" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-defects')" onmouseleave="clearHighlight()">
                             <div class="flex justify-between mb-2">
                                 <label class="text-sm font-medium text-gray-700">Critical Bugs in Prod (Annual)</label>
                                 <span class="text-sm font-bold text-postman" id="prodBugsDisplay">2</span>
