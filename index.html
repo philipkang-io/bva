@@ -2149,6 +2149,13 @@
             });
 
             const container = document.getElementById('opImpactGrouped');
+
+            // Preserve which accordions are open before teardown
+            const openAccordions = new Set();
+            container.querySelectorAll('.output-acc-body').forEach(el => {
+                if (!el.classList.contains('collapsed')) openAccordions.add(el.id);
+            });
+
             container.innerHTML = '';
 
             if (impactItems.length === 0) {
@@ -2170,16 +2177,20 @@
                     });
 
                     const groupId = `output-acc-${objKey}`;
+                    const wasOpen = openAccordions.has(groupId);
+                    const collapsedClass = wasOpen ? '' : 'collapsed';
+                    const chevronRotation = wasOpen ? 'transform:rotate(180deg);' : '';
+
                     let groupHtml = `<div style="margin-bottom: 12px;">`;
                     groupHtml += `<div onclick="toggleOutputAccordion('${groupId}')" style="padding: 8px 8px 6px 8px; border-bottom: 2px solid ${groupColor}22; border-left: 3px solid ${groupColor}; margin-bottom: 0; overflow: hidden; border-radius: 2px 0 0 2px; cursor: pointer; transition: background-color 0.2s;" onmouseenter="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseleave="this.style.backgroundColor='transparent'">`;
                     groupHtml += `<span style="color: ${groupColor}; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;">${meta.icon} ${meta.label}</span>`;
                     groupHtml += badgesHtml;
                     groupHtml += `<span style="float: right; display: flex; align-items: center; gap: 8px;">`;
                     groupHtml += `<span style="color: ${groupColor}; font-size: 15px; font-weight: 700; font-family: monospace;">${formatMoney(subTotal)}</span>`;
-                    groupHtml += `<svg class="output-acc-chevron" style="width:14px;height:14px;transition:transform 0.3s;color:${groupColor};" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>`;
+                    groupHtml += `<svg class="output-acc-chevron" style="width:14px;height:14px;transition:transform 0.3s;color:${groupColor};${chevronRotation}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>`;
                     groupHtml += `</span>`;
                     groupHtml += `<div style="clear:both;"></div></div>`;
-                    groupHtml += `<div id="${groupId}" class="output-acc-body collapsed" style="transition:max-height 0.3s ease,opacity 0.2s ease;">`;
+                    groupHtml += `<div id="${groupId}" class="output-acc-body ${collapsedClass}" style="transition:max-height 0.3s ease,opacity 0.2s ease;">`;
                     items.forEach(item => { groupHtml += renderItem(item); });
                     groupHtml += `</div>`;
                     groupHtml += `</div>`;
