@@ -476,7 +476,7 @@
                             <p class="text-xs text-gray-600 mt-1">Unlocks AI test generation, spec authoring, and shadow API discovery.</p>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer ml-4">
-                            <input type="checkbox" id="agentModeToggle" class="sr-only peer" onchange="toggleAgentMode(); calculate();">
+                            <input type="checkbox" id="agentModeToggle" class="sr-only peer" checked onchange="toggleAgentMode(); calculate();">
                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-agent"></div>
                         </label>
                     </div>
@@ -747,11 +747,15 @@
                                             <input type="number" id="undiscoveredApis" value="20" class="w-full text-sm border-gray-300 rounded focus:ring-agent focus:border-agent" oninput="calculate()">
                                         </div>
                                         <div>
-                                            <label class="text-xs text-gray-600 block mb-1">Incident Cost ($)</label>
-                                            <input type="number" id="incidentCost" value="50000" class="w-full text-sm border-gray-300 rounded focus:ring-agent focus:border-agent" oninput="calculate()">
+                                            <label class="text-xs text-gray-600 block mb-1">Duplication Rate (%)</label>
+                                            <input type="number" id="duplicationRate" value="30" min="0" max="100" class="w-full text-sm border-gray-300 rounded focus:ring-agent focus:border-agent" oninput="calculate()">
+                                        </div>
+                                        <div class="col-span-2">
+                                            <label class="text-xs text-gray-600 block mb-1">Avg Hours to Rebuild</label>
+                                            <input type="number" id="hrsToRebuild" value="40" class="w-full text-sm border-gray-300 rounded focus:ring-agent focus:border-agent" oninput="calculate()">
                                         </div>
                                     </div>
-                                    <p class="text-xs text-gray-500 italic mt-1">Assumes 50% mitigation of ungoverned risks via Agent discovery.</p>
+                                    <p class="text-xs text-gray-500 italic mt-1">% of undiscovered APIs rebuilt by other teams × hours per rebuild.</p>
                                 </div>
                                 <hr class="border-gray-100 my-2 mx-2">
                             </div>
@@ -968,7 +972,19 @@
                                         <!-- ROI Summary (Spans Columns 2 & 3) -->
                                         <td colspan="2" style="padding: 0 30px 30px 30px; background-color: transparent; vertical-align: bottom;">
                                             <div style="background-color: #1F2937; padding: 20px; border-radius: 8px; border: 1px solid #4B5563;" id="roiSummaryBox">
-                                                <h4 style="color: #D1D5DB; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 8px 0;">3. ROI Summary</h4>
+                                                <h4 style="color: #D1D5DB; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0 0 12px 0;">3. ROI Summary</h4>
+                                                <!-- Add-on toggles -->
+                                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+                                                    <span style="color: #9CA3AF; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px;">Annual Seat Cost: <span id="outSeatCostLabel" style="color: #E5E7EB;">$588/user/yr</span></span>
+                                                    <button id="asaToggle" onclick="toggleAddon('asa')" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; border: 1px solid #FF6C37; background: transparent; color: #FF6C37; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
+                                                        ASA +$29/mo
+                                                        <a href="https://www.postman.com/pricing/#advanced-security-administration-add-on" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color: #6B7280; font-size: 10px; line-height: 1; text-decoration: none; transition: color 0.15s;" onmouseenter="this.style.color='#FF6C37'" onmouseleave="this.style.color='#6B7280'">ℹ</a>
+                                                    </button>
+                                                    <button id="supportToggle" onclick="toggleAddon('support')" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; border: 1px solid #FF6C37; background: transparent; color: #FF6C37; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
+                                                        Support +$8/mo
+                                                        <a href="https://www.postman.com/pricing/" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color: #6B7280; font-size: 10px; line-height: 1; text-decoration: none; transition: color 0.15s;" onmouseenter="this.style.color='#FF6C37'" onmouseleave="this.style.color='#6B7280'">ℹ</a>
+                                                    </button>
+                                                </div>
                                                 <p style="margin: 0; font-size: 16px; color: #E5E7EB; line-height: 1.5;">
                                                     "By investing <span style="color: #ffffff; font-weight: 700;" id="outCost">$0</span>, the team creates <span style="color: #ffffff; font-weight: 700;" id="outTotalSavingsText">$0</span> in value (<span style="color: #FF6C37; font-weight: 700; font-size: 18px;" id="outROI">0x</span> ROI)."
                                                 </p>
@@ -1293,8 +1309,8 @@
                             — 5,700+ respondents. Source for API discovery gaps (34%), contract testing adoption (17%), AI agent security concerns (51%), collaboration blockers (93%), and API revenue generation (65%).
                         </li>
                         <li>
-                            <a href="https://smartbear.com/resources/ebooks/state-of-quality-api/" target="_blank" rel="noopener" class="font-semibold text-postman hover:underline">SmartBear State of API Report</a>
-                            — Source for API developer experience, documentation quality impact, and API-first revenue data.
+                            <a href="https://www.postman.com/case-studies/avenu/" target="_blank" rel="noopener" class="font-semibold text-postman hover:underline">Postman Customer Case Study: Avenu</a>
+                            — Partner integration time reduced from 3 months to 2 weeks using Partner Workspaces.
                         </li>
                         <li>
                             <a href="https://www.ibm.com/reports/data-breach" target="_blank" rel="noopener" class="font-semibold text-postman hover:underline">IBM Cost of a Data Breach Report (2025)</a>
@@ -1432,7 +1448,7 @@
             midmarket: {
                 label: 'Mid-Market',
                 numDevs: 50, numNewHires: 10, annualReleases: 24, hourlyRate: 80,
-                undiscoveredApis: 20, annualAudits: 5,
+                undiscoveredApis: 20, duplicationRate: 30, hrsToRebuild: 40, annualAudits: 5,
                 netNewApis: 25, hoursPerApi: 40,
                 revImpact: 5000, delayReleases: 3, delayWeeks: 1,
                 apiPartners: 10, partnerTTFC: 5, partnerDailyCost: 500,
@@ -1445,13 +1461,12 @@
                 numOutages: 2, costPerOutage: 100000,
                 intCount: 10, ttfcHours: 4,
                 agentFails: 100, hrsPerDebug: 2,
-                incidentCost: 50000,
                 prodHours: 3, rampWeeks: 4, dupProjects: 1, regHours: 20
             },
             large: {
                 label: 'Large',
                 numDevs: 200, numNewHires: 30, annualReleases: 36, hourlyRate: 90,
-                undiscoveredApis: 100, annualAudits: 15,
+                undiscoveredApis: 100, duplicationRate: 30, hrsToRebuild: 40, annualAudits: 15,
                 netNewApis: 80, hoursPerApi: 40,
                 revImpact: 25000, delayReleases: 6, delayWeeks: 2,
                 apiPartners: 25, partnerTTFC: 5, partnerDailyCost: 500,
@@ -1464,13 +1479,12 @@
                 numOutages: 4, costPerOutage: 200000,
                 intCount: 30, ttfcHours: 4,
                 agentFails: 300, hrsPerDebug: 2,
-                incidentCost: 75000,
                 prodHours: 4, rampWeeks: 6, dupProjects: 2, regHours: 30
             },
             enterprise: {
                 label: 'Enterprise',
                 numDevs: 1000, numNewHires: 80, annualReleases: 52, hourlyRate: 100,
-                undiscoveredApis: 500, annualAudits: 50,
+                undiscoveredApis: 500, duplicationRate: 30, hrsToRebuild: 40, annualAudits: 50,
                 netNewApis: 200, hoursPerApi: 40,
                 revImpact: 100000, delayReleases: 10, delayWeeks: 3,
                 apiPartners: 50, partnerTTFC: 7, partnerDailyCost: 750,
@@ -1483,13 +1497,33 @@
                 numOutages: 8, costPerOutage: 500000,
                 intCount: 60, ttfcHours: 6,
                 agentFails: 500, hrsPerDebug: 2,
-                incidentCost: 150000,
                 prodHours: 5, rampWeeks: 8, dupProjects: 4, regHours: 40
             }
         };
 
         let _selectedTier = null;
         let _isQuickMode = true;
+        let _addonAsa = false;
+        let _addonSupport = false;
+
+        function toggleAddon(addon) {
+            if (addon === 'asa') {
+                _addonAsa = !_addonAsa;
+                const btn = document.getElementById('asaToggle');
+                if (btn) {
+                    btn.style.background = _addonAsa ? '#FF6C37' : 'transparent';
+                    btn.style.color = _addonAsa ? '#ffffff' : '#FF6C37';
+                }
+            } else if (addon === 'support') {
+                _addonSupport = !_addonSupport;
+                const btn = document.getElementById('supportToggle');
+                if (btn) {
+                    btn.style.background = _addonSupport ? '#FF6C37' : 'transparent';
+                    btn.style.color = _addonSupport ? '#ffffff' : '#FF6C37';
+                }
+            }
+            calculate();
+        }
 
         const rangeDisplayMap = {
             prodHours: { display: 'prodHoursDisplay', suffix: ' hrs' },
@@ -1578,7 +1612,7 @@
             integration: 'saveMoney',
             governance: 'reduceRisk',
             outage: 'reduceRisk',
-            shadowApi: 'reduceRisk',
+            shadowApi: 'saveMoney',
             compliance: 'reduceRisk',
             testAuthoring: 'reduceRisk',
             testing: 'saveMoney',
@@ -1648,7 +1682,8 @@
             ],
             shadowApi: [
                 { id: 'undiscoveredApis', label: 'Undiscovered APIs' },
-                { id: 'incidentCost', label: 'Incident Cost ($)' }
+                { id: 'duplicationRate', label: 'Duplication Rate (%)' },
+                { id: 'hrsToRebuild', label: 'Avg Hours to Rebuild' }
             ],
             testAuthoring: [
                 { id: 'apisNeedTests', label: 'APIs Requiring Tests' },
@@ -1679,10 +1714,10 @@
         const formulaData = {
             shadowApi: {
                 title: "Shadow API Discovery (Agent Mode)",
-                formula: "Est. Undiscovered APIs × Incident Cost × Mitigation rate",
+                formula: "Undiscovered APIs × Duplication Rate × Avg Hours to Rebuild × Rate",
                 desc: formulaDesc(
-                    `${srcLink('Postman State of the API, 2025','https://www.postman.com/state-of-api/2025/')} — "34% of developers cannot find existing APIs."`,
-                    'At default setting, 50% mitigation rate and incident cost defaults ($50–150K) are configurable estimates.'
+                    `${srcLink('Postman State of the API, 2025','https://www.postman.com/state-of-api/2025/')} — "34% of developers cannot find existing APIs," leading to duplicate development and API sprawl.`,
+                    'Duplication rate (30%) estimates the proportion of undiscovered APIs that get rebuilt by other teams. Hours to rebuild (40 hrs) is a configurable estimate — adjust based on customer\'s average API complexity.'
                 )
             },
             testAuthoring: {
@@ -1748,12 +1783,12 @@
                 formula: "Weekly Revenue Impact × Delayed Releases × Delay Weeks × Resolution rate (Agent Mode)",
                 formulaNoAgent: "Weekly Revenue Impact × Delayed Releases × Delay Weeks × Resolution rate (Default)",
                 desc: formulaDesc(
-                    `${srcLink('SmartBear State of API Report','https://smartbear.com/resources/ebooks/state-of-quality-api/')} — API-first organizations generate significant revenue from APIs. ${srcLink('Postman State of the API, 2025','https://www.postman.com/state-of-api/2025/')} — 65% of organizations generate revenue from APIs.`,
-                    'At default setting, weekly revenue impact, delayed releases, and resolution rates (50% standard / 60% Agent Mode) are configurable estimates.'
+                    `${srcLink('Postman State of the API, 2025','https://www.postman.com/state-of-api/2025/')} — 65% of organizations generate revenue from APIs.`,
+                    'Default weekly revenue impact, delayed releases, and resolution rates (50% standard / 60% Agent Mode) are configurable estimates.'
                 ),
                 descNoAgent: formulaDesc(
-                    `${srcLink('SmartBear State of API Report','https://smartbear.com/resources/ebooks/state-of-quality-api/')} — API-first organizations generate significant revenue from APIs. ${srcLink('Postman State of the API, 2025','https://www.postman.com/state-of-api/2025/')} — 65% of organizations generate revenue from APIs.`,
-                    'At default setting, weekly revenue impact, delayed releases, and resolution rate (50%) are configurable estimates.'
+                    `${srcLink('Postman State of the API, 2025','https://www.postman.com/state-of-api/2025/')} — 65% of organizations generate revenue from APIs.`,
+                    'Default weekly revenue impact, delayed releases, and resolution rate (50%) are configurable estimates.'
                 )
             },
             governance: {
@@ -1823,8 +1858,8 @@
                 title: "Partner API Onboarding",
                 formula: "API Partners × Days to First Call × TTFC reduction × Daily Opportunity Cost",
                 desc: formulaDesc(
-                    `${srcLink('SmartBear State of API Report','https://smartbear.com/resources/ebooks/state-of-quality-api/')} — documentation quality is #1 driver of API developer experience. Postman customer data: Avenu reduced partner integration time from 3 months to 2 weeks.`,
-                    'At default setting, Postman reduces partner TTFC by 50% via Public API Network, auto-docs, mock servers, and Run-in-Postman collections. Default days to first call and daily opportunity cost are configurable estimates.'
+                    `${srcLink('Postman customer case study: Avenu','https://www.postman.com/case-studies/avenu/')} — partner integration time reduced from 3 months to 2 weeks using Partner Workspaces.`,
+                    'Default days to first call and daily opportunity cost are configurable estimates.'
                 )
             },
             deliveryAccel: {
@@ -1881,7 +1916,8 @@
                 { key: 'automation', default: 0.95, type: 'scalable', label: 'Automation rate', desc: 'Share of manual regression eliminated.' }
             ],
             shadowApi: [
-                { key: 'mitigation', default: 0.50, type: 'scalable', label: 'Mitigation rate', desc: 'Share of incident cost Agent Mode mitigates.' }
+                { key: 'duplicationRate', default: 0.30, type: 'scalable', label: 'Duplication rate', desc: 'Percentage of undiscovered APIs rebuilt by other teams.' },
+                { key: 'hrsToRebuild', default: 40, type: 'fixed', label: 'Avg hours to rebuild', desc: 'Developer hours spent rebuilding each duplicated API.' }
             ],
             testAuthoring: [
                 { key: 'timeReduction', default: 0.70, type: 'scalable', label: 'Time reduction', desc: 'Reduction in manual authoring hours.' }
@@ -2251,7 +2287,10 @@
             const rate = parseInt(document.getElementById('hourlyRate').value) || 0;
             const hires = parseInt(document.getElementById('numNewHires').value) || 0;
             const releases = parseInt(document.getElementById('annualReleases').value) || 0;
-            const seatCost = parseInt(document.getElementById('seatCost').value) || 588;
+            const baseSeatCost = 588; // $49/mo base
+            const asaActive = _addonAsa;
+            const supportActive = _addonSupport;
+            const seatCost = baseSeatCost + (asaActive ? 348 : 0) + (supportActive ? 96 : 0); // ASA +$29/mo ($348/yr), Support +$8/mo ($96/yr)
 
             // Visibility Logic & Flag Setting for Step 3 Container
             const step3Section = document.getElementById('step3-section');
@@ -2370,9 +2409,9 @@
 
             // NEW AGENT MODE FIELDS MATH
             const undiscoveredApis = parseInt(document.getElementById('undiscoveredApis').value) || 0;
-            const incidentCost = parseInt(document.getElementById('incidentCost').value) || 0;
-            const shadowMitigation = getEffectiveFactor('shadowApi', 'mitigation', true);
-            const valShadow = (isAgentMode && p.shadow) ? undiscoveredApis * incidentCost * shadowMitigation : 0;
+            const hrsToRebuild = parseFloat(document.getElementById('hrsToRebuild').value) || 0;
+            const shadowDupRate = getEffectiveFactor('shadowApi', 'duplicationRate', true);
+            const valShadow = (isAgentMode && p.shadow) ? undiscoveredApis * shadowDupRate * hrsToRebuild * rate : 0;
 
             const apisNeedTests = parseInt(document.getElementById('apisNeedTests').value) || 0;
             const hrsPerSuite = parseFloat(document.getElementById('hrsPerSuite').value) || 0;
@@ -2411,6 +2450,8 @@
             document.getElementById('outTotalSavingsText').innerText = formatMoney(totalSavings);
             document.getElementById('outCost').innerText = formatMoney(totalCost);
             document.getElementById('outROI').innerText = roi + 'x';
+            const seatCostLabel = document.getElementById('outSeatCostLabel');
+            if (seatCostLabel) seatCostLabel.innerText = '$' + seatCost.toLocaleString() + '/user/yr';
             
             // Adjust ROI box style based on Agent mode
             const roiValEl = document.getElementById('outROI');
@@ -2445,7 +2486,7 @@
 
             let impactItems = [];
             
-            if(valShadow > 0) impactItems.push({label: "✨ Shadow API Discovery", val: valShadow, sub: "Risk mitigation via AI discovery", type: 'shadowApi', isAgent: true});
+            if(valShadow > 0) impactItems.push({label: "✨ Shadow API Discovery", val: valShadow, sub: "Eliminating duplicate API development from undiscovered APIs", type: 'shadowApi', isAgent: true});
             if(valTestGen > 0) impactItems.push({label: "✨ AI Test Authoring", val: valTestGen, sub: "Automated test suite generation", type: 'testAuthoring', isAgent: true});
             if(valCompliance > 0) impactItems.push({label: "✨ Compliance Automation", val: valCompliance, sub: "Automated test-to-control mapping", type: 'compliance', isAgent: true});
             if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity', agentBoost: isAgentMode ? {from: '1.0x', to: '1.35x'} : null});
@@ -2454,9 +2495,9 @@
             if(valDup > 0) impactItems.push({label: "Avoided Rework", val: valDup, sub: "Eliminating redundant API builds", type: 'rework'});
             if(valCostDelay > 0) impactItems.push({label: "Cost of Delay Avoided", val: valCostDelay, sub: "Protected revenue via accelerated delivery", type: 'costDelay', agentBoost: isAgentMode ? {from: '50%', to: '60%'} : null});
             if(valQaFte > 0) impactItems.push({label: "QA FTE Efficiencies", val: valQaFte, sub: "Automated testing scaling", type: 'qaFte', agentBoost: isAgentMode ? {from: '65%', to: '80%'} : null});
-            if(valGov > 0) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automating API styling & linting", type: 'governance', agentBoost: isAgentMode ? {additive: '+ Agent Spec Authoring'} : null});
+            if(valGov > 0) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automated API spec linting replaces manual PR reviews", type: 'governance', agentBoost: isAgentMode ? {additive: '+ Agent Spec Authoring'} : null});
             if(valOutage > 0) impactItems.push({label: "Outage & Reliability Savings", val: valOutage, sub: "Avoided service degradations", type: 'outage'});
-            if(valProv > 0) impactItems.push({label: "IT Provisioning", val: valProv, sub: "Automated SCIM/SSO access", type: 'provisioning'});
+            if(valProv > 0) impactItems.push({label: "IT Provisioning", val: valProv, sub: "Time saved per new hire via automated provisioning", type: 'provisioning'});
             if(valInt > 0) impactItems.push({label: "Integration Velocity", val: valInt, sub: `TTFC reduced to 15 mins`, type: 'integration'});
             if(valTest > 0) impactItems.push({label: "Test Cycle Compression", val: valTest, sub: "95% reduction in regression time", type: 'testing', agentBoost: isAgentMode ? {additive: '+ Auto-Resolved Failures'} : null});
             if(valPartnerOnboard > 0) impactItems.push({label: "Partner API Onboarding", val: valPartnerOnboard, sub: "50% partner TTFC reduction", type: 'partnerOnboard'});
