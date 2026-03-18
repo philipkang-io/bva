@@ -73,6 +73,55 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Print-to-PDF styles (Export PDF uses window.print) */
+        @media print {
+            @page { size: landscape; margin: 12mm; }
+            body { background: white !important; }
+            /* Only print the executive summary slide content */
+            #view-calculator > header,
+            #left-panel,
+            #collapse-btn,
+            #toast,
+            #formulaModal,
+            #feedbackModal,
+            #view-methodology,
+            #view-customer-success {
+                display: none !important;
+            }
+            /* Remove layout padding/margins so content starts at top */
+            #main-grid {
+                display: block !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                gap: 0 !important;
+            }
+            #right-panel {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            /* Sticky containers can introduce large offsets in print */
+            #right-panel .sticky {
+                position: static !important;
+                top: auto !important;
+            }
+            /* Ensure the printed slide is aligned and not clipped */
+            #executiveSummaryBody {
+                padding: 0 !important;
+                overflow: visible !important;
+                background: white !important;
+            }
+            /* Landscape at 12mm margins ≈ 1047px usable — 950px slide fits without scaling */
+            #slideContent {
+                break-inside: avoid;
+                margin: 0 !important;
+                width: 950px !important;
+            }
+            /* Remove hover scaling effects that can create whitespace */
+            .output-highlight { transform: none !important; }
+        }
         .view-active {
             animation: fadeIn 0.4s ease-out forwards;
             display: flex !important; 
@@ -2538,161 +2587,9 @@
         }
 
         function exportPDF() {
-            const btn = document.getElementById('pdfBtn');
-            btn.textContent = 'Generating...';
-            btn.disabled = true;
-
-            const tierLabel = _selectedTier ? tierProfiles[_selectedTier].label : 'Custom';
-            const totalVal = document.getElementById('outTotalSavingsText')?.innerText || '$0';
-            const costVal = document.getElementById('outCost')?.innerText || '$0';
-            const roiVal = document.getElementById('outROI')?.innerText || '0x';
-            const isAgent = document.getElementById('agentModeToggle')?.checked;
-            const accentColor = isAgent ? '#3B82F6' : '#FF6C37';
-
-            const selectedPersonas = [...document.querySelectorAll('input[name="persona"]:checked')].map(c => c.value);
-            const personaLabels = { platform: 'Platform Eng.', product: 'Product Eng.', qe: 'Head of QE' };
-            const audienceStr = selectedPersonas.map(p => personaLabels[p] || p).join(', ') || 'None selected';
-
-            let strats = [];
-            if (selectedPersonas.includes('platform')) {
-                strats.push("Corporate Policy and/or Regulatory Compliance & Governance");
-                strats.push("Cost Avoidance & API Reusability");
-                strats.push("Increase Adoption of External APIs (incl. Monetization)");
-            }
-            if (selectedPersonas.includes('product')) {
-                strats.push("Improve Developer Productivity");
-                strats.push("Cost Avoidance & API Reusability");
-                strats.push("Faster Time-to-Market w/Partners");
-            }
-            if (selectedPersonas.includes('qe')) {
-                strats.push("Improve Developer Productivity");
-                strats.push("Corporate Policy and/or Regulatory Compliance & Governance");
-                strats.push("Faster Time-to-Market w/Partners");
-            }
-            strats = [...new Set(strats)];
-
-            const grouped = document.getElementById('opImpactGrouped');
-            let impactHTML = '';
-            if (grouped) {
-                const groups = grouped.querySelectorAll('[style*="margin-bottom"]');
-                groups.forEach(group => {
-                    const header = group.querySelector('div');
-                    if (!header) return;
-                    const headerText = header.innerText.trim();
-                    const items = group.querySelectorAll('[style*="padding: 8px"]');
-                    if (items.length === 0) return;
-                    impactHTML += `<tr><td colspan="2" style="padding:8px 0 4px 0;font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #374151;">${headerText}</td></tr>`;
-                    items.forEach(item => {
-                        const nameEl = item.querySelector('div > div:first-child');
-                        const valEl = item.querySelector('[style*="font-weight: 700"]');
-                        if (nameEl && valEl) {
-                            const badge = item.querySelector('[style*="linear-gradient"]');
-                            const badgeStr = badge ? `<span style="background:linear-gradient(135deg,#F59E0B,#EF4444);color:white;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-right:4px;">${badge.innerText}</span>` : '';
-                            const expandBtn = item.querySelector('[onclick*="toggleInlineEdit"]');
-                            const itemType = expandBtn ? expandBtn.getAttribute('onclick').match(/'([^']+)'/)?.[1] : null;
-                            const fd = itemType && formulaData[itemType];
-                            const formulaStr = fd ? `<div style="font-size:9px;color:#6B7280;margin-top:1px;">${fd.formula}</div>` : '';
-                            impactHTML += `<tr>
-                                <td style="padding:4px 0;font-size:12px;color:#E5E7EB;vertical-align:top;">${badgeStr}${nameEl.innerText.trim()}${formulaStr}</td>
-                                <td style="padding:4px 0;font-size:12px;color:${accentColor};font-weight:700;text-align:right;white-space:nowrap;vertical-align:top;">${valEl.innerText.trim()}</td>
-                            </tr>`;
-                        }
-                    });
-                });
-            }
-
-            const stratsHTML = strats.map(s => `<div style="margin-bottom:5px;display:flex;align-items:baseline;gap:5px;"><span style="color:${accentColor};font-size:11px;">★</span><span style="color:#E5E7EB;font-size:12px;line-height:1.4;">${s}</span></div>`).join('');
-
-            const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-            const pdfContent = document.createElement('div');
-            pdfContent.id = 'pdf-render-target';
-            pdfContent.style.cssText = 'position:fixed;left:-9999px;top:0;width:950px;';
-            pdfContent.innerHTML = `
-                <div style="background:#111827;color:white;font-family:'Inter',Helvetica,Arial,sans-serif;padding:28px 32px;box-sizing:border-box;">
-                    <!-- Header -->
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #374151;">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <img src="https://voyager.postman.com/logo/postman-logo-icon-orange.svg" style="width:32px;height:32px;" crossorigin="anonymous">
-                            <div>
-                                <div style="font-size:20px;font-weight:800;color:white;">Postman <span style="color:${accentColor};">Business Value Assessment</span></div>
-                                <div style="font-size:11px;color:#9CA3AF;margin-top:2px;">${today} &nbsp;|&nbsp; ${tierLabel} Tier &nbsp;|&nbsp; ${audienceStr}${isAgent ? ' &nbsp;|&nbsp; Agent Mode Enabled' : ''}</div>
-                            </div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:28px;font-weight:800;color:${accentColor};">${totalVal}</div>
-                            <div style="font-size:11px;color:#9CA3AF;">Annual Value</div>
-                        </div>
-                    </div>
-
-                    <!-- Executive Summary -->
-                    <div style="border-left:5px solid ${accentColor};padding:12px 16px;margin-bottom:16px;background:#1F2937;border-radius:0 8px 8px 0;">
-                        <div style="font-size:14px;font-weight:600;color:white;line-height:1.5;">
-                            Postman Enterprise${isAgent ? ' with Agent Mode' : ''} will drive <span style="color:${accentColor};font-weight:800;">${totalVal}</span> in annual efficiency gains while reducing security risk.
-                        </div>
-                    </div>
-
-                    <!-- Two Column Layout -->
-                    <div style="display:flex;gap:24px;">
-                        <!-- Left: Strategic Outcomes -->
-                        <div style="flex:0 0 280px;">
-                            <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Strategic Outcomes</div>
-                            ${stratsHTML}
-
-                            <!-- ROI Box -->
-                            <div style="background:#1F2937;border:1px solid #374151;border-radius:8px;padding:12px;margin-top:14px;">
-                                <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">ROI Summary</div>
-                                <div style="font-size:13px;color:#E5E7EB;line-height:1.6;">
-                                    Investment: <span style="color:white;font-weight:700;">${costVal}</span><br>
-                                    Annual Value: <span style="color:white;font-weight:700;">${totalVal}</span><br>
-                                    Return: <span style="color:${accentColor};font-weight:800;font-size:16px;">${roiVal}</span> ROI
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right: Operational Impact -->
-                        <div style="flex:1;">
-                            <div style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">Operational Impact</div>
-                            <table style="width:100%;border-collapse:collapse;">
-                                ${impactHTML}
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Footer -->
-                    <div style="margin-top:16px;padding-top:8px;border-top:1px solid #374151;display:flex;justify-content:space-between;align-items:center;">
-                        <div style="font-size:10px;color:#6B7280;">Generated by Postman Value Calculator &nbsp;|&nbsp; Confidential</div>
-                        <div style="font-size:10px;color:#6B7280;">postman.com</div>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(pdfContent);
-
-            const contentEl = pdfContent.firstElementChild;
-            const contentWidth = contentEl.offsetWidth;
-            const contentHeight = contentEl.offsetHeight;
-            const pxToMm = 25.4 / 96;
-            const pageW = contentWidth * pxToMm;
-            const pageH = contentHeight * pxToMm;
-
-            const opt = {
-                margin: 0,
-                filename: `Postman_BVA_${tierLabel}_${new Date().toISOString().slice(0,10)}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#111827' },
-                jsPDF: { unit: 'mm', format: [pageW, pageH], orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(contentEl).save().then(() => {
-                document.body.removeChild(pdfContent);
-                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> Export PDF`;
-                btn.disabled = false;
-            }).catch(() => {
-                document.body.removeChild(pdfContent);
-                btn.innerHTML = `Export PDF`;
-                btn.disabled = false;
-            });
+            // Use the browser's native print flow.
+            // In the print dialog, the user can choose "Save as PDF".
+            window.print();
         }
 
         // Initialize Calculator and Table on load
