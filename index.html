@@ -2532,7 +2532,7 @@
                     const items = grouped[objKey];
                     if (items.length === 0) return;
                     const meta = objectiveMeta[objKey];
-                    const groupColor = isAgentMode ? '#60A5FA' : meta.color;
+                    const groupColor = meta.color;
                     const subTotal = items.reduce((sum, i) => sum + i.val, 0);
 
                     const topItems = items.filter(i => i.rank);
