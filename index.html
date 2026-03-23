@@ -82,9 +82,9 @@
             #view-calculator > header,
             #left-panel,
             #collapse-btn,
-            #toast,
             #formulaModal,
             #feedbackModal,
+            #exportModal,
             #view-methodology,
             #view-customer-success {
                 display: none !important;
@@ -403,6 +403,41 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- EXPORT PDF MODAL                           -->
+    <!-- ========================================== -->
+    <div id="exportModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-postman" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="text-lg font-bold text-gray-900">Export PDF</h3>
+                </div>
+                <button onclick="closeExportModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-5">
+                <p class="text-sm text-gray-500">This will generate a PDF of the Executive Business Value Summary. Enter the customer name and your email for tracking.</p>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Customer Name <span class="text-postman">*</span></label>
+                    <input type="text" id="exportCustomerName" placeholder="e.g. Acme Corp" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-postman focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Your Email <span class="text-postman">*</span></label>
+                    <input type="email" id="exportUserEmail" placeholder="you@postman.com" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-postman focus:border-transparent">
+                </div>
+            </div>
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <button type="button" onclick="closeExportModal()" class="px-5 py-2.5 border border-gray-300 bg-white rounded-md text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="button" onclick="generatePDF()" class="px-5 py-2.5 bg-postman text-white rounded-md text-sm font-semibold hover:bg-postman-hover transition-colors shadow-sm">Generate PDF</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ========================================== -->
     <!-- VIEW 1: CALCULATOR                         -->
@@ -936,12 +971,6 @@
                                     </svg>
                                     Export PDF
                                 </button>
-                                <button onclick="copyToClipboard()" class="text-xs bg-postman hover:bg-postman-hover text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1 cursor-pointer" id="copyBtn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                    </svg>
-                                    Copy Output
-                                </button>
                             </div>
                         </div>
                         
@@ -996,12 +1025,6 @@
                         </div>
                     </div>
                     
-                    <div id="toast" class="opacity-0 transition-opacity duration-300 fixed bottom-5 right-5 bg-gray-900 text-white px-4 py-2 rounded shadow-lg flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Copied to clipboard!
-                    </div>
                 </div>
             </div>
         </main>
@@ -2665,30 +2688,122 @@
             `;
         }
 
-        function copyToClipboard() {
-            clearHighlight();
-            // Hide interactive elements before copying
-            const inlineEdits = document.querySelectorAll('[id^="inline-edit-"]');
-            const expandBtns = document.querySelectorAll('.expand-btn-copy-hide');
-            inlineEdits.forEach(el => el.style.display = 'none');
-
-            const node = document.getElementById('slideContent');
-            const range = document.createRange();
-            range.selectNode(node);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            try {
-                document.execCommand('copy');
-                document.getElementById('toast').classList.remove('opacity-0');
-                setTimeout(()=>document.getElementById('toast').classList.add('opacity-0'), 2000);
-            } catch(e) {}
-            window.getSelection().removeAllRanges();
+        function exportPDF() {
+            document.getElementById('exportModal').classList.remove('hidden');
         }
 
-        function exportPDF() {
-            // Use the browser's native print flow.
-            // In the print dialog, the user can choose "Save as PDF".
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+            document.getElementById('exportCustomerName').value = '';
+            document.getElementById('exportUserEmail').value = '';
+        }
+
+        document.getElementById('exportModal').addEventListener('click', e => {
+            if (e.target === document.getElementById('exportModal')) closeExportModal();
+        });
+
+        function generatePDF() {
+            const customerName = document.getElementById('exportCustomerName').value.trim();
+            const userEmail = document.getElementById('exportUserEmail').value.trim();
+
+            if (!customerName || !userEmail) {
+                alert('Please fill in both Customer Name and Your Email before generating the PDF.');
+                return;
+            }
+
+            // Collect context
+            const isAgentMode = document.getElementById('agentModeToggle').checked;
+            const modeLabel = isAgentMode ? 'Agent Mode' : 'Standard';
+            const accentColor = isAgentMode ? '#60A5FA' : '#FF6C37';
+            const tierLabel = (_selectedTier && tierProfiles[_selectedTier]) ? tierProfiles[_selectedTier].label : 'Custom';
+            const confLabel = _confidenceLevel.charAt(0).toUpperCase() + _confidenceLevel.slice(1);
+            const totalValue = document.getElementById('outTotalSavings')?.innerText || '';
+            const roiVal = document.getElementById('outROI')?.innerText || '';
+            const personaMap = { platform: 'Platform Eng.', product: 'Product Eng.', qe: 'Head of QE' };
+            const checkedPersonas = Array.from(document.querySelectorAll('input[name="persona"]:checked')).map(el => personaMap[el.value] || el.value);
+            const personasLabel = checkedPersonas.length ? checkedPersonas.join(', ') : 'All';
+
+            // Fire-and-forget tracking log
+            const scriptUrl = document.getElementById('nativeFeedbackForm').action;
+            const trackPayload = {
+                type: 'export',
+                timestamp: new Date().toISOString(),
+                customerName,
+                userEmail,
+                tier: tierLabel,
+                agentMode: isAgentMode ? 'On' : 'Off',
+                confidenceLevel: confLabel,
+                totalAnnualValue: totalValue,
+                roiMultiplier: roiVal,
+                personasSelected: personasLabel
+            };
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ payload: JSON.stringify(trackPayload) })
+            }).catch(() => {});
+
+            // Build header and footer rows
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const fileDate = now.toISOString().slice(0, 10);
+            const slideTable = document.querySelector('#slideContent table');
+
+            const headerRow = document.createElement('tr');
+            headerRow.id = 'pdf-inject-header';
+            headerRow.innerHTML = `
+                <td colspan="3" style="padding: 14px 20px 12px 20px; background-color: #111827; border-bottom: 1px solid #374151;">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width: 33%; vertical-align: middle;">
+                                <img src="https://voyager.postman.com/logo/postman-logo-icon-orange.svg" width="28" height="28" style="display:inline-block; vertical-align:middle; margin-right:8px;">
+                                <span style="color:#E5E7EB; font-size:13px; font-weight:700; vertical-align:middle;">Postman Enterprise BVA</span>
+                            </td>
+                            <td style="width: 34%; text-align:center; vertical-align:middle;">
+                                <span style="color:#9CA3AF; font-size:12px;">Prepared for: </span><span style="color:${accentColor}; font-size:13px; font-weight:700;">${customerName}</span>
+                            </td>
+                            <td style="width: 33%; text-align:right; vertical-align:middle;">
+                                <span style="color:#9CA3AF; font-size:11px;">${dateStr} &nbsp;·&nbsp; ${tierLabel} &nbsp;·&nbsp; ${modeLabel}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>`;
+            slideTable.insertBefore(headerRow, slideTable.firstChild);
+
+            const footerRow = document.createElement('tr');
+            footerRow.id = 'pdf-inject-footer';
+            footerRow.innerHTML = `
+                <td colspan="3" style="padding: 10px 20px; background-color: #111827; border-top: 1px solid #374151;">
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="color:#9CA3AF; font-size:11px;">Prepared by: ${userEmail}</td>
+                            <td style="color:#6B7280; font-size:11px; font-style:italic; text-align:right;">CONFIDENTIAL — For internal use only</td>
+                        </tr>
+                    </table>
+                </td>`;
+            slideTable.appendChild(footerRow);
+
+            // Swap page title for PDF filename
+            const originalTitle = document.title;
+            const safeName = customerName.replace(/\s+/g, '_');
+            document.title = `Postman_BVA_${safeName}_${fileDate}`;
+
+            // Close modal before printing
+            document.getElementById('exportModal').classList.add('hidden');
+
             window.print();
+
+            // Cleanup after print dialog closes
+            setTimeout(() => {
+                const h = document.getElementById('pdf-inject-header');
+                const f = document.getElementById('pdf-inject-footer');
+                if (h) h.remove();
+                if (f) f.remove();
+                document.title = originalTitle;
+                document.getElementById('exportCustomerName').value = '';
+                document.getElementById('exportUserEmail').value = '';
+            }, 500);
         }
 
         // Initialize Calculator and Table on load
