@@ -1040,7 +1040,7 @@
             <!-- Header Section -->
             <div class="text-center">
                 <h2 class="text-3xl font-extrabold text-gray-900">Complete ROI Framework, Logic, and Formula</h2>
-                <p class="mt-4 text-lg text-gray-500">A detailed breakdown of the 15 formulas and logic driving the Business Value Assessment.</p>
+                <p class="mt-4 text-lg text-gray-500">A detailed breakdown of the 16 formulas and logic driving the Business Value Assessment.</p>
             </div>
 
             <!-- Section: Global Baseline Parameters -->
@@ -1054,7 +1054,9 @@
                             <thead>
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Parameter</th>
-                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Default</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Mid-Market</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Large</th>
+                                    <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Enterprise</th>
                                     <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Logic Mapping</th>
                                 </tr>
                             </thead>
@@ -1062,27 +1064,30 @@
                                 <tr>
                                     <td class="px-4 py-3 text-sm font-medium text-gray-900">Total Developers</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">50</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">200</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">1,000</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">Scales all Productivity Metrics</td>
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 text-sm font-medium text-gray-900">Avg Hourly Cost ($)</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">$80</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">$90</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">$100</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">Blended Rate for Labor Value</td>
                                 </tr>
                                 <tr>
-                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">New Hires / Year</td>
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">New Hires per Year</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">10</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">30</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">80</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">Drives Onboarding & IT Math</td>
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 text-sm font-medium text-gray-900">Annual Releases</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">24</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">36</td>
+                                    <td class="px-4 py-3 text-sm text-gray-500">52</td>
                                     <td class="px-4 py-3 text-sm text-gray-500">Frequency of QA Regression</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-sm font-medium text-gray-900">Seat Cost</td>
-                                    <td class="px-4 py-3 text-sm text-gray-500">$588</td>
-                                    <td class="px-4 py-3 text-sm text-gray-500">Platform License Overhead ($49/mo)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1228,6 +1233,30 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Ecosystem & Growth Acceleration -->
+                <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-teal-500"></div>
+                        <h3 class="text-lg font-bold text-gray-900">Ecosystem & Growth Acceleration</h3>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border border-gray-100 rounded-lg p-4 bg-gray-50">
+                            <h4 class="font-bold text-sm text-gray-900 mb-2">Partner API Onboarding</h4>
+                            <div class="bg-white p-3 rounded border border-gray-200 mb-2 overflow-x-auto">
+                                $$Partners \times Days \times TTFC\_Reduction \times Daily\_Opp\_Cost$$
+                            </div>
+                            <p class="text-xs text-gray-600">Partner Workspaces cut integration time from months to weeks (Avenu: 3 months → 2 weeks).</p>
+                        </div>
+                        <div class="border border-gray-100 rounded-lg p-4 bg-gray-50">
+                            <h4 class="font-bold text-sm text-gray-900 mb-2">API-First Delivery Acceleration</h4>
+                            <div class="bg-white p-3 rounded border border-gray-200 mb-2 overflow-x-auto">
+                                $$Blocked \times Days \times 0.60 \times Daily\_Cost$$
+                            </div>
+                            <p class="text-xs text-gray-600">Mock servers and contract-first design eliminate 60% of cross-team API-dependency wait time.</p>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <!-- Section: Appendix (Logic Descriptions) -->
@@ -1279,6 +1308,14 @@
                             <li><strong class="text-gray-900">Ramp-Up (40%):</strong> Based on Forrester TEI benchmarks. Integrated collections allow new hires to execute their first API call on Day 1.</li>
                             <li><strong class="text-gray-900">QA FTE Efficiency (65%):</strong> Shifting manual effort to automated test suites allows for significant headcount reinvestment.</li>
                             <li><strong class="text-gray-900">Test Compression (95%):</strong> Compressing manual regression days into minutes via automated collection runners.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-postman uppercase tracking-wider mb-3 border-b pb-2">Ecosystem & Growth</h4>
+                        <ul class="space-y-3 text-sm text-gray-700">
+                            <li><strong class="text-gray-900">Partner API Onboarding (50% TTFC Reduction):</strong> Partner Workspaces provide ready-to-use collections and environments, cutting time-to-first-call by half. Based on Avenu case study: integration reduced from 3 months to 2 weeks.</li>
+                            <li><strong class="text-gray-900">API-First Delivery Acceleration (60% Wait Elimination):</strong> Mock servers and contract-first design decouple frontend and backend teams, eliminating 60% of cross-team API-dependency wait time. Based on Puppet State of DevOps dependency bottleneck benchmarks.</li>
                         </ul>
                     </div>
 
