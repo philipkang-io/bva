@@ -55,6 +55,11 @@
             background: #0265D2 !important;
         }
 
+        /* AI Boost tooltip */
+        .ai-boost-tooltip-wrapper:hover .ai-boost-tooltip {
+            opacity: 1;
+        }
+
         /* Modal Overlay Transition */
         #formulaModal {
             transition: opacity 0.2s ease-in-out;
@@ -514,6 +519,26 @@
                             <input type="checkbox" id="agentModeToggle" class="sr-only peer" checked onchange="toggleAgentMode(); calculate();">
                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-agent"></div>
                         </label>
+                    </div>
+
+                    <!-- AI Productivity Multiplier Slider (Agent Mode only) -->
+                    <div id="aiBoostSliderSection" class="mt-4 p-4 rounded-xl border border-blue-200 bg-agent-bg hidden">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-sm font-semibold text-agent">AI Productivity Multiplier</span>
+                                <div class="relative inline-block ai-boost-tooltip-wrapper">
+                                    <span class="text-xs text-blue-300 cursor-help select-none border border-blue-300 rounded-full w-4 h-4 inline-flex items-center justify-center leading-none font-bold">?</span>
+                                    <div class="ai-boost-tooltip absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 bg-gray-900 text-gray-200 text-xs rounded-lg px-3 py-2 shadow-xl pointer-events-none opacity-0 transition-opacity duration-150 z-50" style="white-space:normal;">
+                                        Default 1.35x is based on Postman internal productivity benchmarks. Adjust to match your team's expected AI adoption and efficiency gains.
+                                    </div>
+                                </div>
+                            </div>
+                            <span id="aiBoostValueDisplay" class="text-sm font-bold text-agent font-mono">1.35x</span>
+                        </div>
+                        <input type="range" id="aiBoostSlider" min="1.00" max="2.00" step="0.05" value="1.35"
+                            class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer agent-slider"
+                            oninput="updateAiBoost()">
+                        <p class="text-xs text-blue-400 mt-2">Adjusts the AI efficiency boost applied to developer productivity savings.</p>
                     </div>
 
                     <!-- Confidence Level (Model sensitivity) -->
@@ -1442,6 +1467,10 @@
             document.getElementById('costDelayLabel').innerText = isAgent ? "✨ Cost of Delay (AI Boosted)" : "Cost of Delay (Revenue Impact)";
             document.getElementById('qaFteLabel').innerText = isAgent ? "✨ QA Engineer FTE Efficiencies (AI Boosted)" : "QA Engineer FTE Efficiencies";
             
+            // Show/hide AI boost slider
+            const sliderSection = document.getElementById('aiBoostSliderSection');
+            if (sliderSection) sliderSection.classList.toggle('hidden', !isAgent);
+
             // Update inline subtexts
             document.getElementById('prodBoostLabel').classList.toggle('hidden', !isAgent);
             document.getElementById('apiDesignBoostLabel').innerText = isAgent ? "45% reduction" : "25% reduction";
@@ -1984,13 +2013,33 @@
             const f = factors.find(x => x.key === factorKey);
             if (!f) return 0;
             const excluded = (confidenceExcludedFactorKeys[formulaKey] && confidenceExcludedFactorKeys[formulaKey].includes(factorKey)) || f.type === 'rate';
-            const base = (isAgentMode && f.defaultAgent != null) ? f.defaultAgent : f.default;
+            // For agentMult in productivity, read from the slider when Agent Mode is on
+            let base;
+            if (formulaKey === 'productivity' && factorKey === 'agentMult' && isAgentMode) {
+                const sliderEl = document.getElementById('aiBoostSlider');
+                const sliderVal = sliderEl ? parseFloat(sliderEl.value) : NaN;
+                base = (!isNaN(sliderVal) && sliderVal >= 1) ? sliderVal : (f.defaultAgent ?? 1.35);
+            } else {
+                base = (isAgentMode && f.defaultAgent != null) ? f.defaultAgent : f.default;
+            }
             if (excluded) return base;
             const mult = _confidenceLevel === 'conservative' ? 0.85 : _confidenceLevel === 'aggressive' ? 1.15 : 1;
             let value = base * mult;
             // If the underlying factor is a rate/share (base <= 1), cap at 1.0
             if (base <= 1) value = Math.min(1, value);
             return Math.round(value * 100) / 100;
+        }
+
+        function updateAiBoost() {
+            const slider = document.getElementById('aiBoostSlider');
+            if (!slider) return;
+            const val = parseFloat(slider.value);
+            const display = document.getElementById('aiBoostValueDisplay');
+            if (display) display.textContent = val.toFixed(2) + 'x';
+            // Update the prodBoostLabel badge text to reflect slider value
+            const badge = document.getElementById('prodBoostLabel');
+            if (badge) badge.textContent = `✨ AI Multiplier (${val.toFixed(2)}x) Active`;
+            calculate();
         }
 
         function setConfidence(level) {
@@ -2534,7 +2583,9 @@
             if(valShadow > 0) impactItems.push({label: "✨ Shadow API Discovery", val: valShadow, sub: "Eliminating duplicate API development from undiscovered APIs", type: 'shadowApi', isAgent: true});
             if(valTestGen > 0) impactItems.push({label: "✨ AI Test Authoring", val: valTestGen, sub: "Automated test suite generation", type: 'testAuthoring', isAgent: true});
             if(valCompliance > 0) impactItems.push({label: "✨ Compliance Automation", val: valCompliance, sub: "Automated test-to-control mapping", type: 'compliance', isAgent: true});
-            if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity', agentBoost: isAgentMode ? {from: '1.0x', to: '1.35x'} : null});
+            const _aiBoostSliderEl = document.getElementById('aiBoostSlider');
+            const _aiBoostVal = (isAgentMode && _aiBoostSliderEl) ? parseFloat(_aiBoostSliderEl.value) : 1.35;
+            if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity', agentBoost: isAgentMode ? {from: '1.0x', to: `${_aiBoostVal.toFixed(2)}x`} : null});
             if(valApiDes > 0) impactItems.push({label: "API Design Acceleration", val: valApiDes, sub: "Faster design and early testing", type: 'apiDesign', agentBoost: isAgentMode ? {from: '25%', to: '45%'} : null});
             if(valOnb > 0) impactItems.push({label: "Onboarding Velocity", val: valOnb, sub: "Reduced ramp time by 40%", type: 'onboarding'});
             if(valDup > 0) impactItems.push({label: "Avoided Rework", val: valDup, sub: "Eliminating redundant API builds", type: 'rework'});
