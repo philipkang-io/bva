@@ -90,6 +90,7 @@
             #formulaModal,
             #feedbackModal,
             #exportModal,
+            #rhs-globals-bar,
             #view-methodology,
             #view-customer-success {
                 display: none !important;
@@ -579,28 +580,37 @@
                     <!-- Hourly Rate (always visible) -->
                     <div id="global-rate" class="input-section-highlightable p-3 -mx-3 rounded-xl relative mb-4" onmouseenter="setHighlightInput('global-rate')" onmouseleave="clearHighlight()">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Avg Hourly Cost ($)</label>
-                        <input type="number" id="hourlyRate" value="80" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                        <input type="number" id="hourlyRate" value="80" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="syncGlobals('lhs')">
+                    </div>
+
+                    <!-- LHS Compact Summary (shown when detailed inputs are collapsed) -->
+                    <div id="lhs-globals-summary" class="hidden mt-3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between gap-2">
+                        <span id="lhs-summary-text" class="text-xs text-gray-600 font-medium truncate">50 devs · $80/hr · 10 hires · 24 releases</span>
+                        <button onclick="expandLhsGlobals()" class="flex-shrink-0 text-xs text-postman hover:underline font-medium flex items-center gap-1 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                            Edit
+                        </button>
                     </div>
 
                     <!-- Quick/Detailed Toggle -->
-                    <button id="detailToggleBtn" onclick="toggleDetailMode()" class="w-full text-sm font-medium text-gray-600 hover:text-postman bg-gray-50 hover:bg-postman-bg border border-gray-200 rounded-lg px-4 py-2.5 transition-all cursor-pointer">
+                    <button id="detailToggleBtn" onclick="toggleDetailMode()" class="w-full text-sm font-medium text-gray-600 hover:text-postman bg-gray-50 hover:bg-postman-bg border border-gray-200 rounded-lg px-4 py-2.5 transition-all cursor-pointer mt-3">
                         ⚙ Switch to Detailed Mode
                     </button>
 
                     <!-- Detailed-only org metrics -->
-                    <div class="detail-mode-section hidden mt-5">
+                    <div id="lhs-globals-detail" class="detail-mode-section hidden mt-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div id="global-devs" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-devs')" onmouseleave="clearHighlight()">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Total Developers</label>
-                                <input type="number" id="numDevs" value="50" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                                <input type="number" id="numDevs" value="50" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="syncGlobals('lhs')">
                             </div>
                             <div id="global-hires" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-hires')" onmouseleave="clearHighlight()">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">New Hires per Year</label>
-                                <input type="number" id="numNewHires" value="10" min="0" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                                <input type="number" id="numNewHires" value="10" min="0" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="syncGlobals('lhs')">
                             </div>
                             <div id="global-releases" class="input-section-highlightable p-3 -mx-3 rounded-xl relative" onmouseenter="setHighlightInput('global-releases')" onmouseleave="clearHighlight()">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Annual Releases</label>
-                                <input type="number" id="annualReleases" value="24" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="calculate()">
+                                <input type="number" id="annualReleases" value="24" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="syncGlobals('lhs')">
                             </div>
                         </div>
                     </div>
@@ -983,6 +993,54 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
+                    <!-- Global Assumptions Bar (RHS) -->
+                    <div id="rhs-globals-bar" class="bg-white border border-gray-200 rounded-xl shadow-sm mb-3 overflow-hidden">
+                        <!-- Header row (always visible, click to toggle) -->
+                        <div id="rhs-globals-header" onclick="toggleRhsGlobals()" class="flex items-center gap-2 px-4 py-2.5 cursor-pointer select-none hover:bg-gray-50 transition-colors">
+                            <span class="text-gray-400 text-sm">📊</span>
+                            <span class="text-xs font-semibold text-gray-600 uppercase tracking-wide">Global Assumptions</span>
+                            <!-- Collapsed summary (hidden when expanded) -->
+                            <span id="rhs-globals-collapsed-summary" class="hidden text-sm text-gray-500 ml-1 truncate"></span>
+                            <span class="ml-auto text-gray-400 text-xs transition-transform duration-200" id="rhs-globals-chevron">▼</span>
+                        </div>
+                        <!-- Expandable body -->
+                        <div id="rhs-globals-body" style="transition: max-height 200ms ease, opacity 200ms ease; max-height: 200px; opacity: 1; overflow: hidden;">
+                            <div class="px-4 pb-3 pt-1">
+                                <p class="text-xs text-gray-400 mb-2">Edit here or on the left panel</p>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Avg Hourly Cost ($)</label>
+                                        <input type="number" id="rhs-hourlyRate" value="80" min="1"
+                                            class="w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
+                                            oninput="syncGlobals('rhs')">
+                                        <p class="text-xs text-gray-400 mt-0.5">10 formulas</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Total Developers</label>
+                                        <input type="number" id="rhs-numDevs" value="50" min="1"
+                                            class="w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
+                                            oninput="syncGlobals('rhs')">
+                                        <p class="text-xs text-gray-400 mt-0.5">1 formula</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">New Hires / Yr</label>
+                                        <input type="number" id="rhs-numNewHires" value="10" min="0"
+                                            class="w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
+                                            oninput="syncGlobals('rhs')">
+                                        <p class="text-xs text-gray-400 mt-0.5">2 formulas</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Releases / Yr</label>
+                                        <input type="number" id="rhs-annualReleases" value="24" min="1"
+                                            class="w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
+                                            oninput="syncGlobals('rhs')">
+                                        <p class="text-xs text-gray-400 mt-0.5">1 formula</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="bg-gray-900 text-white rounded-xl shadow-2xl overflow-hidden transition-all duration-500" id="executiveSummaryBox">
                         <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-800 transition-colors duration-500" id="executiveSummaryHeader">
                             <h3 class="font-semibold text-base flex items-center gap-2">
@@ -1704,6 +1762,79 @@
             regHours: { display: 'regHoursDisplay', suffix: ' hrs' }
         };
 
+        // ─── Global sync helpers ──────────────────────────────────────────────
+        const _globalSyncMap = [
+            { lhs: 'hourlyRate',     rhs: 'rhs-hourlyRate'    },
+            { lhs: 'numDevs',        rhs: 'rhs-numDevs'       },
+            { lhs: 'numNewHires',    rhs: 'rhs-numNewHires'   },
+            { lhs: 'annualReleases', rhs: 'rhs-annualReleases'},
+        ];
+
+        let _rhsGlobalsCollapsed = false;
+
+        function updateLhsSummary() {
+            const devs  = document.getElementById('numDevs')?.value        || '50';
+            const rate  = document.getElementById('hourlyRate')?.value     || '80';
+            const hires = document.getElementById('numNewHires')?.value    || '10';
+            const rels  = document.getElementById('annualReleases')?.value || '24';
+            const lhsEl = document.getElementById('lhs-summary-text');
+            if (lhsEl) lhsEl.textContent = `${devs} devs · $${rate}/hr · ${hires} hires · ${rels} releases`;
+            // Also update the RHS collapsed summary line
+            const rhsSummaryEl = document.getElementById('rhs-globals-collapsed-summary');
+            if (rhsSummaryEl) rhsSummaryEl.textContent = `$${rate}/hr · ${devs} devs · ${hires} hires · ${rels} releases`;
+        }
+
+        function toggleRhsGlobals() {
+            _rhsGlobalsCollapsed = !_rhsGlobalsCollapsed;
+            const body    = document.getElementById('rhs-globals-body');
+            const summary = document.getElementById('rhs-globals-collapsed-summary');
+            const chevron = document.getElementById('rhs-globals-chevron');
+            const hint    = body?.querySelector('p.text-xs');
+            if (_rhsGlobalsCollapsed) {
+                body.style.maxHeight = '0';
+                body.style.opacity   = '0';
+                if (summary) summary.classList.remove('hidden');
+                if (chevron) chevron.textContent = '▲';
+            } else {
+                body.style.maxHeight = '200px';
+                body.style.opacity   = '1';
+                if (summary) summary.classList.add('hidden');
+                if (chevron) chevron.textContent = '▼';
+            }
+        }
+
+        function syncGlobals(source) {
+            _globalSyncMap.forEach(({ lhs, rhs }) => {
+                const lhsEl = document.getElementById(lhs);
+                const rhsEl = document.getElementById(rhs);
+                if (!lhsEl || !rhsEl) return;
+                if (source === 'rhs') {
+                    lhsEl.value = rhsEl.value;
+                } else {
+                    rhsEl.value = lhsEl.value;
+                }
+            });
+            updateLhsSummary();
+            calculate();
+        }
+
+        function expandLhsGlobals() {
+            // Sync RHS → LHS first, then show the LHS detail inputs
+            _globalSyncMap.forEach(({ lhs, rhs }) => {
+                const lhsEl = document.getElementById(lhs);
+                const rhsEl = document.getElementById(rhs);
+                if (lhsEl && rhsEl) lhsEl.value = rhsEl.value;
+            });
+            // Show the detailed section, hide compact summary
+            const detailDiv = document.getElementById('lhs-globals-detail');
+            const summaryDiv = document.getElementById('lhs-globals-summary');
+            if (detailDiv)  detailDiv.classList.remove('hidden');
+            if (summaryDiv) summaryDiv.classList.add('hidden');
+            // Also force Detailed Mode on if it was in quick mode
+            if (_isQuickMode) toggleDetailMode();
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         function applyTier(tierKey) {
             _selectedTier = tierKey;
             const profile = tierProfiles[tierKey];
@@ -1726,7 +1857,8 @@
                     if (dispEl) dispEl.innerText = val + rd.suffix;
                 }
             }
-            calculate();
+            // Sync new tier globals to RHS bar and update summary
+            syncGlobals('lhs');
         }
 
         function toggleDetailMode() {
@@ -1738,6 +1870,18 @@
             if (btn) {
                 btn.textContent = _isQuickMode ? '⚙ Switch to Detailed Mode' : '⚡ Switch to Quick Mode';
             }
+
+            // When switching to Quick mode, collapse the LHS detail inputs and show summary
+            const summaryDiv  = document.getElementById('lhs-globals-summary');
+            const detailDiv   = document.getElementById('lhs-globals-detail');
+            if (_isQuickMode) {
+                if (summaryDiv)  summaryDiv.classList.remove('hidden');
+                if (detailDiv)   detailDiv.classList.add('hidden');
+            } else {
+                if (summaryDiv)  summaryDiv.classList.add('hidden');
+                if (detailDiv)   detailDiv.classList.remove('hidden');
+            }
+            updateLhsSummary();
 
             if (_isQuickMode && _selectedTier) {
                 applyTier(_selectedTier);
@@ -2958,6 +3102,7 @@
         // Initialize Calculator and Table on load
         window.onload = () => {
             toggleAgentMode(); // Set initial UI state
+            syncGlobals('lhs'); // Populate RHS bar and summary from LHS defaults
             calculate();
             populateFeedbackTable();
         };
