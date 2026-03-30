@@ -2762,7 +2762,7 @@
             // NEW AGENT MODE FIELDS MATH
             const undiscoveredApis = parseInt(document.getElementById('undiscoveredApis').value) || 0;
             const hrsToRebuild = parseFloat(document.getElementById('hrsToRebuild').value) || 0;
-            const shadowDupRate = getEffectiveFactor('shadowApi', 'duplicationRate', true);
+            const shadowDupRate = (parseFloat(document.getElementById('duplicationRate').value) || 0) / 100;
             const valShadow = (isAgentMode && p.shadow) ? undiscoveredApis * shadowDupRate * hrsToRebuild * rate : 0;
 
             const apisNeedTests = parseInt(document.getElementById('apisNeedTests').value) || 0;
