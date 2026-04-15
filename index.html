@@ -55,6 +55,22 @@
             background: #0265D2 !important;
         }
 
+        /* Hide number input spinners on RHS realization fields */
+        #rhs-realizationY1::-webkit-inner-spin-button,
+        #rhs-realizationY1::-webkit-outer-spin-button,
+        #rhs-realizationY2::-webkit-inner-spin-button,
+        #rhs-realizationY2::-webkit-outer-spin-button,
+        #rhs-realizationY3::-webkit-inner-spin-button,
+        #rhs-realizationY3::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #rhs-realizationY1,
+        #rhs-realizationY2,
+        #rhs-realizationY3 {
+            -moz-appearance: textfield;
+        }
+
         /* AI Boost tooltip */
         .ai-boost-tooltip-wrapper:hover .ai-boost-tooltip {
             opacity: 1;
@@ -96,7 +112,8 @@
             #view-customer-success {
                 display: none !important;
             }
-            #adoptionImpactRow {
+            #adoptionImpactRow,
+            #yearlyBreakdownRow {
                 display: none !important;
             }
             #roiSummaryBody {
@@ -658,6 +675,34 @@
                         <input type="range" id="adoptionPct" min="0" max="100" step="5" value="30" class="w-full" oninput="syncAdoption('lhs')">
                     </div>
 
+                    <div class="p-4 rounded-xl border border-gray-200 bg-gray-50/50 mt-4">
+                        <div class="mb-3">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Value Realization Timeline</label>
+                            <p class="text-xs text-gray-500">How value is distributed over 3 years. Must sum to 100%. Default: 50/30/20.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Year 1 (%)</label>
+                                <input type="number" id="realizationY1" value="50" min="0" max="100" step="5"
+                                    class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman text-center"
+                                    oninput="syncRealization('lhs')">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Year 2 (%)</label>
+                                <input type="number" id="realizationY2" value="30" min="0" max="100" step="5"
+                                    class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman text-center"
+                                    oninput="syncRealization('lhs')">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-xs font-medium text-gray-500 mb-1">Year 3 (%)</label>
+                                <input type="number" id="realizationY3" value="20" min="0" max="100" step="5"
+                                    class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman text-center"
+                                    oninput="syncRealization('lhs')">
+                            </div>
+                        </div>
+                        <p id="realizationValidation" class="text-xs mt-2 text-gray-400">Total: 100%</p>
+                    </div>
+
                     <!-- Hidden Seat Cost Input (Default 588) -->
                     <input type="hidden" id="seatCost" value="588">
                 </section>
@@ -692,6 +737,9 @@
                                     </div>
                                     <input type="range" id="prodHours" min="0" max="10" step="0.5" value="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" oninput="updateRangeDisplay('prodHours', 'prodHoursDisplay', ' hrs'); calculate()">
                                     <p class="text-xs text-gray-500 mt-1">Efficiency Baseline <span id="prodBoostLabel" class="hidden text-agent font-semibold ml-1">✨ AI Multiplier (1.35x) Active</span></p>
+                                    <p id="prodHoursGuardrail" class="text-xs text-amber-600 mt-1 hidden">
+                                        ⚠️ Exclude manual testing hours if QA Automation Savings is also enabled — avoid double-counting.
+                                    </p>
                                 </div>
                                 <hr class="border-gray-100 my-2 mx-2">
                             </div>
@@ -741,10 +789,10 @@
                                 <hr class="border-gray-100 my-2 mx-2">
                             </div>
 
-                            <!-- QA Engineer FTE Efficiencies -->
+                            <!-- QA Automation Savings -->
                             <div id="section-qa-fte-wrapper" class="input-section hidden-section p-2 -mx-2" data-audience="qe">
                                 <div id="section-qa-fte" class="input-section-highlightable p-3 rounded-xl relative" onmouseenter="setHighlightInput('section-qa-fte')" onmouseleave="clearHighlight()">
-                                    <h3 id="qaFteLabel" class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Engineer FTE Efficiencies</h3>
+                                    <h3 id="qaFteLabel" class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">QA Automation Savings</h3>
                                     <div class="grid grid-cols-2 gap-4 mb-2">
                                         <div>
                                             <label class="text-xs text-gray-600 block mb-1">Total QA Engineers</label>
@@ -1050,7 +1098,7 @@
                         <div id="rhs-globals-body" style="transition: max-height 200ms ease, opacity 200ms ease; max-height: 0; opacity: 0; overflow: hidden;">
                             <div class="px-4 pb-3 pt-1">
                                 <p class="text-xs text-gray-400 mb-2">Edit here or on the left panel</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                                <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
                                     <div>
                                         <label class="block text-xs font-medium text-gray-500 mb-1">Avg Hourly Cost ($)</label>
                                         <input type="number" id="rhs-hourlyRate" value="80" min="1"
@@ -1085,6 +1133,23 @@
                                             class="w-full text-sm border-2 border-postman rounded-md px-2 py-1.5 bg-postman-bg text-postman font-semibold focus:ring-postman"
                                             oninput="syncAdoption('rhs')">
                                         <p class="text-xs text-postman mt-0.5 font-medium">Sensitivity</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1">Realization (%)</label>
+                                        <div class="flex items-center gap-0.5">
+                                            <input type="number" id="rhs-realizationY1" value="50" min="0" max="100" step="5"
+                                                class="w-10 text-xs border border-gray-200 rounded px-1 py-1.5 text-center focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
+                                                oninput="syncRealization('rhs')" title="Year 1 %">
+                                            <span class="text-gray-300 text-xs">/</span>
+                                            <input type="number" id="rhs-realizationY2" value="30" min="0" max="100" step="5"
+                                                class="w-10 text-xs border border-gray-200 rounded px-1 py-1.5 text-center focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
+                                                oninput="syncRealization('rhs')" title="Year 2 %">
+                                            <span class="text-gray-300 text-xs">/</span>
+                                            <input type="number" id="rhs-realizationY3" value="20" min="0" max="100" step="5"
+                                                class="w-10 text-xs border border-gray-200 rounded px-1 py-1.5 text-center focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
+                                                oninput="syncRealization('rhs')" title="Year 3 %">
+                                        </div>
+                                        <p class="text-xs text-gray-400 mt-0.5">Y1 / Y2 / Y3</p>
                                     </div>
                                 </div>
                             </div>
@@ -1166,13 +1231,50 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr id="yearlyBreakdownRow">
+                                        <td colspan="3" style="padding: 0 30px 30px 30px;">
+                                            <div style="background-color: #1F2937; border-radius: 8px; border: 1px solid #4B5563; overflow: hidden;">
+                                                <div onclick="toggleYearlyBreakdown()" style="padding: 16px 20px 12px; border-bottom: 1px solid #374151; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background-color 0.2s;" onmouseenter="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseleave="this.style.backgroundColor='transparent'">
+                                                    <h4 style="color: #D1D5DB; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                                        4. Multi-Year Value Realization
+                                                        <span id="yearlyBreakdownSummary" style="font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: normal; display: none;"></span>
+                                                    </h4>
+                                                    <svg id="yearlyBreakdownChevron" style="width: 14px; height: 14px; color: #6B7280; transition: transform 0.3s; transform: rotate(180deg);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                                                    </svg>
+                                                </div>
+                                                <div id="yearlyBreakdownPanel" style="max-height: 700px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease;">
+                                                    <div style="padding: 0 20px 20px;">
+                                                        <div style="padding: 16px 0 12px; color: #9CA3AF; font-size: 12px;">
+                                                            How the selected adoption-adjusted annual value is realized across the first 3 years.
+                                                        </div>
+                                                        <div style="padding: 0 0 4px;">
+                                                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                                                                <thead>
+                                                                    <tr style="color: #6B7280; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #374151;">
+                                                                        <th style="text-align: left; padding: 6px 12px; font-weight: 600; width: 18%;">Year</th>
+                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 18%;">Value</th>
+                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 18%;">Cost</th>
+                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 14%;">ROI</th>
+                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 32%;">Cumulative Value</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="yearlyBreakdownBody"></tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div id="yearlyBreakdownChart" style="padding-top: 12px;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <tr id="adoptionImpactRow">
                                         <td colspan="3" style="padding: 0 30px 30px 30px;">
                                             <div style="background-color: #1F2937; border-radius: 8px; border: 1px solid #4B5563; overflow: hidden;">
 
                                                 <div onclick="toggleAdoptionImpact()" style="padding: 16px 20px 12px; border-bottom: 1px solid #374151; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background-color 0.2s;" onmouseenter="this.style.backgroundColor='rgba(255,255,255,0.03)'" onmouseleave="this.style.backgroundColor='transparent'">
                                                     <h4 style="color: #D1D5DB; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
-                                                        4. Adoption Impact
+                                                        5. Adoption Impact
                                                         <span id="adoptionCollapsedSummary" style="font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: normal;"></span>
                                                     </h4>
                                                     <span style="display: flex; align-items: center; gap: 10px;">
@@ -1322,6 +1424,84 @@
                 </div>
             </section>
 
+            <!-- Section: Output Model — Adoption & Realization -->
+            <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-5 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-bold text-gray-900">Output Model: Adoption % &amp; Value Realization</h3>
+                    <p class="text-sm text-gray-500 mt-1">How the calculator adjusts raw formula outputs into defensible, real-world projections.</p>
+                </div>
+                <div class="p-6 space-y-8">
+
+                    <!-- Adoption % Sensitivity -->
+                    <div>
+                        <h4 class="text-sm font-bold text-postman uppercase tracking-wider mb-3 border-b pb-2">Adoption % Sensitivity</h4>
+                        <p class="text-sm text-gray-700 mb-3">
+                            The 16 formulas calculate a <strong>full annual value</strong> assuming 100% of licensed developers are actively using Postman. In practice, adoption ramps over time. The Adoption % input scales the headline value to reflect realistic utilization.
+                        </p>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-3 overflow-x-auto">
+                            $$\text{Adoption-Adjusted Value} = \text{Annual Value} \times \frac{\text{Adoption \%}}{100}$$
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li><strong class="text-gray-900">Default: 30%</strong> — Based on observed utilization data: typical adoption is ~30% at 9+ months on mature accounts (Markus Siebeneick, "BVA ROI Reality Check — 9-Month Analysis").</li>
+                            <li><strong class="text-gray-900">Supporting data points:</strong> Adobe: 50% power / 64% casual / 22% at-risk. Exact Sciences: only 14% power users. Visa renewal: contention over reducing 4,000 → 3,500 licenses.</li>
+                            <li><strong class="text-gray-900">Sensitivity table:</strong> Shows projected value at 10% through 65% adoption. The headline "Every +10% adoption = ~$X additional annual value" scales linearly with headcount ($1,740 per developer per 10% step at $80/hr blended rate).</li>
+                            <li><strong class="text-gray-900">SE guidance:</strong> Estimate adoption from a single discovery question: <em>"How many of your developers use Postman daily?"</em> Use that percentage directly.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Multi-Year Value Realization Curve -->
+                    <div>
+                        <h4 class="text-sm font-bold text-postman uppercase tracking-wider mb-3 border-b pb-2">Multi-Year Value Realization Curve</h4>
+                        <p class="text-sm text-gray-700 mb-3">
+                            Not all value is realized in Year 1. The realization curve distributes the adoption-adjusted annual value across a 3-year period to reflect real deployment timelines — onboarding, enablement, and organizational change management take time.
+                        </p>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-3 overflow-x-auto">
+                            $$\text{Year}_N \text{ Value} = \text{Adoption-Adjusted Annual Value} \times \text{Realization \%}_N$$
+                            <br>
+                            $$\text{3-Year Total} = \text{Year 1} + \text{Year 2} + \text{Year 3}$$
+                        </div>
+                        <div class="overflow-x-auto mb-3">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Year</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Default %</th>
+                                        <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Rationale</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white">
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium text-gray-900">Year 1</td>
+                                        <td class="px-4 py-3 text-postman font-bold">50%</td>
+                                        <td class="px-4 py-3 text-gray-600">Rollout, onboarding, initial enablement. Teams are ramping — not all features are adopted yet.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium text-gray-900">Year 2</td>
+                                        <td class="px-4 py-3 text-postman font-bold">30%</td>
+                                        <td class="px-4 py-3 text-gray-600">Expansion and deepening. CI/CD integration, governance rules, additional teams onboarded.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium text-gray-900">Year 3</td>
+                                        <td class="px-4 py-3 text-postman font-bold">20%</td>
+                                        <td class="px-4 py-3 text-gray-600">Optimization. Mature usage, full feature adoption, organizational habits established.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li><strong class="text-gray-900">Editable by SE:</strong> Percentages must sum to 100%. Adjust per account based on customer maturity, existing Postman usage, and deployment timeline.</li>
+                            <li><strong class="text-gray-900">Composition with Adoption %:</strong> Adoption % is applied first (scales raw annual value), then the realization curve distributes that adoption-adjusted value across 3 years. Example: 200 devs, 30% adoption, 50/30/20 curve → Year 1 value is ~$639K (vs. $2.4M raw annual).</li>
+                            <li><strong class="text-gray-900">Not shown in PDF export:</strong> The realization curve is an internal SE credibility tool for live conversations. The customer-facing PDF shows adoption-adjusted annual value only.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-4 bg-postman-bg text-postman rounded-lg text-sm border border-[#ffdbcc]">
+                        <span class="font-bold">Methodology Note:</span> Both Adoption % and the Realization Curve are presentation-layer adjustments. They do not modify the underlying 16 formulas — they scale the output to reflect real-world conditions. The raw formula logic remains independently auditable.
+                    </div>
+
+                </div>
+            </section>
+
             <!-- Formulas Grid -->
             <div class="grid grid-cols-1 gap-8">
                 <!-- Platform Engineering -->
@@ -1416,7 +1596,7 @@
                             <p class="text-xs text-gray-600">Collections speed up developer ramp-up by 40%.</p>
                         </div>
                         <div class="border border-gray-100 rounded-lg p-4 bg-gray-50">
-                            <h4 class="font-bold text-sm text-gray-900 mb-2">Avoided Rework</h4>
+                            <h4 class="font-bold text-sm text-gray-900 mb-2">API Discovery and Reuse Savings</h4>
                             <div class="bg-white p-3 rounded border border-gray-200 mb-2 overflow-x-auto">
                                 $$Proj \times 3Devs \times 3Mo \times Rate$$
                             </div>
@@ -1530,7 +1710,7 @@
                         <h4 class="text-sm font-bold text-postman uppercase tracking-wider mb-3 border-b pb-2">Scaling & QE Logic</h4>
                         <ul class="space-y-3 text-sm text-gray-700">
                             <li><strong class="text-gray-900">Ramp-Up (40%):</strong> Based on Forrester TEI benchmarks. Integrated collections allow new hires to execute their first API call on Day 1.</li>
-                            <li><strong class="text-gray-900">QA FTE Efficiency (65%):</strong> Shifting manual effort to automated test suites allows for significant headcount reinvestment.</li>
+                            <li><strong class="text-gray-900">QA Automation Savings (65%):</strong> Shifting manual effort to automated test suites reduces QA cycle time and cost.</li>
                             <li><strong class="text-gray-900">Test Compression (95%):</strong> Compressing manual regression days into minutes via automated collection runners.</li>
                         </ul>
                     </div>
@@ -1593,7 +1773,7 @@
                                         <td class="px-5 py-3 text-center font-bold" style="color:#2563EB;">60% resolution rate</td>
                                     </tr>
                                     <tr style="background:rgba(239,246,255,0.5);">
-                                        <td class="px-5 py-3 font-medium text-gray-800">QA FTE Efficiencies</td>
+                                        <td class="px-5 py-3 font-medium text-gray-800">QA Automation Savings</td>
                                         <td class="px-5 py-3 text-center text-gray-500">65% automation</td>
                                         <td class="px-5 py-3 text-center font-bold" style="color:#2563EB;">80% automation</td>
                                     </tr>
@@ -1755,7 +1935,7 @@
             document.getElementById('productivityLabel').innerText = isAgent ? "Hours saved per week (Boosted by AI)" : "Hours saved per week (env setup, debugging)";
             document.getElementById('apiDesignLabel').innerText = isAgent ? "✨ API Design Acceleration (AI Boosted)" : "API Design Acceleration";
             document.getElementById('costDelayLabel').innerText = isAgent ? "✨ Cost of Delay (AI Boosted)" : "Cost of Delay (Revenue Impact)";
-            document.getElementById('qaFteLabel').innerText = isAgent ? "✨ QA Engineer FTE Efficiencies (AI Boosted)" : "QA Engineer FTE Efficiencies";
+            document.getElementById('qaFteLabel').innerText = isAgent ? "✨ QA Automation Savings (AI Boosted)" : "QA Automation Savings";
             
             // Show/hide AI boost slider
             const sliderSection = document.getElementById('aiBoostSliderSection');
@@ -1931,7 +2111,7 @@
                 if (summary) summary.classList.remove('hidden');
                 if (chevron) chevron.textContent = '▲';
             } else {
-                body.style.maxHeight = '200px';
+                body.style.maxHeight = '320px';
                 body.style.opacity   = '1';
                 if (summary) summary.classList.add('hidden');
                 if (chevron) chevron.textContent = '▼';
@@ -1966,6 +2146,41 @@
             if (displayEl) displayEl.textContent = lhsEl.value + '%';
             updateLhsSummary();
             calculate();
+        }
+
+        function syncRealization(source = 'lhs') {
+            const pairs = [
+                { lhs: 'realizationY1', rhs: 'rhs-realizationY1' },
+                { lhs: 'realizationY2', rhs: 'rhs-realizationY2' },
+                { lhs: 'realizationY3', rhs: 'rhs-realizationY3' }
+            ];
+
+            pairs.forEach(({ lhs, rhs }) => {
+                const lhsEl = document.getElementById(lhs);
+                const rhsEl = document.getElementById(rhs);
+                if (!lhsEl || !rhsEl) return;
+                if (source === 'rhs') {
+                    lhsEl.value = rhsEl.value;
+                } else if (source === 'lhs') {
+                    rhsEl.value = lhsEl.value;
+                }
+            });
+
+            const y1 = parseInt(document.getElementById('realizationY1')?.value) || 0;
+            const y2 = parseInt(document.getElementById('realizationY2')?.value) || 0;
+            const y3 = parseInt(document.getElementById('realizationY3')?.value) || 0;
+            const total = y1 + y2 + y3;
+            const validationEl = document.getElementById('realizationValidation');
+            if (validationEl) {
+                if (total === 100) {
+                    validationEl.textContent = `Total: ${total}%`;
+                    validationEl.className = 'text-xs mt-2 text-green-600';
+                } else {
+                    validationEl.textContent = `Total: ${total}% (must equal 100%)`;
+                    validationEl.className = 'text-xs mt-2 text-red-500 font-medium';
+                }
+            }
+            recalculate();
         }
 
         function recalculate() {
@@ -2006,7 +2221,7 @@
             pushField('aiBoostSlider', readValue('aiBoostSlider'));
 
             lines.push('# --- Global Assumptions ---');
-            ['hourlyRate', 'numDevs', 'numNewHires', 'annualReleases', 'adoptionPct'].forEach(id => {
+            ['hourlyRate', 'numDevs', 'numNewHires', 'annualReleases', 'adoptionPct', 'realizationY1', 'realizationY2', 'realizationY3'].forEach(id => {
                 pushField(id, readValue(id));
             });
 
@@ -2145,7 +2360,7 @@
                     'persona_platform', 'persona_product', 'persona_qe',
                     'agentModeToggle',
                     'companyTier',
-                    'hourlyRate', 'numDevs', 'numNewHires', 'annualReleases', 'adoptionPct',
+                    'hourlyRate', 'numDevs', 'numNewHires', 'annualReleases', 'adoptionPct', 'realizationY1', 'realizationY2', 'realizationY3',
                     'confidenceLevel',
                     'addonAsa', 'addonSupport',
                     'aiBoostSlider',
@@ -2275,6 +2490,28 @@
             } else {
                 body.style.maxHeight = '0';
                 body.style.opacity = '0';
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+                if (summary) summary.style.display = 'inline';
+            }
+        }
+
+        let _yearlyBreakdownExpanded = true;
+
+        function toggleYearlyBreakdown() {
+            _yearlyBreakdownExpanded = !_yearlyBreakdownExpanded;
+            const panel = document.getElementById('yearlyBreakdownPanel');
+            const chevron = document.getElementById('yearlyBreakdownChevron');
+            const summary = document.getElementById('yearlyBreakdownSummary');
+            if (!panel) return;
+
+            if (_yearlyBreakdownExpanded) {
+                panel.style.maxHeight = '700px';
+                panel.style.opacity = '1';
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+                if (summary) summary.style.display = 'none';
+            } else {
+                panel.style.maxHeight = '0';
+                panel.style.opacity = '0';
                 if (chevron) chevron.style.transform = 'rotate(0deg)';
                 if (summary) summary.style.display = 'inline';
             }
@@ -2483,7 +2720,7 @@
                 )
             },
             rework: {
-                title: "Avoided Rework",
+                title: "API Discovery and Reuse Savings",
                 formula: "Duplicate Projects × 3 Devs × 3 Months × 160hrs × Rate",
                 desc: formulaDesc(
                     'Postman internal — "Private API Network makes APIs easily discoverable and promotes reuse, directly reducing redundant development."',
@@ -2533,7 +2770,7 @@
                 )
             },
             qaFte: {
-                title: "QA Engineer FTE Efficiencies",
+                title: "QA Automation Savings",
                 formula: "QA Engineers × Annual Salary × Efficiency gain × Year 1 capture",
                 formulaNoAgent: "QA Engineers × Annual Salary × Efficiency gain × Year 1 capture",
                 desc: formulaDesc(
@@ -3078,6 +3315,59 @@
             }
         }
 
+        function renderYearlyBreakdown(y1Val, y2Val, y3Val, total3Y, annualCost, cost3Y, roi3Y, isAgentMode) {
+            const accent = isAgentMode ? '#60A5FA' : '#FF6C37';
+            const bodyEl = document.getElementById('yearlyBreakdownBody');
+            if (!bodyEl) return;
+
+            const chartEl = document.getElementById('yearlyBreakdownChart');
+            const years = [
+                { label: 'Year 1', value: y1Val, cumulative: y1Val },
+                { label: 'Year 2', value: y2Val, cumulative: y1Val + y2Val },
+                { label: 'Year 3', value: y3Val, cumulative: y1Val + y2Val + y3Val }
+            ];
+            const maxCumulative = years[2].cumulative;
+
+            bodyEl.innerHTML = years.map(yr => {
+                const yrRoi = annualCost > 0 ? (yr.value / annualCost).toFixed(1) : '0.0';
+                return `
+                    <tr style="border-bottom: 1px solid #374151;">
+                        <td style="padding:10px 12px; color:#D1D5DB; font-weight:600;">${yr.label}</td>
+                        <td style="padding:10px 12px; color:#FFFFFF; font-weight:700; text-align:right;">${formatMoney(yr.value)}</td>
+                        <td style="padding:10px 12px; color:#9CA3AF; text-align:right;">${formatMoney(annualCost)}</td>
+                        <td style="padding:10px 12px; color:${accent}; font-weight:600; text-align:right;">${yrRoi}x</td>
+                        <td style="padding:10px 12px; color:#D1D5DB; font-weight:700; text-align:right;">${formatMoney(yr.cumulative)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (chartEl) {
+                chartEl.innerHTML = `
+                    <div style="background:#111827; border-radius:6px; padding:12px 16px; border:1px solid #374151;">
+                        <div style="color:#6B7280; font-size:10px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600; margin-bottom:10px;">Cumulative Value Growth</div>
+                        ${years.map(yr => {
+                            const barWidth = maxCumulative > 0 ? Math.round((yr.cumulative / maxCumulative) * 100) : 0;
+                            return `
+                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                                    <div style="width:56px; color:#D1D5DB; font-size:11px; font-weight:600;">${yr.label}</div>
+                                    <div style="flex:1; height:8px; border-radius:999px; background:#0B1220; overflow:hidden; border:1px solid #374151;">
+                                        <div style="height:100%; width:${barWidth}%; background:${accent}; border-radius:999px; transition: width 0.3s;"></div>
+                                    </div>
+                                    <div style="width:110px; text-align:right; color:#9CA3AF; font-size:11px; font-weight:600;">${formatMoney(yr.cumulative)}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                        <div style="padding-top:6px; color:#6B7280; font-size:11px;">3-year investment: <span style="color:#D1D5DB; font-weight:600;">${formatMoney(cost3Y)}</span></div>
+                    </div>
+                `;
+            }
+
+            const summaryEl = document.getElementById('yearlyBreakdownSummary');
+            if (summaryEl) {
+                summaryEl.innerHTML = `<span style="color: #6B7280;">·</span> <span style="color: ${accent};">${formatMoney(total3Y)}</span> <span style="color: #6B7280;">over 3 years</span> <span style="color: #6B7280;">·</span> <span style="color: ${accent};">${roi3Y}x</span> <span style="color: #6B7280;">3Y ROI</span>`;
+            }
+        }
+
         function calculate() {
             const isAgentMode = document.getElementById('agentModeToggle').checked;
             const selectedPersonas = Array.from(document.querySelectorAll('input[name="persona"]:checked')).map(cb => cb.value);
@@ -3144,6 +3434,15 @@
             });
 
             if(!isDefault && selectedPersonas.includes('platform')) { p.prov = true; }
+
+            const guardrailEl = document.getElementById('prodHoursGuardrail');
+            if (guardrailEl) {
+                if (p.prod && p.qaFte) {
+                    guardrailEl.classList.remove('hidden');
+                } else {
+                    guardrailEl.classList.add('hidden');
+                }
+            }
 
             // Math Computations (factors from registry + Confidence)
             const hoursWasted = parseFloat(document.getElementById('prodHours').value) || 0;
@@ -3238,22 +3537,36 @@
 
             const totalSavings = valProd + valApiDes + valOnb + valDup + valCostDelay + valQaFte + valGov + valOutage + valProv + valInt + valTest + valShadow + valTestGen + valCompliance + valPartnerOnboard + valDeliveryAccel;
             const totalCost = devs * seatCost;
-            const roi = totalCost > 0 ? (totalSavings / totalCost).toFixed(1) : "0";
             const adoptionPct = parseInt(document.getElementById('adoptionPct')?.value) || 30;
             const adoptionAdjusted = Math.round(totalSavings * (adoptionPct / 100));
-            const adoptionRoi = totalCost > 0 ? (adoptionAdjusted / totalCost).toFixed(1) : "0";
+
+            // Multi-Year Realization Curve
+            const rY1 = (parseInt(document.getElementById('realizationY1')?.value) || 50) / 100;
+            const rY2 = (parseInt(document.getElementById('realizationY2')?.value) || 30) / 100;
+            const rY3 = (parseInt(document.getElementById('realizationY3')?.value) || 20) / 100;
+
+            // adoptionAdjusted is the annual value at the selected adoption %
+            const year1Value = Math.round(adoptionAdjusted * rY1);
+            const year2Value = Math.round(adoptionAdjusted * rY2);
+            const year3Value = Math.round(adoptionAdjusted * rY3);
+            const threeYearTotal = year1Value + year2Value + year3Value;
+            const threeYearCost = totalCost * 3;
+            const threeYearRoi = threeYearCost > 0 ? (threeYearTotal / threeYearCost).toFixed(1) : '0';
+            const year1Roi = totalCost > 0 ? (year1Value / totalCost).toFixed(1) : '0';
             renderAdoptionImpact(totalSavings, devs, seatCost, adoptionPct, isAgentMode);
 
             // Update UI Output text
             if(isAgentMode) {
-                document.getElementById('summaryText').innerHTML = `"Postman Enterprise <span style="color: #60A5FA;">with Agent Mode</span> will drive <span style="color: #60A5FA; font-size: 28px;" id="outAdoptionValue">${formatMoney(adoptionAdjusted)}</span> in estimated annual value at <span style="color: #60A5FA;">${adoptionPct}%</span> adoption
+                document.getElementById('summaryText').innerHTML = `"Postman Enterprise <span style="color: #60A5FA;">with Agent Mode</span> will drive <span style="color: #60A5FA; font-size: 28px;" id="outAdoptionValue">${formatMoney(year1Value)}</span> in Year 1 value at <span style="color: #60A5FA;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 6px; font-size: 14px; color: #9CA3AF; font-weight: 400;">
-    Full platform potential: <span style="color: #D1D5DB; font-weight: 600;" id="outTotalSavings">${formatMoney(totalSavings)}</span> · <span style="color: #D1D5DB; font-weight: 600;" id="outFullROI">${roi}x</span> ROI at 100% adoption"
+    3-Year Total: <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearTotal">${formatMoney(threeYearTotal)}</span> · <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearROI">${threeYearRoi}x</span> 3-Year ROI
+    <span style="margin-left: 12px;">·</span> Full annual potential: <span style="color: #D1D5DB; font-weight: 600;" id="outTotalSavings">${formatMoney(totalSavings)}</span>"
 </span>`;
             } else {
-                document.getElementById('summaryText').innerHTML = `"Postman Enterprise will drive <span style="color: #FF6C37; font-size: 28px;" id="outAdoptionValue">${formatMoney(adoptionAdjusted)}</span> in estimated annual value at <span style="color: #FF6C37;">${adoptionPct}%</span> adoption
+                document.getElementById('summaryText').innerHTML = `"Postman Enterprise will drive <span style="color: #FF6C37; font-size: 28px;" id="outAdoptionValue">${formatMoney(year1Value)}</span> in Year 1 value at <span style="color: #FF6C37;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 6px; font-size: 14px; color: #9CA3AF; font-weight: 400;">
-    Full platform potential: <span style="color: #D1D5DB; font-weight: 600;" id="outTotalSavings">${formatMoney(totalSavings)}</span> · <span style="color: #D1D5DB; font-weight: 600;" id="outFullROI">${roi}x</span> ROI at 100% adoption"
+    3-Year Total: <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearTotal">${formatMoney(threeYearTotal)}</span> · <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearROI">${threeYearRoi}x</span> 3-Year ROI
+    <span style="margin-left: 12px;">·</span> Full annual potential: <span style="color: #D1D5DB; font-weight: 600;" id="outTotalSavings">${formatMoney(totalSavings)}</span>"
 </span>`;
             }
 
@@ -3262,16 +3575,17 @@
                 const accentColor = isAgentMode ? '#60A5FA' : '#FF6C37';
                 roiParagraph.innerHTML = `
         "At <span style="color: ${accentColor}; font-weight: 700;">${adoptionPct}% adoption</span>, investing
-        <span style="color: #ffffff; font-weight: 700;" id="outCost">${formatMoney(totalCost)}</span> creates
-        <span style="color: #ffffff; font-weight: 700;" id="outTotalSavingsText">${formatMoney(adoptionAdjusted)}</span> in value
-        (<span style="color: ${accentColor}; font-weight: 700; font-size: 18px;" id="outROI">${adoptionRoi}x</span> ROI)."
+        <span style="color: #ffffff; font-weight: 700;" id="outCost">${formatMoney(totalCost)}</span>/yr creates
+        <span style="color: #ffffff; font-weight: 700;" id="outTotalSavingsText">${formatMoney(year1Value)}</span> in Year 1 value
+        (<span style="color: ${accentColor}; font-weight: 700; font-size: 18px;" id="outROI">${year1Roi}x</span> Year 1 ROI)."
     `;
             }
             const roiCollapsedEl = document.getElementById('roiCollapsedSummary');
             if (roiCollapsedEl) {
                 const accentColor = isAgentMode ? '#60A5FA' : '#FF6C37';
-                roiCollapsedEl.innerHTML = `<span style="color: #6B7280;">·</span> <span style="color: ${accentColor};">${formatMoney(adoptionAdjusted)}</span> <span style="color: #6B7280;">at ${adoptionPct}%</span> <span style="color: #6B7280;">·</span> <span style="color: ${accentColor};">${adoptionRoi}x ROI</span> <span style="color: #6B7280;">·</span> <span style="color: #9CA3AF;">Cost: ${formatMoney(totalCost)}</span>`;
+                roiCollapsedEl.innerHTML = `<span style="color: #6B7280;">·</span> <span style="color: ${accentColor};">${formatMoney(year1Value)}</span> <span style="color: #6B7280;">Y1 at ${adoptionPct}%</span> <span style="color: #6B7280;">·</span> <span style="color: ${accentColor};">${year1Roi}x ROI</span> <span style="color: #6B7280;">·</span> <span style="color: #9CA3AF;">3Y: ${formatMoney(threeYearTotal)}</span>`;
             }
+            renderYearlyBreakdown(year1Value, year2Value, year3Value, threeYearTotal, totalCost, threeYearCost, threeYearRoi, isAgentMode);
             const seatCostLabel = document.getElementById('outSeatCostLabel');
             if (seatCostLabel) seatCostLabel.innerText = '$' + seatCost.toLocaleString() + '/user/yr';
 
@@ -3311,9 +3625,9 @@
             if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity', agentBoost: isAgentMode ? {from: '1.0x', to: `${_aiBoostVal.toFixed(2)}x`} : null});
             if(valApiDes > 0) impactItems.push({label: "API Design Acceleration", val: valApiDes, sub: "Faster design and early testing", type: 'apiDesign', agentBoost: isAgentMode ? {from: '25%', to: '45%'} : null});
             if(valOnb > 0) impactItems.push({label: "Onboarding Velocity", val: valOnb, sub: "Reduced ramp time by 40%", type: 'onboarding'});
-            if(valDup > 0) impactItems.push({label: "Avoided Rework", val: valDup, sub: "Eliminating redundant API builds", type: 'rework'});
+            if(valDup > 0) impactItems.push({label: "API Discovery and Reuse Savings", val: valDup, sub: "Eliminating redundant API builds via Private API Network", type: 'rework'});
             if(valCostDelay > 0) impactItems.push({label: "Cost of Delay Avoided", val: valCostDelay, sub: "Protected revenue via accelerated delivery", type: 'costDelay', agentBoost: isAgentMode ? {from: '50%', to: '60%'} : null});
-            if(valQaFte > 0) impactItems.push({label: "QA FTE Efficiencies", val: valQaFte, sub: "Automated testing scaling", type: 'qaFte', agentBoost: isAgentMode ? {from: '65%', to: '80%'} : null});
+            if(valQaFte > 0) impactItems.push({label: "QA Automation Savings", val: valQaFte, sub: "Automated testing scaling", type: 'qaFte', agentBoost: isAgentMode ? {from: '65%', to: '80%'} : null});
             if(valGov > 0) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automated API spec linting replaces manual PR reviews", type: 'governance', agentBoost: isAgentMode ? {additive: '+ Agent Spec Authoring'} : null});
             if(valOutage > 0) impactItems.push({label: "Outage & Reliability Savings", val: valOutage, sub: "Avoided service degradations", type: 'outage'});
             if(valProv > 0) impactItems.push({label: "IT Provisioning", val: valProv, sub: "Time saved per new hire via automated provisioning", type: 'provisioning'});
@@ -3584,6 +3898,7 @@
         window.onload = () => {
             toggleAgentMode(); // Set initial UI state
             syncGlobals('lhs'); // Populate RHS bar and summary from LHS defaults
+            syncRealization('lhs');
             calculate();
             populateFeedbackTable();
         };
