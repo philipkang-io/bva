@@ -467,6 +467,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">Your Email <span class="text-postman">*</span></label>
                     <input type="email" id="exportUserEmail" placeholder="you@postman.com" class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-postman focus:border-transparent">
+                    <p id="exportUserEmailError" class="text-xs text-red-600 mt-1 hidden"></p>
                 </div>
             </div>
             <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
@@ -3784,18 +3785,67 @@
             document.getElementById('exportModal').classList.add('hidden');
             document.getElementById('exportCustomerName').value = '';
             document.getElementById('exportUserEmail').value = '';
+            const errEl = document.getElementById('exportUserEmailError');
+            if (errEl) {
+                errEl.classList.add('hidden');
+                errEl.textContent = '';
+            }
         }
 
         document.getElementById('exportModal').addEventListener('click', e => {
             if (e.target === document.getElementById('exportModal')) closeExportModal();
         });
 
+        function validateExportEmail(email) {
+            const trimmed = (email || '').trim();
+            if (!trimmed) return 'Email is required.';
+
+            const formatRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!formatRegex.test(trimmed)) return 'Please enter a valid email address.';
+
+            const [localRaw, domainRaw] = trimmed.split('@');
+            const local = localRaw.toLowerCase();
+            const domain = domainRaw.toLowerCase();
+
+            const dummyLocals = ['test', 'dummy', 'fake', 'asdf', 'qwerty', 'noreply', 'no-reply', 'example', 'none', 'na', 'n/a'];
+            if (dummyLocals.includes(local)) return 'Please enter a real email address.';
+
+            const dummyDomains = [
+                'test.com', 'test.test', 'example.com', 'example.org', 'example.net',
+                'dummy.com', 'fake.com', 'asdf.com', 'localhost', 'mailinator.com',
+                'a.a', 'x.x', 'a.b', 'io.com'
+            ];
+            if (dummyDomains.includes(domain)) return 'Please enter a real email address.';
+
+            const tld = domain.split('.').pop();
+            if (tld.length < 2) return 'Please enter a valid email address.';
+            if (local.length < 2) return 'Please enter a valid email address.';
+
+            return null;
+        }
+
         function generatePDF() {
             const customerName = document.getElementById('exportCustomerName').value.trim();
             const userEmail = document.getElementById('exportUserEmail').value.trim();
 
-            if (!customerName || !userEmail) {
-                alert('Please fill in both Customer Name and Your Email before generating the PDF.');
+            const emailErrorEl = document.getElementById('exportUserEmailError');
+            if (emailErrorEl) {
+                emailErrorEl.classList.add('hidden');
+                emailErrorEl.textContent = '';
+            }
+
+            if (!customerName) {
+                alert('Please enter a Customer Name before generating the PDF.');
+                return;
+            }
+
+            const emailError = validateExportEmail(userEmail);
+            if (emailError) {
+                if (emailErrorEl) {
+                    emailErrorEl.textContent = emailError;
+                    emailErrorEl.classList.remove('hidden');
+                }
+                document.getElementById('exportUserEmail').focus();
                 return;
             }
 
@@ -3806,10 +3856,11 @@
             const tierLabel = (_selectedTier && tierProfiles[_selectedTier]) ? tierProfiles[_selectedTier].label : 'Custom';
             const confLabel = _confidenceLevel.charAt(0).toUpperCase() + _confidenceLevel.slice(1);
             const totalValue = document.getElementById('outTotalSavings')?.innerText || '';
-            const roiVal = document.getElementById('outROI')?.innerText || '';
+            const roiVal = document.getElementById('outThreeYearROI')?.innerText || '';
             const personaMap = { platform: 'Platform Eng.', product: 'Product Eng.', qe: 'Head of QE' };
             const checkedPersonas = Array.from(document.querySelectorAll('input[name="persona"]:checked')).map(el => personaMap[el.value] || el.value);
             const personasLabel = checkedPersonas.length ? checkedPersonas.join(', ') : 'All';
+            const adoptionPctVal = document.getElementById('adoptionPct')?.value || '';
 
             // Fire-and-forget tracking log
             const scriptUrl = document.getElementById('nativeFeedbackForm').action;
@@ -3823,7 +3874,9 @@
                 confidenceLevel: confLabel,
                 totalAnnualValue: totalValue,
                 roiMultiplier: roiVal,
-                personasSelected: personasLabel
+                personasSelected: personasLabel,
+                adoptionPct: adoptionPctVal,
+                driveFileUrl: ''
             };
             fetch(scriptUrl, {
                 method: 'POST',
@@ -3891,6 +3944,11 @@
                 document.title = originalTitle;
                 document.getElementById('exportCustomerName').value = '';
                 document.getElementById('exportUserEmail').value = '';
+                const errEl = document.getElementById('exportUserEmailError');
+                if (errEl) {
+                    errEl.classList.add('hidden');
+                    errEl.textContent = '';
+                }
             }, 500);
         }
 
