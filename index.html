@@ -3106,7 +3106,7 @@
                 const val = origEl.value;
                 html += `<div>`;
                 html += `<label style="color: #9CA3AF; font-size: 10px; display: block; margin-bottom: 2px;">${inp.label}</label>`;
-                html += `<input type="number" value="${val}" data-sync-target="${inp.id}" oninput="syncInlineInput(this)" style="width: 100%; background: #111827; border: 1px solid #4B5563; border-radius: 4px; color: white; font-size: 12px; padding: 4px 6px; font-family: monospace;">`;
+                html += `<input type="text" inputmode="decimal" value="${val}" data-sync-target="${inp.id}" oninput="syncInlineInput(this)" style="width: 100%; background: #111827; border: 1px solid #4B5563; border-radius: 4px; color: white; font-size: 12px; padding: 4px 6px; font-family: monospace;">`;
                 html += `</div>`;
             });
             html += '</div>';
@@ -3618,24 +3618,24 @@
 
             let impactItems = [];
             
-            if(valShadow > 0) impactItems.push({label: "✨ Shadow API Discovery", val: valShadow, sub: "Eliminating duplicate API development from undiscovered APIs", type: 'shadowApi', isAgent: true});
-            if(valTestGen > 0) impactItems.push({label: "✨ AI Test Authoring", val: valTestGen, sub: "Automated test suite generation", type: 'testAuthoring', isAgent: true});
-            if(valCompliance > 0) impactItems.push({label: "✨ Compliance Automation", val: valCompliance, sub: "Automated test-to-control mapping", type: 'compliance', isAgent: true});
+            if(p.shadow) impactItems.push({label: "✨ Shadow API Discovery", val: valShadow, sub: "Eliminating duplicate API development from undiscovered APIs", type: 'shadowApi', isAgent: true});
+            if(p.testGen) impactItems.push({label: "✨ AI Test Authoring", val: valTestGen, sub: "Automated test suite generation", type: 'testAuthoring', isAgent: true});
+            if(p.compliance) impactItems.push({label: "✨ Compliance Automation", val: valCompliance, sub: "Automated test-to-control mapping", type: 'compliance', isAgent: true});
             const _aiBoostSliderEl = document.getElementById('aiBoostSlider');
             const _aiBoostVal = (isAgentMode && _aiBoostSliderEl) ? parseFloat(_aiBoostSliderEl.value) : 1.35;
-            if(valProd > 0) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity', agentBoost: isAgentMode ? {from: '1.0x', to: `${_aiBoostVal.toFixed(2)}x`} : null});
-            if(valApiDes > 0) impactItems.push({label: "API Design Acceleration", val: valApiDes, sub: "Faster design and early testing", type: 'apiDesign', agentBoost: isAgentMode ? {from: '25%', to: '45%'} : null});
-            if(valOnb > 0) impactItems.push({label: "Onboarding Velocity", val: valOnb, sub: "Reduced ramp time by 40%", type: 'onboarding'});
-            if(valDup > 0) impactItems.push({label: "API Discovery and Reuse Savings", val: valDup, sub: "Eliminating redundant API builds via Private API Network", type: 'rework'});
-            if(valCostDelay > 0) impactItems.push({label: "Cost of Delay Avoided", val: valCostDelay, sub: "Protected revenue via accelerated delivery", type: 'costDelay', agentBoost: isAgentMode ? {from: '50%', to: '60%'} : null});
-            if(valQaFte > 0) impactItems.push({label: "QA Automation Savings", val: valQaFte, sub: "Automated testing scaling", type: 'qaFte', agentBoost: isAgentMode ? {from: '65%', to: '80%'} : null});
-            if(valGov > 0) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automated API spec linting replaces manual PR reviews", type: 'governance', agentBoost: isAgentMode ? {additive: '+ Agent Spec Authoring'} : null});
-            if(valOutage > 0) impactItems.push({label: "Outage & Reliability Savings", val: valOutage, sub: "Avoided service degradations", type: 'outage'});
-            if(valProv > 0) impactItems.push({label: "IT Provisioning", val: valProv, sub: "Time saved per new hire via automated provisioning", type: 'provisioning'});
-            if(valInt > 0) impactItems.push({label: "Integration Velocity", val: valInt, sub: `TTFC reduced to 15 mins`, type: 'integration'});
-            if(valTest > 0) impactItems.push({label: "Test Cycle Compression", val: valTest, sub: "95% reduction in regression time", type: 'testing', agentBoost: isAgentMode ? {additive: '+ Auto-Resolved Failures'} : null});
-            if(valPartnerOnboard > 0) impactItems.push({label: "Partner API Onboarding", val: valPartnerOnboard, sub: "50% partner TTFC reduction", type: 'partnerOnboard'});
-            if(valDeliveryAccel > 0) impactItems.push({label: "Delivery Acceleration", val: valDeliveryAccel, sub: "60% API-dependency wait eliminated", type: 'deliveryAccel'});
+            if(p.prod) impactItems.push({label: "Developer Productivity", val: valProd, sub: `(Recovering ${hoursWasted} hrs/dev/wk)`, type: 'productivity', agentBoost: isAgentMode ? {from: '1.0x', to: `${_aiBoostVal.toFixed(2)}x`} : null});
+            if(p.apiDes) impactItems.push({label: "API Design Acceleration", val: valApiDes, sub: "Faster design and early testing", type: 'apiDesign', agentBoost: isAgentMode ? {from: '25%', to: '45%'} : null});
+            if(p.onb) impactItems.push({label: "Onboarding Velocity", val: valOnb, sub: "Reduced ramp time by 40%", type: 'onboarding'});
+            if(p.dup) impactItems.push({label: "API Discovery and Reuse Savings", val: valDup, sub: "Eliminating redundant API builds via Private API Network", type: 'rework'});
+            if(p.costDelay) impactItems.push({label: "Cost of Delay Avoided", val: valCostDelay, sub: "Protected revenue via accelerated delivery", type: 'costDelay', agentBoost: isAgentMode ? {from: '50%', to: '60%'} : null});
+            if(p.qaFte) impactItems.push({label: "QA Automation Savings", val: valQaFte, sub: "Automated testing scaling", type: 'qaFte', agentBoost: isAgentMode ? {from: '65%', to: '80%'} : null});
+            if(p.gov) impactItems.push({label: "Governance Efficiency", val: valGov, sub: "Automated API spec linting replaces manual PR reviews", type: 'governance', agentBoost: isAgentMode ? {additive: '+ Agent Spec Authoring'} : null});
+            if(p.outage) impactItems.push({label: "Outage & Reliability Savings", val: valOutage, sub: "Avoided service degradations", type: 'outage'});
+            if(p.prov) impactItems.push({label: "IT Provisioning", val: valProv, sub: "Time saved per new hire via automated provisioning", type: 'provisioning'});
+            if(p.int) impactItems.push({label: "Integration Velocity", val: valInt, sub: `TTFC reduced to 15 mins`, type: 'integration'});
+            if(p.test) impactItems.push({label: "Test Cycle Compression", val: valTest, sub: "95% reduction in regression time", type: 'testing', agentBoost: isAgentMode ? {additive: '+ Auto-Resolved Failures'} : null});
+            if(p.partnerOnboard) impactItems.push({label: "Partner API Onboarding", val: valPartnerOnboard, sub: "50% partner TTFC reduction", type: 'partnerOnboard'});
+            if(p.deliveryAccel) impactItems.push({label: "Delivery Acceleration", val: valDeliveryAccel, sub: "60% API-dependency wait eliminated", type: 'deliveryAccel'});
 
             // Top 3 badges: sort by value, tag highest 3
             const sorted = [...impactItems].sort((a, b) => b.val - a.val);
