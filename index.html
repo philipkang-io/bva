@@ -477,6 +477,49 @@
         </div>
     </div>
 
+    <!-- Regional Dev Cost Reference Modal -->
+    <div id="regionalRateModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-postman" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 class="text-lg font-bold text-gray-900">Regional Dev Cost Benchmarks</h3>
+                </div>
+                <button onclick="closeRegionalRateModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-gray-600 mb-4">Click a region to apply its rate to the calculator. The default is North America ($80/hr).</p>
+                <div class="overflow-hidden border border-gray-200 rounded-lg">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Region</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wide">Default (USD)</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wide">Native Rate</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wide">Source</th>
+                            </tr>
+                        </thead>
+                        <tbody id="regionalRateTableBody">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-gray-500 mt-4 leading-relaxed">
+                    Loaded hourly rates (median, mid-level engineer). Data refreshed annually. Last update: 2025.
+                </p>
+            </div>
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end">
+                <button type="button" onclick="closeRegionalRateModal()" class="px-5 py-2.5 border border-gray-300 bg-white rounded-md text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
     <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleCSVImport(event)">
 
     <!-- ========================================== -->
@@ -629,7 +672,14 @@
 
                     <!-- Hourly Rate (always visible) -->
                     <div id="global-rate" class="input-section-highlightable p-3 -mx-3 rounded-xl relative mb-4" onmouseenter="setHighlightInput('global-rate')" onmouseleave="clearHighlight()">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Avg Hourly Cost ($)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+                            Avg Hourly Cost ($)
+                            <button type="button" onclick="openRegionalRateModal()" class="text-gray-400 hover:text-postman transition-colors cursor-pointer focus:outline-none" title="See regional benchmarks">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                        </label>
                         <input type="number" id="hourlyRate" value="80" min="1" class="w-full border-gray-300 rounded-md shadow-sm focus:border-postman focus:ring-postman" oninput="syncGlobals('lhs')">
                     </div>
 
@@ -1101,7 +1151,14 @@
                                 <p class="text-xs text-gray-400 mb-2">Edit here or on the left panel</p>
                                 <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
                                     <div>
-                                        <label class="block text-xs font-medium text-gray-500 mb-1">Avg Hourly Cost ($)</label>
+                                        <label class="block text-xs font-medium text-gray-500 mb-1 flex items-center gap-1.5">
+                                            Avg Hourly Cost ($)
+                                            <button type="button" onclick="openRegionalRateModal()" class="text-gray-400 hover:text-postman transition-colors cursor-pointer focus:outline-none" title="See regional benchmarks">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </button>
+                                        </label>
                                         <input type="number" id="rhs-hourlyRate" value="80" min="1"
                                             class="w-full text-sm border border-gray-200 rounded-md px-2 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
                                             oninput="syncGlobals('rhs')">
@@ -3790,6 +3847,72 @@
                 errEl.classList.add('hidden');
                 errEl.textContent = '';
             }
+        }
+
+        // ===== Regional Dev Cost Reference =====
+        const _regionalRates = [
+            {
+                region: 'North America',
+                usd: 80,
+                native: '$80/hr',
+                source: 'Stack Overflow Developer Survey 2025 (US median) + Gartner IT Salary Survey 2025'
+            },
+            {
+                region: 'EU',
+                usd: 76,
+                native: '€70 / £60 per hr',
+                source: 'Honeypot — State of European Tech Salaries 2025 + Hays UK Tech Salary Guide 2025'
+            },
+            {
+                region: 'APAC',
+                usd: 22,
+                native: '$22/hr',
+                source: 'Stack Overflow Developer Survey 2025 (APAC ex-India median)'
+            },
+            {
+                region: 'India',
+                usd: 25,
+                native: '₹2,100/hr',
+                source: 'NASSCOM Strategic Review 2025 + Glassdoor India'
+            },
+            {
+                region: 'LATAM',
+                usd: 40,
+                native: '$40/hr',
+                source: 'Terminal — LATAM Engineering Compensation Report 2025'
+            }
+        ];
+
+        function renderRegionalRateTable() {
+            const tbody = document.getElementById('regionalRateTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = _regionalRates.map((r, i) => `
+                <tr class="border-b border-gray-100 last:border-b-0 hover:bg-postman-bg/30 cursor-pointer transition-colors" onclick="applyRegionalRate(${r.usd})">
+                    <td class="px-4 py-3 font-medium text-gray-900">${r.region}</td>
+                    <td class="px-4 py-3 text-right font-semibold text-postman">$${r.usd}/hr</td>
+                    <td class="px-4 py-3 text-right text-gray-600">${r.native}</td>
+                    <td class="px-4 py-3 text-xs text-gray-500 leading-snug">${r.source}</td>
+                </tr>
+            `).join('');
+        }
+
+        function openRegionalRateModal() {
+            renderRegionalRateTable();
+            document.getElementById('regionalRateModal').classList.remove('hidden');
+        }
+
+        function closeRegionalRateModal() {
+            document.getElementById('regionalRateModal').classList.add('hidden');
+        }
+
+        function applyRegionalRate(usdRate) {
+            const lhsInput = document.getElementById('hourlyRate');
+            if (lhsInput) {
+                lhsInput.value = usdRate;
+                // syncGlobals propagates to RHS and triggers calculate()
+                syncGlobals('lhs');
+            }
+            closeRegionalRateModal();
         }
 
         document.getElementById('exportModal').addEventListener('click', e => {
