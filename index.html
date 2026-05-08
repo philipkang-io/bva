@@ -1312,9 +1312,9 @@
                                                                 <a href="https://www.postman.com/pricing/#premium-support-add-on" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color: #6B7280; font-size: 10px; line-height: 1; text-decoration: none; transition: color 0.15s;" onmouseenter="this.style.color='#FF6C37'" onmouseleave="this.style.color='#6B7280'">ℹ</a>
                                                             </button>
                                                         </div>
-                                                        <p style="margin: 0; font-size: 16px; color: #E5E7EB; line-height: 1.5;">
+                                                        <div id="roiSummaryContent" style="margin: 0; font-size: 16px; color: #E5E7EB; line-height: 1.5;">
                                                             "By investing <span style="color: #ffffff; font-weight: 700;" id="outCost">$0</span>, the team creates <span style="color: #ffffff; font-weight: 700;" id="outTotalSavingsText">$0</span> in value (<span style="color: #FF6C37; font-weight: 700; font-size: 18px;" id="outROI">0x</span> ROI)."
-                                                        </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1335,21 +1335,7 @@
                                                 <div id="yearlyBreakdownPanel" style="max-height: 700px; opacity: 1; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease;">
                                                     <div style="padding: 0 20px 20px;">
                                                         <div style="padding: 16px 0 12px; color: #9CA3AF; font-size: 12px;">
-                                                            How the selected adoption-adjusted annual value is realized across the first 3 years.
-                                                        </div>
-                                                        <div style="padding: 0 0 4px;">
-                                                            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                                                                <thead>
-                                                                    <tr style="color: #6B7280; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #374151;">
-                                                                        <th style="text-align: left; padding: 6px 12px; font-weight: 600; width: 18%;">Year</th>
-                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 18%;">Value</th>
-                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 18%;">Cost</th>
-                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 14%;">ROI</th>
-                                                                        <th style="text-align: right; padding: 6px 12px; font-weight: 600; width: 32%;">Cumulative Value</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="yearlyBreakdownBody"></tbody>
-                                                            </table>
+                                                            Cumulative value growth over the 3-year window. See the ROI Summary above for per-year value, cost, and net.
                                                         </div>
                                                         <div id="yearlyBreakdownChart" style="padding-top: 12px;"></div>
                                                     </div>
@@ -1383,8 +1369,7 @@
                                                     </div>
                                                     <div style="padding: 2px 20px 14px; color: #6B7280; font-size: 11px;">
                                                         <span id="adoptionHeadlineDevs">0</span> developers ·
-                                                        <span id="adoptionHeadlinePerDev">$0</span>/dev per 10% step ·
-                                                        ~<span id="adoptionHeadlineRoi">0.0</span>x ROI per step
+                                                        <span id="adoptionHeadlinePerDev">$0</span>/dev per 10% step
                                                     </div>
 
                                                     <div style="padding: 0 20px 4px;">
@@ -1392,13 +1377,14 @@
                                                             <thead>
                                                                 <tr style="color: #6B7280; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #374151;">
                                                                     <th style="text-align: left; padding: 6px 10px; font-weight: 600; width: 20%;">Adoption</th>
-                                                                    <th style="text-align: right; padding: 6px 10px; font-weight: 600; width: 25%;">Projected Value</th>
-                                                                    <th style="text-align: right; padding: 6px 10px; font-weight: 600; width: 12%;">ROI</th>
+                                                                    <th style="text-align: right; padding: 6px 10px; font-weight: 600; width: 25%;">Annual Value</th>
+                                                                    <th style="text-align: right; padding: 6px 10px; font-weight: 600; width: 12%;">Annual Value : Cost</th>
                                                                     <th style="text-align: left; padding: 6px 10px 6px 20px; font-weight: 600; width: 43%;"></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody id="adoptionSensitivityBody"></tbody>
                                                         </table>
+                                                        <p class="text-xs text-gray-500 italic mt-2 px-3">Sensitivity ratio at this adoption %, single-year. Use to test adoption assumptions. Headline 3-Year ROI on the executive summary is the canonical number.</p>
                                                     </div>
 
                                                     <div style="padding: 12px 20px 20px;">
@@ -3420,14 +3406,12 @@
             const totalCost = devs * seatCost;
             const valuePer10 = Math.round(totalSavings * 0.10);
             const perDevPer10 = devs > 0 ? Math.round(valuePer10 / devs) : 0;
-            const roiPer10 = totalCost > 0 ? (valuePer10 / totalCost).toFixed(1) : '0.0';
             const roundedAdoption = Math.max(0, Math.min(100, Math.round(adoptionPct / 5) * 5));
             const steps = [10, 20, 30, 40, 50, 60, 65];
 
             const headlineValueEl = document.getElementById('adoptionHeadlineValue');
             const headlineDevsEl = document.getElementById('adoptionHeadlineDevs');
             const headlinePerDevEl = document.getElementById('adoptionHeadlinePerDev');
-            const headlineRoiEl = document.getElementById('adoptionHeadlineRoi');
             const currentLabelEl = document.getElementById('adoptionCurrentLabel');
             const bodyEl = document.getElementById('adoptionSensitivityBody');
             const talkingPointEl = document.getElementById('adoptionTalkingPoint');
@@ -3438,7 +3422,6 @@
             }
             if (headlineDevsEl) headlineDevsEl.textContent = Math.round(devs * 0.10).toLocaleString();
             if (headlinePerDevEl) headlinePerDevEl.textContent = formatMoney(perDevPer10);
-            if (headlineRoiEl) headlineRoiEl.textContent = roiPer10;
             if (currentLabelEl) {
                 currentLabelEl.textContent = roundedAdoption + '%';
                 currentLabelEl.style.color = accent;
@@ -3483,11 +3466,118 @@
             }
         }
 
+        function computePaybackMonths(year1Value, year2Value, year3Value, annualCost) {
+            if (!Number.isFinite(annualCost) || annualCost <= 0) return null;
+            const monthlyValues = [
+                (year1Value || 0) / 12,
+                (year2Value || 0) / 12,
+                (year3Value || 0) / 12
+            ];
+            const monthlyCost = annualCost / 12;
+            let cumValue = 0;
+            let cumCost = 0;
+            for (let m = 1; m <= 36; m++) {
+                const yearIdx = Math.min(2, Math.floor((m - 1) / 12));
+                cumValue += monthlyValues[yearIdx];
+                cumCost += monthlyCost;
+                const paybackThreshold = m <= 12 ? annualCost : cumCost;
+                if (cumValue >= paybackThreshold) return m;
+            }
+            return null; // No payback within 3-year window
+        }
+
+        function formatPaybackLabel(months) {
+            if (months === null) return 'Not within 3-year window';
+            if (months <= 12) return `month ${months}`;
+            if (months <= 24) return `month ${months} (Year 2)`;
+            return `month ${months} (Year 3)`;
+        }
+
+        function renderRoiSummaryPnL(year1Value, year2Value, year3Value, totalCost, threeYearTotal, threeYearCost, threeYearRoi, isAgentMode, adoptionPct) {
+            const accentColor = isAgentMode ? '#60A5FA' : '#FF6C37';
+            const target = document.getElementById('roiSummaryContent');
+            if (!target) return;
+
+            const cost = totalCost;
+            const y1Net = year1Value - cost;
+            const y2Net = year2Value - cost;
+            const y3Net = year3Value - cost;
+            const totalNet = threeYearTotal - threeYearCost;
+            const cumY1 = y1Net;
+            const cumY2 = y1Net + y2Net;
+            const cumY3 = y1Net + y2Net + y3Net;
+
+            const paybackMonths = computePaybackMonths(year1Value, year2Value, year3Value, cost);
+            const paybackLabel = formatPaybackLabel(paybackMonths);
+            const paybackColor = paybackMonths === null ? '#FB923C' : accentColor;
+
+            const fmt = (v) => formatMoney(v);
+            const fmtNeg = (v) => v < 0 ? `<span style="color: #FB923C;">(${fmt(Math.abs(v))})</span>` : fmt(v);
+
+            target.innerHTML = `
+                <div style="padding: 4px 0;">
+                    <div style="font-size: 12px; color: #9CA3AF; margin-bottom: 10px;">
+                        At <span style="color: ${accentColor}; font-weight: 700;">${adoptionPct}% adoption</span>,
+                        <span style="color: #ffffff; font-weight: 700;" id="outCost">${fmt(cost)}</span>/yr produces:
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #374151; color: #9CA3AF; font-weight: 600;">
+                                    <th style="text-align: left; padding: 6px 8px;"></th>
+                                    <th style="text-align: right; padding: 6px 8px;">Year 1</th>
+                                    <th style="text-align: right; padding: 6px 8px;">Year 2</th>
+                                    <th style="text-align: right; padding: 6px 8px;">Year 3</th>
+                                    <th style="text-align: right; padding: 6px 8px; color: ${accentColor};">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid #1F2937;">
+                                    <td style="padding: 6px 8px; color: #D1D5DB;">Value</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #FFFFFF; font-weight: 600;">${fmt(year1Value)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #FFFFFF; font-weight: 600;">${fmt(year2Value)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #FFFFFF; font-weight: 600;">${fmt(year3Value)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: ${accentColor}; font-weight: 700;">${fmt(threeYearTotal)}</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #1F2937;">
+                                    <td style="padding: 6px 8px; color: #D1D5DB;">Cost</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #9CA3AF;">(${fmt(cost)})</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #9CA3AF;">(${fmt(cost)})</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #9CA3AF;">(${fmt(cost)})</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #9CA3AF; font-weight: 600;">(${fmt(threeYearCost)})</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #374151;">
+                                    <td style="padding: 6px 8px; color: #D1D5DB; font-weight: 600;">Net</td>
+                                    <td style="text-align: right; padding: 6px 8px; font-weight: 600;">${fmtNeg(y1Net)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; font-weight: 600;">${fmtNeg(y2Net)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; font-weight: 600;">${fmtNeg(y3Net)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: ${accentColor}; font-weight: 700;">${fmtNeg(totalNet)}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 6px 8px; color: #6B7280; font-style: italic;">Cumulative</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #9CA3AF;">${fmtNeg(cumY1)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #9CA3AF;">${fmtNeg(cumY2)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #9CA3AF;">${fmtNeg(cumY3)}</td>
+                                    <td style="text-align: right; padding: 6px 8px; color: #6B7280;">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #374151; font-size: 12px; color: #D1D5DB;">
+                        <span style="color: ${accentColor}; font-weight: 700; font-size: 16px;" id="outROI">${threeYearRoi}x</span>
+                        <span style="color: #9CA3AF;"> 3-Year ROI</span>
+                        <span style="color: #6B7280; margin: 0 8px;">·</span>
+                        <span style="color: #FFFFFF; font-weight: 600;" id="outTotalSavingsText">${fmt(totalNet)}</span>
+                        <span style="color: #9CA3AF;"> Net 3-Year Value</span>
+                        <span style="color: #6B7280; margin: 0 8px;">·</span>
+                        <span style="color: ${paybackColor}; font-weight: 600;">Payback: ${paybackLabel}</span>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderYearlyBreakdown(y1Val, y2Val, y3Val, total3Y, annualCost, cost3Y, roi3Y, isAgentMode) {
             const accent = isAgentMode ? '#60A5FA' : '#FF6C37';
-            const bodyEl = document.getElementById('yearlyBreakdownBody');
-            if (!bodyEl) return;
-
             const chartEl = document.getElementById('yearlyBreakdownChart');
             const years = [
                 { label: 'Year 1', value: y1Val, cumulative: y1Val },
@@ -3495,19 +3585,6 @@
                 { label: 'Year 3', value: y3Val, cumulative: y1Val + y2Val + y3Val }
             ];
             const maxCumulative = years[2].cumulative;
-
-            bodyEl.innerHTML = years.map(yr => {
-                const yrRoi = annualCost > 0 ? (yr.value / annualCost).toFixed(1) : '0.0';
-                return `
-                    <tr style="border-bottom: 1px solid #374151;">
-                        <td style="padding:10px 12px; color:#D1D5DB; font-weight:600;">${yr.label}</td>
-                        <td style="padding:10px 12px; color:#FFFFFF; font-weight:700; text-align:right;">${formatMoney(yr.value)}</td>
-                        <td style="padding:10px 12px; color:#9CA3AF; text-align:right;">${formatMoney(annualCost)}</td>
-                        <td style="padding:10px 12px; color:${accent}; font-weight:600; text-align:right;">${yrRoi}x</td>
-                        <td style="padding:10px 12px; color:#D1D5DB; font-weight:700; text-align:right;">${formatMoney(yr.cumulative)}</td>
-                    </tr>
-                `;
-            }).join('');
 
             if (chartEl) {
                 chartEl.innerHTML = `
@@ -3532,7 +3609,7 @@
 
             const summaryEl = document.getElementById('yearlyBreakdownSummary');
             if (summaryEl) {
-                summaryEl.innerHTML = `<span style="color: #6B7280;">·</span> <span style="color: ${accent};">${formatMoney(total3Y)}</span> <span style="color: #6B7280;">over 3 years</span> <span style="color: #6B7280;">·</span> <span style="color: ${accent};">${roi3Y}x</span> <span style="color: #6B7280;">3Y ROI</span>`;
+                summaryEl.innerHTML = `<span style="color: #6B7280;">·</span> <span style="color: ${accent};">${formatMoney(total3Y)}</span> <span style="color: #6B7280;">over 3 years</span>`;
             }
         }
 
@@ -3725,7 +3802,6 @@
             const threeYearTotal = year1Value + year2Value + year3Value;
             const threeYearCost = totalCost * 3;
             const threeYearRoi = threeYearCost > 0 ? (threeYearTotal / threeYearCost).toFixed(1) : '0';
-            const year1Roi = totalCost > 0 ? (year1Value / totalCost).toFixed(1) : '0';
             renderAdoptionImpact(totalSavings, devs, seatCost, adoptionPct, isAgentMode);
 
             // Update UI Output text
@@ -3733,30 +3809,20 @@
                 document.getElementById('summaryText').innerHTML = `"Postman Enterprise <span style="color: #60A5FA;">with Agent Mode</span> will drive <span style="color: #60A5FA; font-size: 28px;" id="outAdoptionValue">${formatMoney(year1Value)}</span> in Year 1 value at <span style="color: #60A5FA;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 6px; font-size: 14px; color: #9CA3AF; font-weight: 400;">
     3-Year Total: <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearTotal">${formatMoney(threeYearTotal)}</span> · <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearROI">${threeYearRoi}x</span> 3-Year ROI
-    <span style="margin-left: 12px;">·</span> Full annual potential: <span style="color: #D1D5DB; font-weight: 600;" id="outTotalSavings">${formatMoney(totalSavings)}</span>"
 </span>`;
             } else {
                 document.getElementById('summaryText').innerHTML = `"Postman Enterprise will drive <span style="color: #FF6C37; font-size: 28px;" id="outAdoptionValue">${formatMoney(year1Value)}</span> in Year 1 value at <span style="color: #FF6C37;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 6px; font-size: 14px; color: #9CA3AF; font-weight: 400;">
     3-Year Total: <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearTotal">${formatMoney(threeYearTotal)}</span> · <span style="color: #D1D5DB; font-weight: 600;" id="outThreeYearROI">${threeYearRoi}x</span> 3-Year ROI
-    <span style="margin-left: 12px;">·</span> Full annual potential: <span style="color: #D1D5DB; font-weight: 600;" id="outTotalSavings">${formatMoney(totalSavings)}</span>"
 </span>`;
             }
 
-            const roiParagraph = document.getElementById('outROI')?.closest('p');
-            if (roiParagraph) {
-                const accentColor = isAgentMode ? '#60A5FA' : '#FF6C37';
-                roiParagraph.innerHTML = `
-        "At <span style="color: ${accentColor}; font-weight: 700;">${adoptionPct}% adoption</span>, investing
-        <span style="color: #ffffff; font-weight: 700;" id="outCost">${formatMoney(totalCost)}</span>/yr creates
-        <span style="color: #ffffff; font-weight: 700;" id="outTotalSavingsText">${formatMoney(year1Value)}</span> in Year 1 value
-        (<span style="color: ${accentColor}; font-weight: 700; font-size: 18px;" id="outROI">${year1Roi}x</span> Year 1 ROI)."
-    `;
-            }
+            renderRoiSummaryPnL(year1Value, year2Value, year3Value, totalCost, threeYearTotal, threeYearCost, threeYearRoi, isAgentMode, adoptionPct);
             const roiCollapsedEl = document.getElementById('roiCollapsedSummary');
             if (roiCollapsedEl) {
                 const accentColor = isAgentMode ? '#60A5FA' : '#FF6C37';
-                roiCollapsedEl.innerHTML = `<span style="color: #6B7280;">·</span> <span style="color: ${accentColor};">${formatMoney(year1Value)}</span> <span style="color: #6B7280;">Y1 at ${adoptionPct}%</span> <span style="color: #6B7280;">·</span> <span style="color: ${accentColor};">${year1Roi}x ROI</span> <span style="color: #6B7280;">·</span> <span style="color: #9CA3AF;">3Y: ${formatMoney(threeYearTotal)}</span>`;
+                const totalNet = threeYearTotal - threeYearCost;
+                roiCollapsedEl.innerHTML = `<span style="color: #6B7280;">·</span> <span style="color: ${accentColor};">${threeYearRoi}x</span> <span style="color: #6B7280;">3Y ROI</span> <span style="color: #6B7280;">·</span> <span style="color: #9CA3AF;">Net: ${formatMoney(totalNet)}</span>`;
             }
             renderYearlyBreakdown(year1Value, year2Value, year3Value, threeYearTotal, totalCost, threeYearCost, threeYearRoi, isAgentMode);
             const seatCostLabel = document.getElementById('outSeatCostLabel');
@@ -4093,7 +4159,7 @@
             const accentColor = isAgentMode ? '#60A5FA' : '#FF6C37';
             const tierLabel = (_selectedTier && tierProfiles[_selectedTier]) ? tierProfiles[_selectedTier].label : 'Custom';
             const confLabel = _confidenceLevel.charAt(0).toUpperCase() + _confidenceLevel.slice(1);
-            const totalValue = document.getElementById('outTotalSavings')?.innerText || '';
+            const totalValue = document.getElementById('outThreeYearTotal')?.innerText || document.getElementById('outTotalSavings')?.innerText || '';
             const roiVal = document.getElementById('outThreeYearROI')?.innerText || '';
             const personaMap = { platform: 'Platform Eng.', product: 'Product Eng.', qe: 'Head of QE' };
             const checkedPersonas = Array.from(document.querySelectorAll('input[name="persona"]:checked')).map(el => personaMap[el.value] || el.value);
