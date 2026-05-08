@@ -2224,9 +2224,12 @@
                 }
             });
 
-            const y1 = parseInt(document.getElementById('realizationY1')?.value) || 0;
-            const y2 = parseInt(document.getElementById('realizationY2')?.value) || 0;
-            const y3 = parseInt(document.getElementById('realizationY3')?.value) || 0;
+            const y1Raw = parseFloat(document.getElementById('realizationY1')?.value);
+            const y2Raw = parseFloat(document.getElementById('realizationY2')?.value);
+            const y3Raw = parseFloat(document.getElementById('realizationY3')?.value);
+            const y1 = Number.isFinite(y1Raw) ? y1Raw : 0;
+            const y2 = Number.isFinite(y2Raw) ? y2Raw : 0;
+            const y3 = Number.isFinite(y3Raw) ? y3Raw : 0;
             const total = y1 + y2 + y3;
             const validationEl = document.getElementById('realizationValidation');
             if (validationEl) {
@@ -3536,7 +3539,8 @@
             const prs = parseInt(document.getElementById('prsReviewed').value) || 0;
             const mins = parseInt(document.getElementById('minsReview').value) || 0;
             const archMult = parseFloat(document.getElementById('archMultiplier').value) || getEffectiveFactor('governance', 'architectMultiplier', false);
-            const govSave = _confidenceLevel === 'default' ? (parseFloat(document.getElementById('govSavings').value) || 90) / 100 : getEffectiveFactor('governance', 'automation', isAgentMode);
+            const govSaveRaw = parseFloat(document.getElementById('govSavings').value);
+            const govSave = _confidenceLevel === 'default' ? (Number.isFinite(govSaveRaw) ? govSaveRaw : 90) / 100 : getEffectiveFactor('governance', 'automation', isAgentMode);
             const agentSpecs = parseInt(document.getElementById('agentSpecs').value) || 0;
             const hrsPerSpec = parseFloat(document.getElementById('hrsPerSpec').value) || 0;
             const valGovBase = p.gov ? prs * (mins/60) * (rate * archMult) * govSave : 0;
@@ -3595,13 +3599,17 @@
 
             const totalSavings = valProd + valApiDes + valOnb + valDup + valCostDelay + valQaFte + valGov + valOutage + valProv + valInt + valTest + valShadow + valTestGen + valCompliance + valPartnerOnboard + valDeliveryAccel;
             const totalCost = devs * seatCost;
-            const adoptionPct = parseInt(document.getElementById('adoptionPct')?.value) || 30;
+            const adoptionPctRaw = parseFloat(document.getElementById('adoptionPct')?.value);
+            const adoptionPct = Number.isFinite(adoptionPctRaw) ? adoptionPctRaw : 30;
             const adoptionAdjusted = Math.round(totalSavings * (adoptionPct / 100));
 
             // Multi-Year Realization Curve
-            const rY1 = (parseInt(document.getElementById('realizationY1')?.value) || 50) / 100;
-            const rY2 = (parseInt(document.getElementById('realizationY2')?.value) || 30) / 100;
-            const rY3 = (parseInt(document.getElementById('realizationY3')?.value) || 20) / 100;
+            const rY1Raw = parseFloat(document.getElementById('realizationY1')?.value);
+            const rY2Raw = parseFloat(document.getElementById('realizationY2')?.value);
+            const rY3Raw = parseFloat(document.getElementById('realizationY3')?.value);
+            const rY1 = (Number.isFinite(rY1Raw) ? rY1Raw : 50) / 100;
+            const rY2 = (Number.isFinite(rY2Raw) ? rY2Raw : 30) / 100;
+            const rY3 = (Number.isFinite(rY3Raw) ? rY3Raw : 20) / 100;
 
             // adoptionAdjusted is the annual value at the selected adoption %
             const year1Value = Math.round(adoptionAdjusted * rY1);
