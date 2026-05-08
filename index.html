@@ -71,6 +71,19 @@
             -moz-appearance: textfield;
         }
 
+        @media print {
+            #curvePreset,
+            #rhs-curvePreset {
+                display: none !important;
+            }
+
+            /* Also hide the labels for the preset selectors when printing */
+            label[for="curvePreset"],
+            label[for="rhs-curvePreset"] {
+                display: none !important;
+            }
+        }
+
         /* AI Boost tooltip */
         .ai-boost-tooltip-wrapper:hover .ai-boost-tooltip {
             opacity: 1;
@@ -729,29 +742,38 @@
                     <div class="p-4 rounded-xl border border-gray-200 bg-gray-50/50 mt-4">
                         <div class="mb-3">
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Value Realization Timeline</label>
-                            <p class="text-xs text-gray-500">How value is distributed over 3 years. Must sum to 100%. Default: 50/30/20.</p>
+                            <p class="text-xs text-gray-500">% of full annual value realized each year. Independent per year — sum can range freely. Default: Standard SaaS Ramp (70/100/100).</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="curvePreset" class="block text-xs font-medium text-gray-500 mb-1">Curve preset</label>
+                            <select id="curvePreset" onchange="applyCurvePreset('lhs')" class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman">
+                                <option value="70,100,100" selected>Standard SaaS Ramp (70/100/100) — DEFAULT</option>
+                                <option value="100,100,100">Postman Steady-State (100/100/100)</option>
+                                <option value="50,30,20">Most Conservative (50/30/20)</option>
+                                <option value="custom">Custom</option>
+                            </select>
                         </div>
                         <div class="flex gap-4">
                             <div class="flex-1">
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Year 1 (%)</label>
-                                <input type="number" id="realizationY1" value="50" min="0" max="100" step="5"
+                                <input type="number" id="realizationY1" value="70" min="0" max="150" step="5"
                                     class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman text-center"
                                     oninput="syncRealization('lhs')">
                             </div>
                             <div class="flex-1">
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Year 2 (%)</label>
-                                <input type="number" id="realizationY2" value="30" min="0" max="100" step="5"
+                                <input type="number" id="realizationY2" value="100" min="0" max="150" step="5"
                                     class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman text-center"
                                     oninput="syncRealization('lhs')">
                             </div>
                             <div class="flex-1">
                                 <label class="block text-xs font-medium text-gray-500 mb-1">Year 3 (%)</label>
-                                <input type="number" id="realizationY3" value="20" min="0" max="100" step="5"
+                                <input type="number" id="realizationY3" value="100" min="0" max="150" step="5"
                                     class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:border-postman focus:ring-1 focus:ring-postman text-center"
                                     oninput="syncRealization('lhs')">
                             </div>
                         </div>
-                        <p id="realizationValidation" class="text-xs mt-2 text-gray-400">Total: 100%</p>
+                        <p id="realizationValidation" class="text-xs mt-2 text-gray-500">Sum: 270%</p>
                     </div>
 
                     <!-- Hidden Seat Cost Input (Default 588) -->
@@ -1194,16 +1216,25 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-500 mb-1">Realization (%)</label>
+                                        <div class="mb-2">
+                                            <label for="rhs-curvePreset" class="block text-xs font-medium text-gray-500 mb-1">Curve preset</label>
+                                            <select id="rhs-curvePreset" onchange="applyCurvePreset('rhs')" class="w-full text-xs border border-gray-200 rounded px-1 py-1 bg-gray-50 focus:border-postman focus:ring-1 focus:ring-postman">
+                                                <option value="70,100,100" selected>Standard SaaS Ramp — DEFAULT</option>
+                                                <option value="100,100,100">Postman Steady-State</option>
+                                                <option value="50,30,20">Most Conservative</option>
+                                                <option value="custom">Custom</option>
+                                            </select>
+                                        </div>
                                         <div class="flex items-center gap-0.5">
-                                            <input type="number" id="rhs-realizationY1" value="50" min="0" max="100" step="5"
+                                            <input type="number" id="rhs-realizationY1" value="70" min="0" max="150" step="5"
                                                 class="w-10 text-xs border border-gray-200 rounded px-1 py-1.5 text-center focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
                                                 oninput="syncRealization('rhs')" title="Year 1 %">
                                             <span class="text-gray-300 text-xs">/</span>
-                                            <input type="number" id="rhs-realizationY2" value="30" min="0" max="100" step="5"
+                                            <input type="number" id="rhs-realizationY2" value="100" min="0" max="150" step="5"
                                                 class="w-10 text-xs border border-gray-200 rounded px-1 py-1.5 text-center focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
                                                 oninput="syncRealization('rhs')" title="Year 2 %">
                                             <span class="text-gray-300 text-xs">/</span>
-                                            <input type="number" id="rhs-realizationY3" value="20" min="0" max="100" step="5"
+                                            <input type="number" id="rhs-realizationY3" value="100" min="0" max="150" step="5"
                                                 class="w-10 text-xs border border-gray-200 rounded px-1 py-1.5 text-center focus:border-postman focus:ring-1 focus:ring-postman bg-gray-50"
                                                 oninput="syncRealization('rhs')" title="Year 3 %">
                                         </div>
@@ -2206,6 +2237,97 @@
             calculate();
         }
 
+        function applyCurvePreset(source) {
+            const sourceId = source === 'rhs' ? 'rhs-curvePreset' : 'curvePreset';
+            const preset = document.getElementById(sourceId)?.value;
+            if (!preset) return;
+
+            const otherId = source === 'rhs' ? 'curvePreset' : 'rhs-curvePreset';
+            const otherEl = document.getElementById(otherId);
+            if (preset === 'custom') {
+                if (otherEl) otherEl.value = preset;
+                return;
+            }
+
+            const parts = preset.split(',').map(v => parseInt(v, 10));
+            if (parts.length !== 3 || parts.some(v => Number.isNaN(v))) return;
+            const [y1, y2, y3] = parts;
+
+            // Set both LHS and RHS year inputs
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            };
+            setVal('realizationY1', y1);
+            setVal('realizationY2', y2);
+            setVal('realizationY3', y3);
+            setVal('rhs-realizationY1', y1);
+            setVal('rhs-realizationY2', y2);
+            setVal('rhs-realizationY3', y3);
+
+            // Sync the OTHER dropdown to match
+            if (otherEl) otherEl.value = preset;
+
+            // Update validation message + recalculate
+            updateRealizationValidation();
+            recalculate();
+        }
+
+        function detectAndUpdatePreset() {
+            const y1 = parseFloat(document.getElementById('realizationY1')?.value);
+            const y2 = parseFloat(document.getElementById('realizationY2')?.value);
+            const y3 = parseFloat(document.getElementById('realizationY3')?.value);
+
+            let presetValue = 'custom';
+            if (y1 === 70 && y2 === 100 && y3 === 100) presetValue = '70,100,100';
+            else if (y1 === 100 && y2 === 100 && y3 === 100) presetValue = '100,100,100';
+            else if (y1 === 50 && y2 === 30 && y3 === 20) presetValue = '50,30,20';
+
+            const lhs = document.getElementById('curvePreset');
+            const rhs = document.getElementById('rhs-curvePreset');
+            if (lhs) lhs.value = presetValue;
+            if (rhs) rhs.value = presetValue;
+        }
+
+        function updateRealizationValidation() {
+            const validationEl = document.getElementById('realizationValidation');
+            if (!validationEl) return;
+
+            const y1Raw = parseFloat(document.getElementById('realizationY1')?.value);
+            const y2Raw = parseFloat(document.getElementById('realizationY2')?.value);
+            const y3Raw = parseFloat(document.getElementById('realizationY3')?.value);
+            const y1 = Number.isFinite(y1Raw) ? y1Raw : 0;
+            const y2 = Number.isFinite(y2Raw) ? y2Raw : 0;
+            const y3 = Number.isFinite(y3Raw) ? y3Raw : 0;
+            const sum = y1 + y2 + y3;
+
+            // Detect per-year overflow (>100%)
+            const overflows = [];
+            if (y1 > 100) overflows.push({ n: 1, val: y1 });
+            if (y2 > 100) overflows.push({ n: 2, val: y2 });
+            if (y3 > 100) overflows.push({ n: 3, val: y3 });
+
+            let warningText = '';
+            let isWarning = false;
+
+            if (overflows.length > 0) {
+                const yearList = overflows.map(o => o.n).join(', ');
+                const valList = overflows.map(o => o.val + '%').join(', ');
+                const yearWord = overflows.length === 1 ? 'Year' : 'Years';
+                const verb = overflows.length === 1 ? 'exceeds' : 'exceed';
+                warningText = ` ⚠ ${yearWord} ${yearList} at ${valList} ${verb} full annual value (modeling growth or expansion)`;
+                isWarning = true;
+            } else if (sum === 0) {
+                warningText = ' ⚠ No value modeled — verify intentional';
+                isWarning = true;
+            }
+
+            validationEl.innerHTML = `Sum: ${sum}%<span class="italic">${warningText}</span>`;
+            validationEl.className = isWarning
+                ? 'text-xs mt-2 text-orange-600 font-medium'
+                : 'text-xs mt-2 text-gray-500';
+        }
+
         function syncRealization(source = 'lhs') {
             const pairs = [
                 { lhs: 'realizationY1', rhs: 'rhs-realizationY1' },
@@ -2224,23 +2346,8 @@
                 }
             });
 
-            const y1Raw = parseFloat(document.getElementById('realizationY1')?.value);
-            const y2Raw = parseFloat(document.getElementById('realizationY2')?.value);
-            const y3Raw = parseFloat(document.getElementById('realizationY3')?.value);
-            const y1 = Number.isFinite(y1Raw) ? y1Raw : 0;
-            const y2 = Number.isFinite(y2Raw) ? y2Raw : 0;
-            const y3 = Number.isFinite(y3Raw) ? y3Raw : 0;
-            const total = y1 + y2 + y3;
-            const validationEl = document.getElementById('realizationValidation');
-            if (validationEl) {
-                if (total === 100) {
-                    validationEl.textContent = `Total: ${total}%`;
-                    validationEl.className = 'text-xs mt-2 text-green-600';
-                } else {
-                    validationEl.textContent = `Total: ${total}% (must equal 100%)`;
-                    validationEl.className = 'text-xs mt-2 text-red-500 font-medium';
-                }
-            }
+            detectAndUpdatePreset();
+            updateRealizationValidation();
             recalculate();
         }
 
@@ -3607,9 +3714,9 @@
             const rY1Raw = parseFloat(document.getElementById('realizationY1')?.value);
             const rY2Raw = parseFloat(document.getElementById('realizationY2')?.value);
             const rY3Raw = parseFloat(document.getElementById('realizationY3')?.value);
-            const rY1 = (Number.isFinite(rY1Raw) ? rY1Raw : 50) / 100;
-            const rY2 = (Number.isFinite(rY2Raw) ? rY2Raw : 30) / 100;
-            const rY3 = (Number.isFinite(rY3Raw) ? rY3Raw : 20) / 100;
+            const rY1 = (Number.isFinite(rY1Raw) ? rY1Raw : 70) / 100;
+            const rY2 = (Number.isFinite(rY2Raw) ? rY2Raw : 100) / 100;
+            const rY3 = (Number.isFinite(rY3Raw) ? rY3Raw : 100) / 100;
 
             // adoptionAdjusted is the annual value at the selected adoption %
             const year1Value = Math.round(adoptionAdjusted * rY1);
