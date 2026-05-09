@@ -3588,6 +3588,9 @@
 
             const fmt = (v) => formatMoney(v);
             const fmtNeg = (v) => v < 0 ? `<span style="color: #FB923C;">(${fmt(Math.abs(v))})</span>` : fmt(v);
+            const roiTooltip = '3-year cumulative value divided by 3-year cumulative cost. Curve-dependent — toggle the realization curve preset to see sensitivity. Headline metric for executive summary.';
+            const netValueTooltip = 'Cumulative value generated over 3 years minus cumulative Postman cost. Net dollar gain to your organization over the contract period.';
+            const paybackTooltip = 'Month at which cumulative monthly value first crosses the Year 1 upfront annual cost. Assumes annual SaaS prepaid model. Conservative estimate using current realization curve.';
 
             target.innerHTML = `
                 <div style="padding: 4px 0;">
@@ -3639,13 +3642,19 @@
                         </table>
                     </div>
                     <div style="margin-top: 12px; padding-top: 10px; border-top: 1px solid #374151; font-size: 12px; color: #D1D5DB;">
-                        <span style="color: ${accentColor}; font-weight: 700; font-size: 16px;" id="outROI">${threeYearRoi}x</span>
-                        <span style="color: #9CA3AF;"> 3-Year ROI</span>
+                        <span title="${roiTooltip}">
+                            <span style="color: ${accentColor}; font-weight: 700; font-size: 16px;" id="outROI">${threeYearRoi}x</span>
+                            <span style="color: #9CA3AF;"> 3-Year ROI</span>
+                        </span>
                         <span style="color: #6B7280; margin: 0 8px;">·</span>
-                        <span style="color: #FFFFFF; font-weight: 600;" id="outTotalSavingsText">${fmt(totalNet)}</span>
-                        <span style="color: #9CA3AF;"> Net 3-Year Value</span>
+                        <span title="${netValueTooltip}">
+                            <span style="color: #FFFFFF; font-weight: 600;" id="outTotalSavingsText">${fmt(totalNet)}</span>
+                            <span style="color: #9CA3AF;"> Net 3-Year Value</span>
+                        </span>
                         <span style="color: #6B7280; margin: 0 8px;">·</span>
-                        <span style="color: ${paybackColor}; font-weight: 600;">Payback: ${paybackLabel}</span>
+                        <span title="${paybackTooltip}">
+                            <span style="color: ${paybackColor}; font-weight: 600;">Payback: ${paybackLabel}</span>
+                        </span>
                     </div>
                 </div>
             `;
@@ -3880,6 +3889,9 @@
             renderAdoptionImpact(totalSavings, devs, seatCost, adoptionPct, isAgentMode);
             const netThreeYearValue = threeYearTotal - threeYearCost;
             const paybackMonths = computePaybackMonths(year1Value, year2Value, year3Value, totalCost);
+            const roiTooltip = '3-year cumulative value divided by 3-year cumulative cost. Curve-dependent — toggle the realization curve preset to see sensitivity. Headline metric for executive summary.';
+            const netValueTooltip = 'Cumulative value generated over 3 years minus cumulative Postman cost. Net dollar gain to your organization over the contract period.';
+            const paybackTooltip = 'Month at which cumulative monthly value first crosses the Year 1 upfront annual cost. Assumes annual SaaS prepaid model. Conservative estimate using current realization curve.';
 
             // Split payback label/value so values pop and labels recede in the headline.
             let paybackPrefix, paybackValue, paybackPrefixColor, paybackValueColor, paybackValueWeight;
@@ -3899,20 +3911,20 @@
 
             // Update UI Output text
             if(isAgentMode) {
-                document.getElementById('summaryText').innerHTML = `Postman Enterprise <span style="color: #60A5FA; font-weight: 700;">with Agent Mode</span> delivers <span style="color: #60A5FA; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #60A5FA; font-weight: 700;">3-Year ROI</span> at <span style="color: #60A5FA; font-weight: 700;">${adoptionPct}%</span> adoption
+                document.getElementById('summaryText').innerHTML = `Postman Enterprise <span style="color: #60A5FA; font-weight: 700;">with Agent Mode</span> delivers <span title="${roiTooltip}"><span style="color: #60A5FA; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #60A5FA; font-weight: 700;">3-Year ROI</span></span> at <span style="color: #60A5FA; font-weight: 700;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 8px; font-size: 14px; font-weight: 400;">
     <span id="outThreeYearTotal" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">${formatMoney(threeYearTotal)}</span>
-    <span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span>
+    <span title="${netValueTooltip}"><span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span></span>
     <span style="color: #6B7280; margin: 0 6px;">·</span>
-    <span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span>
+    <span title="${paybackTooltip}"><span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span></span>
 </span>`;
             } else {
-                document.getElementById('summaryText').innerHTML = `Postman Enterprise delivers <span style="color: #FF6C37; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #FF6C37; font-weight: 700;">3-Year ROI</span> at <span style="color: #FF6C37; font-weight: 700;">${adoptionPct}%</span> adoption
+                document.getElementById('summaryText').innerHTML = `Postman Enterprise delivers <span title="${roiTooltip}"><span style="color: #FF6C37; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #FF6C37; font-weight: 700;">3-Year ROI</span></span> at <span style="color: #FF6C37; font-weight: 700;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 8px; font-size: 14px; font-weight: 400;">
     <span id="outThreeYearTotal" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">${formatMoney(threeYearTotal)}</span>
-    <span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span>
+    <span title="${netValueTooltip}"><span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span></span>
     <span style="color: #6B7280; margin: 0 6px;">·</span>
-    <span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span>
+    <span title="${paybackTooltip}"><span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span></span>
 </span>`;
             }
 
