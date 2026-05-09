@@ -3880,25 +3880,39 @@
             renderAdoptionImpact(totalSavings, devs, seatCost, adoptionPct, isAgentMode);
             const netThreeYearValue = threeYearTotal - threeYearCost;
             const paybackMonths = computePaybackMonths(year1Value, year2Value, year3Value, totalCost);
-            const paybackDurationLabel = formatPaybackDuration(paybackMonths);
-            const paybackColor = paybackMonths === null ? '#FB923C' : '#9CA3AF';
+
+            // Split payback label/value so values pop and labels recede in the headline.
+            let paybackPrefix, paybackValue, paybackPrefixColor, paybackValueColor, paybackValueWeight;
+            if (paybackMonths === null || !Number.isFinite(paybackMonths)) {
+                paybackPrefix = 'Payback';
+                paybackValue = 'not within 3-year window';
+                paybackPrefixColor = '#FB923C';
+                paybackValueColor = '#FB923C';
+                paybackValueWeight = '700';
+            } else {
+                paybackPrefix = 'Payback in ';
+                paybackValue = paybackMonths === 1 ? '1 month' : `${paybackMonths} months`;
+                paybackPrefixColor = '#9CA3AF';
+                paybackValueColor = '#D1D5DB';
+                paybackValueWeight = '700';
+            }
 
             // Update UI Output text
             if(isAgentMode) {
                 document.getElementById('summaryText').innerHTML = `Postman Enterprise <span style="color: #60A5FA; font-weight: 700;">with Agent Mode</span> delivers <span style="color: #60A5FA; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #60A5FA; font-weight: 700;">3-Year ROI</span> at <span style="color: #60A5FA; font-weight: 700;">${adoptionPct}%</span> adoption
-<span style="display: block; margin-top: 8px; font-size: 14px; color: #9CA3AF; font-weight: 400;">
+<span style="display: block; margin-top: 8px; font-size: 14px; font-weight: 400;">
     <span id="outThreeYearTotal" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">${formatMoney(threeYearTotal)}</span>
-    <span style="color: #D1D5DB; font-weight: 600;">${formatMoneyRounded(netThreeYearValue)}</span> Net 3-Year Value
-    <span style="margin: 0 6px;">·</span>
-    <span style="color: ${paybackColor}; font-weight: 600;">${paybackDurationLabel}</span>
+    <span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span>
+    <span style="color: #6B7280; margin: 0 6px;">·</span>
+    <span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span>
 </span>`;
             } else {
                 document.getElementById('summaryText').innerHTML = `Postman Enterprise delivers <span style="color: #FF6C37; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #FF6C37; font-weight: 700;">3-Year ROI</span> at <span style="color: #FF6C37; font-weight: 700;">${adoptionPct}%</span> adoption
-<span style="display: block; margin-top: 8px; font-size: 14px; color: #9CA3AF; font-weight: 400;">
+<span style="display: block; margin-top: 8px; font-size: 14px; font-weight: 400;">
     <span id="outThreeYearTotal" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">${formatMoney(threeYearTotal)}</span>
-    <span style="color: #D1D5DB; font-weight: 600;">${formatMoneyRounded(netThreeYearValue)}</span> Net 3-Year Value
-    <span style="margin: 0 6px;">·</span>
-    <span style="color: ${paybackColor}; font-weight: 600;">${paybackDurationLabel}</span>
+    <span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span>
+    <span style="color: #6B7280; margin: 0 6px;">·</span>
+    <span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span>
 </span>`;
             }
 
