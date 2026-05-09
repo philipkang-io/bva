@@ -71,19 +71,6 @@
             -moz-appearance: textfield;
         }
 
-        @media print {
-            #curvePreset,
-            #rhs-curvePreset {
-                display: none !important;
-            }
-
-            /* Also hide the labels for the preset selectors when printing */
-            label[for="curvePreset"],
-            label[for="rhs-curvePreset"] {
-                display: none !important;
-            }
-        }
-
         /* AI Boost tooltip */
         .ai-boost-tooltip-wrapper:hover .ai-boost-tooltip {
             opacity: 1;
@@ -110,8 +97,11 @@
 
         /* Print-to-PDF styles (Export PDF uses window.print) */
         @media print {
-            @page { size: landscape; margin: 12mm; }
-            body { background: white !important; }
+            @page { size: landscape; margin: 0.4in; }
+            body {
+                background: white !important;
+                font-size: 12px !important;
+            }
             /* Only print the executive summary slide content */
             #view-calculator > header,
             #left-panel,
@@ -127,6 +117,14 @@
             }
             #adoptionImpactRow,
             #yearlyBreakdownRow {
+                display: none !important;
+            }
+            #curvePreset,
+            #rhs-curvePreset {
+                display: none !important;
+            }
+            label[for="curvePreset"],
+            label[for="rhs-curvePreset"] {
                 display: none !important;
             }
             #roiSummaryBody {
@@ -163,11 +161,73 @@
                 overflow: visible !important;
                 background: white !important;
             }
-            /* Landscape at 12mm margins ≈ 1047px usable — 950px slide fits without scaling */
+            #pdf-inject-header td {
+                padding: 8px 14px 7px 14px !important;
+            }
+            #pdf-inject-footer td {
+                padding: 7px 14px !important;
+            }
+            /* Landscape at 0.4in margins keeps the 950px slide fitting without scaling */
             #slideContent {
                 break-inside: avoid;
                 margin: 0 !important;
                 width: 950px !important;
+            }
+            #summaryTextBorder {
+                padding: 18px 24px !important;
+            }
+            #summaryText {
+                font-size: 15px !important;
+                line-height: 1.35 !important;
+                margin-bottom: 10px !important;
+            }
+            #slideContent h4 {
+                font-size: 10px !important;
+                margin-bottom: 6px !important;
+            }
+            #strategicBullets {
+                font-size: 13px !important;
+                line-height: 1.35 !important;
+            }
+            #strategicBullets > div {
+                margin-bottom: 6px !important;
+            }
+            #opImpactGrouped .output-item {
+                padding: 7px !important;
+                margin-bottom: 4px !important;
+                line-height: 1.25 !important;
+            }
+            #opImpactGrouped .output-item span {
+                font-size: 12px !important;
+            }
+            #roiSummaryBox {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            #roiSummaryBox > div:first-child {
+                padding: 10px 14px 6px !important;
+            }
+            #roiSummaryBody > div {
+                padding: 0 14px 12px !important;
+            }
+            #roiSummaryBody > div > div:first-child {
+                margin-bottom: 8px !important;
+            }
+            #roiSummaryContent {
+                font-size: 12px !important;
+                line-height: 1.35 !important;
+            }
+            #roiSummaryContent table {
+                font-size: 11px !important;
+            }
+            #roiSummaryContent table th,
+            #roiSummaryContent table td {
+                padding: 4px 6px !important;
+            }
+            #roiSummaryContent > div > div:last-child {
+                margin-top: 8px !important;
+                padding-top: 6px !important;
+                font-size: 11px !important;
             }
             /* Remove hover scaling effects that can create whitespace */
             .output-highlight { transform: none !important; }
