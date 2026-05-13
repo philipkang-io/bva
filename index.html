@@ -4101,11 +4101,16 @@ Step 6 — Headline metrics:
                 paybackValueWeight = '700';
             }
 
+            const devCountDisplay = devs.toLocaleString('en-US');
+            const devLabel = devs === 1 ? 'developer' : 'developers';
+
             // Update UI Output text
             if(isAgentMode) {
                 document.getElementById('summaryText').innerHTML = `Postman Enterprise <span style="color: #60A5FA; font-weight: 700;">with Agent Mode</span> delivers <span title="${roiTooltip}"><span style="color: #60A5FA; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #60A5FA; font-weight: 700;">3-Year ROI</span><span class="info-icon">ℹ</span></span> at <span style="color: #60A5FA; font-weight: 700;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 8px; font-size: 14px; font-weight: 400;">
     <span id="outThreeYearTotal" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">${formatMoney(threeYearTotal)}</span>
+    <span style="color: #9CA3AF; font-weight: 400;">For </span><span style="color: #D1D5DB; font-weight: 700;">${devCountDisplay}</span><span style="color: #9CA3AF; font-weight: 400;"> ${devLabel}</span>
+    <span style="color: #6B7280; margin: 0 6px;">·</span>
     <span title="${netValueTooltip}"><span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span><span class="info-icon">ℹ</span></span>
     <span style="color: #6B7280; margin: 0 6px;">·</span>
     <span title="${paybackTooltip}"><span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span><span class="info-icon">ℹ</span></span>
@@ -4114,6 +4119,8 @@ Step 6 — Headline metrics:
                 document.getElementById('summaryText').innerHTML = `Postman Enterprise delivers <span title="${roiTooltip}"><span style="color: #FF6C37; font-size: 28px; font-weight: 700;" id="outThreeYearROI">${threeYearRoi}x</span> <span style="color: #FF6C37; font-weight: 700;">3-Year ROI</span><span class="info-icon">ℹ</span></span> at <span style="color: #FF6C37; font-weight: 700;">${adoptionPct}%</span> adoption
 <span style="display: block; margin-top: 8px; font-size: 14px; font-weight: 400;">
     <span id="outThreeYearTotal" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">${formatMoney(threeYearTotal)}</span>
+    <span style="color: #9CA3AF; font-weight: 400;">For </span><span style="color: #D1D5DB; font-weight: 700;">${devCountDisplay}</span><span style="color: #9CA3AF; font-weight: 400;"> ${devLabel}</span>
+    <span style="color: #6B7280; margin: 0 6px;">·</span>
     <span title="${netValueTooltip}"><span style="color: #D1D5DB; font-weight: 700;">${formatMoneyRounded(netThreeYearValue)}</span><span style="color: #9CA3AF; font-weight: 400;"> Net 3-Year Value</span><span class="info-icon">ℹ</span></span>
     <span style="color: #6B7280; margin: 0 6px;">·</span>
     <span title="${paybackTooltip}"><span style="color: ${paybackPrefixColor}; font-weight: 400;">${paybackPrefix}</span><span style="color: ${paybackValueColor}; font-weight: ${paybackValueWeight};">${paybackValue}</span><span class="info-icon">ℹ</span></span>
