@@ -3132,7 +3132,7 @@ Step 6 — Headline metrics:
             },
             rework: {
                 title: "API Discovery and Reuse Savings",
-                formula: "Duplicate Projects × 3 Devs × 3 Months × 160hrs × Rate",
+                formula: "Redundant Projects/Yr × 3 Devs × 3 Months × 160hrs × Rate",
                 desc: formulaDesc(
                     'Postman internal — "Private API Network makes APIs easily discoverable and promotes reuse, directly reducing redundant development."',
                     'Default team size (3 devs) and project duration (3 months) are configurable estimates.'
@@ -3195,7 +3195,7 @@ Step 6 — Headline metrics:
             },
             testing: {
                 title: "Test Compression",
-                formula: "(Releases × Cycle Hours × Automation rate × Rate) + (Agent Resolved Fails × Hrs × Rate)",
+                formula: "(Releases × Cycle Hours × Automation rate × Rate) + (Agent Resolved Fails × Hrs per Debug × Rate)",
                 formulaNoAgent: "Releases × Cycle Hours × Automation rate × Rate",
                 desc: formulaDesc(
                     `${srcLink('Forrester TEI for Postman, 2022','https://voyager.postman.com/pdf/forrester-tei-postman-api-platform.pdf')} — automated collection runners compress regression testing.`,
