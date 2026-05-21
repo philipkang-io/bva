@@ -3153,8 +3153,8 @@ Step 6 — Headline metrics:
             },
             governance: {
                 title: "Governance Efficiency",
-                formula: "(PRs × (Mins/60) × Rate × Architect rate multiplier × Automation rate) + (Agent Specs Authored × Hrs × Rate)",
-                formulaNoAgent: "PRs × (Mins/60) × Rate × Architect rate multiplier × Automation rate",
+                formula: "(PRs × (Mins per Review/60) × Rate × Architect rate multiplier × Automation rate) + (Agent Specs Authored × Hrs per Spec × Rate)",
+                formulaNoAgent: "PRs × (Mins per Review/60) × Rate × Architect rate multiplier × Automation rate",
                 desc: formulaDesc(
                     `${srcLink('Forrester TEI for Postman, 2022','https://voyager.postman.com/pdf/forrester-tei-postman-api-platform.pdf')} — Spectral linting automates API governance. Minutes per review (20–30 min saved per PR) from Postman internal SE data.`,
                     'PRs/year, architect rate multiplier (1.25x), and automation percentage (90%) are configurable estimates.'
